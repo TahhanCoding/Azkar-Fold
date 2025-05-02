@@ -18,3 +18,11 @@ The Azkar Fold app uses a structured navigation system managed by the `Navigatio
 - Supports views like `HomeView`, `AzkarListView`, `AzkarDetailView`, `SettingsView`, and `AboutView`.
 
 This setup allows for a flexible and scalable navigation system within the Azkar Fold app.
+
+
+## Neo-Brutalism Design Principles
+- **Bold Typography**: Use strong, clear fonts to make text stand out.
+- **Vibrant Colors**: Incorporate bright and contrasting colors to create visual interest.
+- **Minimalistic Layouts**: Keep designs simple and uncluttered, focusing on essential elements.
+- **Raw Aesthetic**: Embrace unfinished or raw elements to highlight authenticity.
+- **Functional Design**: Prioritize functionality and usability in design choices.

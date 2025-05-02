@@ -82,18 +82,23 @@ struct HomeView: View {
         VStack(spacing: 20) {
             Text("Home View")
                 .font(.largeTitle)
+                .foregroundColor(.blue) // Vibrant color
+                .fontWeight(.bold) // Bold typography
             
             Button("Go to Azkar List") {
                 coordinator.navigate(to: .azkarList)
             }
             .buttonStyle(.borderedProminent)
+            .foregroundColor(.red) // Vibrant color
             
             Button("Go to Settings") {
                 coordinator.navigate(to: .settings)
             }
             .buttonStyle(.borderedProminent)
+            .foregroundColor(.green) // Vibrant color
         }
         .navigationTitle("Home")
+        .background(Color.gray.opacity(0.1)) // Raw aesthetic
     }
 }
 
@@ -104,13 +109,17 @@ struct AzkarListView: View {
         VStack(spacing: 20) {
             Text("Azkar List")
                 .font(.largeTitle)
+                .foregroundColor(.blue) // Vibrant color
+                .fontWeight(.bold) // Bold typography
             
             Button("View Morning Azkar") {
                 coordinator.navigate(to: .azkarDetail(id: "morning"))
             }
             .buttonStyle(.borderedProminent)
+            .foregroundColor(.red) // Vibrant color
         }
         .navigationTitle("Azkar List")
+        .background(Color.gray.opacity(0.1)) // Raw aesthetic
     }
 }
 
@@ -121,8 +130,11 @@ struct AzkarDetailView: View {
         VStack {
             Text("Azkar Detail: \(id)")
                 .font(.largeTitle)
+                .foregroundColor(.blue) // Vibrant color
+                .fontWeight(.bold) // Bold typography
         }
         .navigationTitle("Azkar Detail")
+        .background(Color.gray.opacity(0.1)) // Raw aesthetic
     }
 }
 
@@ -131,8 +143,11 @@ struct SettingsView: View {
         VStack {
             Text("Settings View")
                 .font(.largeTitle)
+                .foregroundColor(.blue) // Vibrant color
+                .fontWeight(.bold) // Bold typography
         }
         .navigationTitle("Settings")
+        .background(Color.gray.opacity(0.1)) // Raw aesthetic
     }
 }
 
@@ -141,7 +156,10 @@ struct AboutView: View {
         VStack {
             Text("About View")
                 .font(.largeTitle)
+                .foregroundColor(.blue) // Vibrant color
+                .fontWeight(.bold) // Bold typography
         }
         .navigationTitle("About")
+        .background(Color.gray.opacity(0.1)) // Raw aesthetic
     }
 }
