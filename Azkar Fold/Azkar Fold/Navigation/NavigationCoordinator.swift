@@ -118,7 +118,7 @@ struct HomeView: View {
 
 struct AzkaryTabView: View {
     @EnvironmentObject var coordinator: NavigationCoordinator
-    @StateObject private var zekrStore = ZekrStore()
+    @EnvironmentObject var zekrStore: ZekrStore
     
     var body: some View {
         NavigationView {
@@ -155,7 +155,6 @@ struct AzkaryTabView: View {
                     .opacity(0.05)
             )
         }
-        .environmentObject(zekrStore)
     }
 }
 
