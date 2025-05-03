@@ -36,8 +36,10 @@ struct ZekrView: View {
                 .frame(height: geometry.size.height / 2)
                 .frame(maxWidth: .infinity)
                 .background(
-                    RoundedRectangle(cornerRadius: 0)
+                    RoundedRectangle(cornerRadius: 27)
                         .fill(Color.purple.opacity(0.1))
+                        .padding(.horizontal, 21)
+                        .padding(.vertical, 21)
                 )
                 
                 // Lower half - Counter
