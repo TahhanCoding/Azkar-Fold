@@ -20,7 +20,7 @@ struct EmptyZekrView: View {
                 .font(.title2)
                 .fontWeight(.bold)
             
-            Text("Tap the + button to create your first Zekr")
+            Text("Tap the Create button to start your first Zekr")
                 .font(.subheadline)
                 .foregroundColor(.secondary)
                 .multilineTextAlignment(.center)

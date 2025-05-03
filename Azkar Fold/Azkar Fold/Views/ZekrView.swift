@@ -36,11 +36,18 @@ struct ZekrView: View {
                 .frame(height: geometry.size.height / 2)
                 .frame(maxWidth: .infinity)
                 .background(
-                    RoundedRectangle(cornerRadius: 27)
+                    RoundedRectangle(cornerRadius: 33)
                         .fill(Color.purple.opacity(0.1))
+                        .overlay(
+                            Image("islamic_pattern")
+                                .resizable(resizingMode: .tile)
+                                .opacity(0.35)
+                        )
+                        .clipShape(RoundedRectangle(cornerRadius: 33))
                         .padding(.horizontal, 21)
                         .padding(.vertical, 21)
                 )
+
                 
                 // Lower half - Counter
                 VStack {
@@ -77,11 +84,6 @@ struct ZekrView: View {
             }
             .navigationTitle("Zekr Counter")
             .navigationBarTitleDisplayMode(.inline)
-            .background(
-                Image("islamic_pattern")
-                    .resizable(resizingMode: .tile)
-                    .opacity(0.05)
-            )
         }
         .ignoresSafeArea(.all, edges: .bottom)
     }

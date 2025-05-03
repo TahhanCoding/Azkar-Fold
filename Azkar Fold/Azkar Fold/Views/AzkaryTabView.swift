@@ -16,6 +16,19 @@ struct AzkaryTabView: View {
             VStack {
                 if zekrStore.zekrs.isEmpty {
                     EmptyZekrView()
+                        .background(
+                               Image("islamic_pattern")
+                                   .resizable(resizingMode: .tile)
+                                   .opacity(0.55)
+                                   .mask(
+                                       RadialGradient(
+                                           gradient: Gradient(colors: [.white, .clear]),
+                                           center: .center,
+                                           startRadius: 50,
+                                           endRadius: 300
+                                       )
+                                   )
+                           )
                 } else {
                     List {
                         ForEach(zekrStore.zekrs) { zekr in
@@ -25,6 +38,11 @@ struct AzkaryTabView: View {
                                 }
                         }
                         .onDelete(perform: zekrStore.deleteZekr)
+                        .background(
+                            Image("islamic_pattern")
+                                .resizable(resizingMode: .tile)
+                                .opacity(0.55)
+                        )
                     }
                 }
             }
@@ -34,17 +52,13 @@ struct AzkaryTabView: View {
                     Button(action: {
                         coordinator.navigate(to: .createZekr)
                     }) {
-                        Image(systemName: "plus")
+                        Text("Create")
                             .font(.title2)
+                            .bold()
                             .foregroundColor(.purple)
                     }
                 }
             }
-            .background(
-                Image("islamic_pattern")
-                    .resizable(resizingMode: .tile)
-                    .opacity(0.05)
-            )
         }
     }
 }

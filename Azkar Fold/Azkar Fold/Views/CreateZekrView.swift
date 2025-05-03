@@ -22,9 +22,10 @@ struct CreateZekrView: View {
                 .padding(.top)
             
             // Neo-brutalism style text field
-            TextField("Enter your Zekr text", text: $zekrText)
+            TextField("سبحان الله وبحمده", text: $zekrText)
                 .font(.headline)
                 .padding()
+                .environment(\.layoutDirection, .rightToLeft)
                 .background(
                     RoundedRectangle(cornerRadius: 8)
                         .fill(Color.white)
