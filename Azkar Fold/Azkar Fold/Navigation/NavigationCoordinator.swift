@@ -11,9 +11,15 @@ import SwiftUI
 enum Route: Hashable {
     case home
     case azkarList
-    case azkarDetail(id: String)
+    case azkarDetail(id: UUID)
+    case createZekr
     case settings
     case about
+    
+    // Tab views
+    case azkaryTab
+    case sunnahTab
+    case settingsTab
 }
 
 // Coordinator class that manages navigation state
@@ -66,11 +72,19 @@ struct ViewFactory {
         case .azkarList:
             AzkarListView()
         case .azkarDetail(let id):
-            AzkarDetailView(id: id)
+            ZekrView(zekrId: id)
+        case .createZekr:
+            CreateZekrView()
         case .settings:
             SettingsView()
         case .about:
             AboutView()
+        case .azkaryTab:
+            AzkaryTabView()
+        case .sunnahTab:
+            SunnahTabView()
+        case .settingsTab:
+            SettingsTabView()
         }
     }
 }
@@ -79,87 +93,241 @@ struct HomeView: View {
     @EnvironmentObject var coordinator: NavigationCoordinator
     
     var body: some View {
-        VStack(spacing: 20) {
-            Text("Home View")
-                .font(.largeTitle)
-                .foregroundColor(.blue) // Vibrant color
-                .fontWeight(.bold) // Bold typography
+        TabView {
+            AzkaryTabView()
+                .tabItem {
+                    Label("Azkary", systemImage: "heart.fill")
+                }
+                .tag(0)
             
-            Button("Go to Azkar List") {
-                coordinator.navigate(to: .azkarList)
-            }
-            .buttonStyle(.borderedProminent)
-            .foregroundColor(.red) // Vibrant color
+            SunnahTabView()
+                .tabItem {
+                    Label("Sunnah", systemImage: "book.fill")
+                }
+                .tag(1)
             
-            Button("Go to Settings") {
-                coordinator.navigate(to: .settings)
-            }
-            .buttonStyle(.borderedProminent)
-            .foregroundColor(.green) // Vibrant color
+            SettingsTabView()
+                .tabItem {
+                    Label("Settings", systemImage: "gear")
+                }
+                .tag(2)
         }
-        .navigationTitle("Home")
-        .background(Color.gray.opacity(0.1)) // Raw aesthetic
+        .accentColor(.purple) // Neo-brutalism vibrant color
     }
 }
 
-struct AzkarListView: View {
+struct AzkaryTabView: View {
+    @EnvironmentObject var coordinator: NavigationCoordinator
+    @StateObject private var zekrStore = ZekrStore()
+    
+    var body: some View {
+        NavigationView {
+            VStack {
+                if zekrStore.zekrs.isEmpty {
+                    EmptyZekrView()
+                } else {
+                    List {
+                        ForEach(zekrStore.zekrs) { zekr in
+                            ZekrRowView(zekr: zekr)
+                                .onTapGesture {
+                                    coordinator.navigate(to: .azkarDetail(id: zekr.id))
+                                }
+                        }
+                        .onDelete(perform: zekrStore.deleteZekr)
+                    }
+                }
+            }
+            .navigationTitle("My Azkar")
+            .toolbar {
+                ToolbarItem(placement: .navigationBarTrailing) {
+                    Button(action: {
+                        coordinator.navigate(to: .createZekr)
+                    }) {
+                        Image(systemName: "plus")
+                            .font(.title2)
+                            .foregroundColor(.purple)
+                    }
+                }
+            }
+            .background(
+                Image("islamic_pattern")
+                    .resizable(resizingMode: .tile)
+                    .opacity(0.05)
+            )
+        }
+        .environmentObject(zekrStore)
+    }
+}
+
+struct ZekrRowView: View {
+    let zekr: Zekr
+    
+    var body: some View {
+        HStack {
+            VStack(alignment: .leading, spacing: 4) {
+                Text(zekr.text)
+                    .font(.headline)
+                    .fontWeight(.bold)
+                    .lineLimit(1)
+                
+                Text("Last updated: \(formattedDate)")
+                    .font(.caption)
+                    .foregroundColor(.secondary)
+            }
+            
+            Spacer()
+            
+            Text("\(zekr.counter)")
+                .font(.title)
+                .fontWeight(.black)
+                .foregroundColor(.purple)
+                .padding(10)
+                .background(
+                    RoundedRectangle(cornerRadius: 8)
+                        .fill(Color.purple.opacity(0.1))
+                )
+        }
+        .padding(.vertical, 8)
+    }
+    
+    private var formattedDate: String {
+        let formatter = DateFormatter()
+        formatter.dateStyle = .short
+        formatter.timeStyle = .short
+        return formatter.string(from: zekr.lastUpdated)
+    }
+}
+
+struct EmptyZekrView: View {
     @EnvironmentObject var coordinator: NavigationCoordinator
     
     var body: some View {
         VStack(spacing: 20) {
-            Text("Azkar List")
-                .font(.largeTitle)
-                .foregroundColor(.blue) // Vibrant color
-                .fontWeight(.bold) // Bold typography
+            Image(systemName: "heart.text.square")
+                .font(.system(size: 80))
+                .foregroundColor(.purple.opacity(0.7))
             
-            Button("View Morning Azkar") {
-                coordinator.navigate(to: .azkarDetail(id: "morning"))
+            Text("No custom Azkar created yet")
+                .font(.title2)
+                .fontWeight(.bold)
+            
+            Text("Tap the + button to create your first Zekr")
+                .font(.subheadline)
+                .foregroundColor(.secondary)
+                .multilineTextAlignment(.center)
+                .padding(.horizontal)
+            
+            Button(action: {
+                coordinator.navigate(to: .createZekr)
+            }) {
+                Text("Create Zekr")
+                    .font(.headline)
+                    .foregroundColor(.white)
+                    .padding(.horizontal, 20)
+                    .padding(.vertical, 10)
+                    .background(Color.purple)
+                    .cornerRadius(8)
             }
-            .buttonStyle(.borderedProminent)
-            .foregroundColor(.red) // Vibrant color
+            .padding(.top, 10)
         }
-        .navigationTitle("Azkar List")
-        .background(Color.gray.opacity(0.1)) // Raw aesthetic
+        .padding()
     }
 }
 
-struct AzkarDetailView: View {
-    let id: String
+struct ZekrView: View {
+    let zekrId: UUID
+    @EnvironmentObject var zekrStore: ZekrStore
+    @State private var animateCounter = false
+    
+    var zekr: Zekr? {
+        zekrStore.zekrs.first(where: { $0.id == zekrId })
+    }
     
     var body: some View {
-        VStack {
-            Text("Azkar Detail: \(id)")
-                .font(.largeTitle)
-                .foregroundColor(.blue) // Vibrant color
-                .fontWeight(.bold) // Bold typography
+        GeometryReader { geometry in
+            VStack(spacing: 0) {
+                // Upper half - Zekr text
+                VStack {
+                    if let zekr = zekr {
+                        Text(zekr.text)
+                            .font(.title)
+                            .fontWeight(.bold)
+                            .multilineTextAlignment(.center)
+                            .padding()
+                    } else {
+                        Text("Zekr not found")
+                            .font(.title)
+                            .foregroundColor(.red)
+                    }
+                }
+                .frame(height: geometry.size.height / 2)
+                .frame(maxWidth: .infinity)
+                .background(
+                    RoundedRectangle(cornerRadius: 0)
+                        .fill(Color.purple.opacity(0.1))
+                )
+                
+                // Lower half - Counter
+                VStack {
+                    if let zekr = zekr {
+                        Text("\(zekr.counter)")
+                            .font(.system(size: 80, weight: .black, design: .rounded))
+                            .foregroundColor(.purple)
+                            .scaleEffect(animateCounter ? 1.2 : 1.0)
+                            .animation(.spring(response: 0.3, dampingFraction: 0.6), value: animateCounter)
+                    }
+                    
+                    Text("Tap to count")
+                        .font(.subheadline)
+                        .foregroundColor(.secondary)
+                        .padding(.top, 5)
+                }
+                .frame(height: geometry.size.height / 2)
+                .frame(maxWidth: .infinity)
+                .contentShape(Rectangle())
+                .onTapGesture {
+                    if let zekr = zekr {
+                        zekrStore.updateCounter(for: zekr.id)
+                        animateCounter = true
+                        DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
+                            animateCounter = false
+                        }
+                    }
+                }
+                .background(
+                    RoundedRectangle(cornerRadius: 0)
+                        .fill(Color.white)
+                        .shadow(color: .black.opacity(0.1), radius: 2, x: 0, y: -2)
+                )
+            }
+            .navigationTitle("Zekr Counter")
+            .navigationBarTitleDisplayMode(.inline)
+            .background(
+                Image("islamic_pattern")
+                    .resizable(resizingMode: .tile)
+                    .opacity(0.05)
+            )
         }
-        .navigationTitle("Azkar Detail")
-        .background(Color.gray.opacity(0.1)) // Raw aesthetic
+        .ignoresSafeArea(.all, edges: .bottom)
     }
 }
 
-struct SettingsView: View {
-    var body: some View {
-        VStack {
-            Text("Settings View")
-                .font(.largeTitle)
-                .foregroundColor(.blue) // Vibrant color
-                .fontWeight(.bold) // Bold typography
-        }
-        .navigationTitle("Settings")
-        .background(Color.gray.opacity(0.1)) // Raw aesthetic
-    }
-}
 
-struct AboutView: View {
+struct SettingsTabView: View {
     var body: some View {
-        VStack {
-            Text("About View")
-                .font(.largeTitle)
-                .foregroundColor(.blue) // Vibrant color
-                .fontWeight(.bold) // Bold typography
+        NavigationView {
+            VStack {
+                Text("Settings View")
+                    .font(.largeTitle)
+                    .foregroundColor(.purple) // Neo-brutalism vibrant color
+                    .fontWeight(.bold) // Bold typography
+            }
+            .navigationTitle("Settings")
+            .background(
+                Image("islamic_pattern")
+                    .resizable(resizingMode: .tile)
+                    .opacity(0.05)
+            )
         }
-        .navigationTitle("About")
-        .background(Color.gray.opacity(0.1)) // Raw aesthetic
     }
 }

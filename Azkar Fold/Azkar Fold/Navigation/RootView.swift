@@ -9,6 +9,7 @@ import SwiftUI
 
 struct RootView: View {
     @StateObject private var coordinator = NavigationCoordinator()
+    @StateObject private var zekrStore = ZekrStore()
     
     var body: some View {
         NavigationStack(path: $coordinator.path) {
@@ -18,6 +19,7 @@ struct RootView: View {
                 }
         }
         .environmentObject(coordinator)
+        .environmentObject(zekrStore)
     }
 }
 

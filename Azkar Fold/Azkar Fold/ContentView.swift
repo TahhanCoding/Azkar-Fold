@@ -12,18 +12,8 @@ struct ContentView: View {
     @EnvironmentObject var coordinator: NavigationCoordinator
     
     var body: some View {
-        VStack {
-            Text("Welcome to Azkar Fold")
-                .font(.largeTitle)
-                .padding()
-            
-            Button("Start Navigation") {
-                coordinator.navigate(to: .azkarList)
-            }
-            .buttonStyle(.borderedProminent)
-            .padding()
-        }
-        .padding()
+        // Redirect to the main HomeView with tab navigation
+        HomeView()
     }
 }
 
