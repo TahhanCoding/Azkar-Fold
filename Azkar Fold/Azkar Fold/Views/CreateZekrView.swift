@@ -18,7 +18,7 @@ struct CreateZekrView: View {
             Text("Create New Zekr")
                 .font(.title)
                 .fontWeight(.bold)
-                .foregroundColor(.purple)
+                .foregroundColor(.azkarPrimary)
                 .padding(.top)
             
             // Neo-brutalism style text field
@@ -32,7 +32,7 @@ struct CreateZekrView: View {
                         .shadow(color: .black.opacity(0.2), radius: 0, x: 4, y: 4)
                         .overlay(
                             RoundedRectangle(cornerRadius: 8)
-                                .stroke(Color.purple, lineWidth: 2)
+                                .stroke(Color.azkarPrimary, lineWidth: 2)
                         )
                 )
                 .padding(.horizontal)
@@ -54,7 +54,7 @@ struct CreateZekrView: View {
                     .padding()
                     .background(
                         Rectangle()
-                            .fill(Color.purple)
+                            .fill(Color.azkarPrimary)
                             .shadow(color: .black.opacity(0.3), radius: 0, x: 4, y: 4)
                     )
                     .padding(.horizontal)

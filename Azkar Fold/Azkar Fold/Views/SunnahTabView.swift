@@ -14,13 +14,13 @@ struct SunnahTabView: View {
                 // Placeholder content for Sunnah tab
                 Image(systemName: "book.fill")
                     .font(.system(size: 70))
-                    .foregroundColor(.purple.opacity(0.7))
+                    .foregroundColor(.azkarPrimary.opacity(0.7))
                     .padding()
                 
                 Text("Sunnah Content")
                     .font(.title)
                     .fontWeight(.bold)
-                    .foregroundColor(.purple)
+                    .foregroundColor(.azkarPrimary)
                 
                 Text("This section will contain Sunnah practices and teachings")
                     .font(.subheadline)
@@ -36,7 +36,7 @@ struct SunnahTabView: View {
                     .padding(.vertical, 10)
                     .background(
                         Rectangle()
-                            .fill(Color.purple)
+                            .fill(Color.azkarPrimary)
                             .shadow(color: .black.opacity(0.3), radius: 0, x: 4, y: 4)
                     )
                     .padding(.top, 20)

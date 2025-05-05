@@ -31,11 +31,11 @@ struct ZekrRowView: View {
             Text("\(zekr.counter)")
                 .font(.title)
                 .fontWeight(.black)
-                .foregroundColor(.purple)
+                .foregroundColor(.azkarPrimary)
                 .padding(10)
                 .background(
                     RoundedRectangle(cornerRadius: 8)
-                        .fill(Color.purple.opacity(0.1))
+                        .fill(Color.azkarPrimary.opacity(0.1))
                 )
         }
         .padding(.vertical, 8)

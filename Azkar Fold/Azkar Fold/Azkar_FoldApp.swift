@@ -10,9 +10,27 @@ import Combine
 
 @main
 struct Azkar_FoldApp: App {
+    @State private var showLaunchScreen = true
+    
     var body: some Scene {
         WindowGroup {
-            RootView()
+            ZStack {
+                RootView()
+                    .opacity(showLaunchScreen ? 0 : 1)
+                
+                if showLaunchScreen {
+                    LaunchScreenView()
+                        .transition(.opacity)
+                        .onAppear {
+                            // Dismiss launch screen after animations complete
+                            DispatchQueue.main.asyncAfter(deadline: .now() + 3.5) {
+                                withAnimation(.easeInOut(duration: 0.7)) {
+                                    showLaunchScreen = false
+                                }
+                            }
+                        }
+                }
+            }
         }
     }
 }

@@ -55,7 +55,7 @@ struct AzkaryTabView: View {
                         Text("Create")
                             .font(.title2)
                             .bold()
-                            .foregroundColor(.purple)
+                            .foregroundColor(.azkarPrimary)
                     }
                 }
             }

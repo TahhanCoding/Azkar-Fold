@@ -13,7 +13,7 @@ struct SettingsTabView: View {
             VStack {
                 Text("Settings View")
                     .font(.largeTitle)
-                    .foregroundColor(.purple) // Neo-brutalism vibrant color
+                    .foregroundColor(.azkarPrimary) // Neo-brutalism vibrant color
                     .fontWeight(.bold) // Bold typography
             }
             .navigationTitle("Settings")

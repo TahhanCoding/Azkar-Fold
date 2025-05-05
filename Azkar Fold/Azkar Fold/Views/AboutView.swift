@@ -14,13 +14,13 @@ struct AboutView: View {
                 // App logo/icon
                 Image(systemName: "heart.text.square.fill")
                     .font(.system(size: 80))
-                    .foregroundColor(.purple)
+                    .foregroundColor(.azkarPrimary)
                     .padding(.top, 30)
                 
                 // App name and version
                 Text("Azkar Fold")
                     .font(.system(size: 28, weight: .black))
-                    .foregroundColor(.purple)
+                    .foregroundColor(.azkarPrimary)
                 
                 Text("Version 1.0.0")
                     .font(.subheadline)
@@ -76,7 +76,7 @@ struct AboutView: View {
             Text(title)
                 .font(.headline)
                 .fontWeight(.bold)
-                .foregroundColor(.purple)
+                .foregroundColor(.azkarPrimary)
             
             Text(content)
                 .font(.body)
@@ -98,7 +98,7 @@ struct AboutView: View {
         .frame(width: 250, height: 50)
         .background(
             Rectangle()
-                .fill(Color.purple)
+                .fill(Color.azkarPrimary)
                 .shadow(color: .black.opacity(0.3), radius: 0, x: 4, y: 4)
         )
     }

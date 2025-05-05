@@ -37,7 +37,7 @@ struct ZekrView: View {
                 .frame(maxWidth: .infinity)
                 .background(
                     RoundedRectangle(cornerRadius: 33)
-                        .fill(Color.purple.opacity(0.1))
+                        .fill(Color.azkarPrimary.opacity(0.1))
                         .overlay(
                             Image("islamic_pattern")
                                 .resizable(resizingMode: .tile)
@@ -54,7 +54,7 @@ struct ZekrView: View {
                     if let zekr = zekr {
                         Text("\(zekr.counter)")
                             .font(.system(size: 80, weight: .black, design: .rounded))
-                            .foregroundColor(.purple)
+                            .foregroundColor(.azkarPrimary)
                             .scaleEffect(animateCounter ? 1.2 : 1.0)
                             .animation(.spring(response: 0.3, dampingFraction: 0.6), value: animateCounter)
                     }

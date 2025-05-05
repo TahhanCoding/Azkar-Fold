@@ -30,6 +30,6 @@ struct HomeView: View {
                 }
                 .tag(2)
         }
-        .accentColor(.purple) // Neo-brutalism vibrant color
+        .accentColor(.azkarPrimary) // Neo-brutalism vibrant color
     }
 }
