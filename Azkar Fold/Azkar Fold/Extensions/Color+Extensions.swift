@@ -8,7 +8,19 @@
 import SwiftUI
 
 extension Color {
-    // Hex code initializer
+    static let appPrimary = Color(hex: "4A9897")
+    static let appBackground = Color(hex: "#FAD358")//
+    static let appBeads = Color(hex: "#45968B")
+    static let appAccent = Color(hex: "#000000")//
+    static let appClear = Color(hex: "#FEFEF7")//
+}
+
+
+
+
+
+
+extension Color {
     init(hex: String) {
         let hex = hex.trimmingCharacters(in: CharacterSet.alphanumerics.inverted)
         var int: UInt64 = 0
@@ -33,24 +45,4 @@ extension Color {
             opacity: Double(a) / 255
         )
     }
-    
-    static let azkarPrimary = Color(hex: "2596be")
-    static let azkarSecondary =  Color(hex: "F5C400").opacity(0.7)
-    
-    static let azkarPrimaryLight = Color(hex: "FFDF4F") // Lighter yellow
-    static let azkarPrimaryDark = Color(hex: "D4AF37") // Darker gold
-    
-    // Background colors
-    static let azkarBackground = Color("AzkarBackground", bundle: nil) ?? Color.white.opacity(0.95)
-    
-    // Neo-brutalism accent colors
-    static let azkarAccent = Color("AzkarAccent", bundle: nil) ?? Color.black.opacity(0.8)
-    
-    // Legacy color names for backward compatibility
-    @available(*, deprecated, renamed: "azkarPrimary")
-    static let azkarPurple = azkarPrimary
-    @available(*, deprecated, renamed: "azkarPrimaryLight")
-    static let azkarPurpleLight = azkarPrimaryLight
-    @available(*, deprecated, renamed: "azkarPrimaryDark")
-    static let azkarPurpleDark = azkarPrimaryDark
 }

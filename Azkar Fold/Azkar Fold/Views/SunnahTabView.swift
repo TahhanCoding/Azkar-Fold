@@ -18,7 +18,7 @@ struct SunnahTabView: View {
                     Text("Daily Sunnah Azkar")
                         .font(.title2)
                         .fontWeight(.bold)
-                        .foregroundColor(.azkarPrimary)
+                        .foregroundColor(.appPrimary)
                         .frame(maxWidth: .infinity, alignment: .leading)
                         .padding(.horizontal)
                     
@@ -30,7 +30,7 @@ struct SunnahTabView: View {
                             title: "Morning Azkar",
                             iconName: "sun.max.fill",
                             isCompleted: isCategoryCompleted(for: .morning),
-                            backgroundColor: .azkarPrimary
+                            backgroundColor: .appPrimary
                         )
                     }
                     .buttonStyle(PlainButtonStyle())
@@ -43,7 +43,7 @@ struct SunnahTabView: View {
                             title: "Evening Azkar",
                             iconName: "moon.stars.fill",
                             isCompleted: isCategoryCompleted(for: .evening),
-                            backgroundColor: .azkarPrimary.opacity(0.8)
+                            backgroundColor: .appPrimary.opacity(0.8)
                         )
                     }
                     .buttonStyle(PlainButtonStyle())

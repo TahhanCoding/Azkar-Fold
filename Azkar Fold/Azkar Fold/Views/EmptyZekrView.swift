@@ -14,7 +14,7 @@ struct EmptyZekrView: View {
         VStack(spacing: 20) {
             Image(systemName: "heart.text.square")
                 .font(.system(size: 80))
-                .foregroundColor(.azkarPrimary.opacity(0.7))
+                .foregroundColor(.appPrimary.opacity(0.7))
             
             Text("No custom Azkar created yet")
                 .font(.title2)
@@ -34,7 +34,7 @@ struct EmptyZekrView: View {
                     .foregroundColor(.white)
                     .padding(.horizontal, 20)
                     .padding(.vertical, 10)
-                    .background(Color.azkarPrimary)
+                    .background(Color.appPrimary)
                     .cornerRadius(8)
             }
             .padding(.top, 10)

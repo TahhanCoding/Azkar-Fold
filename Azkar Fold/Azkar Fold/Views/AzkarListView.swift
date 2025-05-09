@@ -36,7 +36,7 @@ struct AzkarListView: View {
                 }) {
                     Image(systemName: "plus")
                         .font(.title2)
-                        .foregroundColor(.azkarPrimary)
+                        .foregroundColor(.appPrimary)
                 }
             }
         }

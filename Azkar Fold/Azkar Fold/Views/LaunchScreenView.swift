@@ -37,7 +37,7 @@ struct LaunchScreenView: View {
             Image("launch_pattern")
                 .resizable()
                 .aspectRatio(contentMode: .fill)
-                .foregroundColor(Color.azkarPrimary)
+                .foregroundColor(Color.appPrimary)
                 .scaleEffect(isPatternAnimated ? 1.1 : patternScale)
                 .rotationEffect(Angle(degrees: isPatternAnimated ? 5 : 0))
                 .offset(y: patternMovement ? 5 : -5)
@@ -46,7 +46,7 @@ struct LaunchScreenView: View {
                 .overlay(
                     // Subtle wave effect overlay
                     RoundedRectangle(cornerRadius: 0)
-                        .fill(Color.azkarPrimary.opacity(0.1))
+                        .fill(Color.appPrimary.opacity(0.1))
                         .scaleEffect(1.2)
                         .offset(x: patternWave, y: 0)
                         .blendMode(.overlay)
@@ -55,7 +55,7 @@ struct LaunchScreenView: View {
                 .overlay(
                     // Glow effect
                     RoundedRectangle(cornerRadius: 0)
-                        .fill(Color.azkarPrimary.opacity(glowIntensity))
+                        .fill(Color.appPrimary.opacity(glowIntensity))
                         .blur(radius: 20)
                         .blendMode(.screen)
                 )
@@ -74,7 +74,7 @@ struct LaunchScreenView: View {
                     
                     Image(systemName: "heart.text.square.fill")
                         .font(.system(size: 80))
-                        .foregroundColor(.azkarPrimary)
+                        .foregroundColor(.appPrimary)
                         .scaleEffect(isLogoAnimated ? 1.0 : 0.5)
                         .opacity(isLogoAnimated ? 1.0 : 0.0)
                 }
@@ -82,7 +82,7 @@ struct LaunchScreenView: View {
                 // App name with enhanced animation
                 Text("Azkar Fold")
                     .font(.system(size: 42, weight: .black))
-                    .foregroundColor(.azkarPrimary)
+                    .foregroundColor(.appPrimary)
                     .opacity(isTextAnimated ? 1.0 : 0.0)
                     .offset(y: isTextAnimated ? 0 : 20)
                     .shadow(color: .black.opacity(0.2), radius: 0, x: 2, y: 2) // Neo-brutalism shadow
@@ -104,7 +104,7 @@ struct LaunchScreenView: View {
                 // Subtitle with animation
                 Text("Your Daily Islamic Remembrance")
                     .font(.headline)
-                    .foregroundColor(.azkarPrimary.opacity(0.8))
+                    .foregroundColor(.appPrimary.opacity(0.8))
                     .opacity(isTextAnimated ? 0.8 : 0.0)
                     .offset(y: isTextAnimated ? 0 : 30)
             }

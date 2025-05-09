@@ -12,15 +12,15 @@ struct SettingsView: View {
         List {
             Section(header: Text("Appearance")) {
                 Toggle("Dark Mode", isOn: .constant(false))
-                    .toggleStyle(SwitchToggleStyle(tint: .azkarPrimary))
+                    .toggleStyle(SwitchToggleStyle(tint: .appPrimary))
             }
             
             Section(header: Text("Notifications")) {
                 Toggle("Daily Reminders", isOn: .constant(true))
-                    .toggleStyle(SwitchToggleStyle(tint: .azkarPrimary))
+                    .toggleStyle(SwitchToggleStyle(tint: .appPrimary))
                 
                 Toggle("Prayer Times", isOn: .constant(true))
-                    .toggleStyle(SwitchToggleStyle(tint: .azkarPrimary))
+                    .toggleStyle(SwitchToggleStyle(tint: .appPrimary))
             }
             
             Section(header: Text("About")) {
