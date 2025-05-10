@@ -17,6 +17,7 @@ struct HomeView: View {
                     Label("Azkary", systemImage: "heart.fill")
                 }
                 .tag(0)
+
             
             SunnahTabView()
                 .tabItem {
@@ -30,6 +31,6 @@ struct HomeView: View {
                 }
                 .tag(2)
         }
-        .accentColor(.appPrimary) // Neo-brutalism vibrant color
+        .accentColor(.appPrimary)
     }
 }

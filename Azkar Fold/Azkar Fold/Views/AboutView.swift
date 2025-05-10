@@ -24,7 +24,7 @@ struct AboutView: View {
                 
                 Text("Version 1.0.0")
                     .font(.subheadline)
-                    .foregroundColor(.secondary)
+                    .foregroundColor(.appAccent)
                 
                 // App description
                 VStack(alignment: .leading, spacing: 15) {
@@ -66,7 +66,8 @@ struct AboutView: View {
         .background(
             Image("islamic_pattern")
                 .resizable(resizingMode: .tile)
-                .opacity(0.05)
+                .opacity(0.1)
+                .background(Color.appBackground.ignoresSafeArea())
         )
     }
     
@@ -80,7 +81,7 @@ struct AboutView: View {
             
             Text(content)
                 .font(.body)
-                .foregroundColor(.primary)
+                .foregroundColor(.appClear) 
                 .fixedSize(horizontal: false, vertical: true)
         }
         .frame(maxWidth: .infinity, alignment: .leading)
@@ -94,11 +95,11 @@ struct AboutView: View {
             Text(title)
                 .font(.headline)
         }
-        .foregroundColor(.white)
+        .foregroundColor(.appClear) // Use appClear for text
         .frame(width: 250, height: 50)
         .background(
             Rectangle()
-                .fill(Color.appPrimary)
+                .fill(Color.appAccent) // Use appAccent for background
                 .shadow(color: .black.opacity(0.3), radius: 0, x: 4, y: 4)
         )
     }

@@ -13,8 +13,9 @@ struct SettingsTabView: View {
             VStack {
                 Text("Settings View")
                     .font(.largeTitle)
-                    .foregroundColor(.appPrimary) // Neo-brutalism vibrant color
-                    .fontWeight(.bold) // Bold typography
+                    .foregroundColor(.appPrimary)
+                    .fontWeight(.bold)
+                    .padding(10)
             }
             .navigationTitle("Settings")
             .background(
@@ -23,5 +24,6 @@ struct SettingsTabView: View {
                     .opacity(0.05)
             )
         }
+        .background(Color.appBackground.ignoresSafeArea()) 
     }
 }

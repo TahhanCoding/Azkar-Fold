@@ -61,33 +61,3 @@ class NavigationCoordinator: ObservableObject {
         }
     }
 }
-
-//// Factory to create views based on routes
-//struct ViewFactory {
-//    @ViewBuilder
-//    static func viewFor(route: Route) -> some View {
-//        switch route {
-//        case .home:
-//            HomeView()
-//        case .azkarList:
-//            AzkarListView()
-//        case .azkarDetail(let id):
-//            ZekrView(zekrId: id)
-//        case .createZekr:
-//            CreateZekrView()
-//        case .settings:
-//            SettingsView()
-//        case .about:
-//            AboutView()
-//        case .azkaryTab:
-//            AzkaryTabView()
-//        case .sunnahTab:
-//            SunnahTabView()
-//        case .settingsTab:
-//            SettingsTabView()
-//        }
-//    }
-//}
-//
-//
-//

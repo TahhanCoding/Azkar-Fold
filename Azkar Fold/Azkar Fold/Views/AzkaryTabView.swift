@@ -30,23 +30,34 @@ struct AzkaryTabView: View {
                                    )
                            )
                 } else {
-                    List {
-                        ForEach(zekrStore.zekrs) { zekr in
-                            ZekrRowView(zekr: zekr)
-                                .onTapGesture {
-                                    coordinator.navigate(to: .azkarDetail(id: zekr.id))
-                                }
+                    VStack {
+                        Text("Daily Sunnah Azkar")
+                            .font(.title2)
+                            .fontWeight(.bold)
+                            .foregroundColor(.appPrimary)
+                            .frame(maxWidth: .infinity, alignment: .leading)
+                            .padding(.horizontal)
+
+                        List {
+                            ForEach(zekrStore.zekrs) { zekr in
+                                ZekrRowView(zekr: zekr)
+                                    .onTapGesture {
+                                        coordinator.navigate(to: .azkarDetail(id: zekr.id))
+                                    }
+                            }
+                            .onDelete(perform: zekrStore.deleteZekr)
+                            .background(
+                                Image("islamic_pattern")
+                                    .resizable(resizingMode: .tile)
+                                    .opacity(0.55)
+                            )
                         }
-                        .onDelete(perform: zekrStore.deleteZekr)
-                        .background(
-                            Image("islamic_pattern")
-                                .resizable(resizingMode: .tile)
-                                .opacity(0.55)
-                        )
                     }
+                    .background(
+                        Color.appBackground.ignoresSafeArea(.all)
+                    )
                 }
             }
-            .navigationTitle("My Azkar")
             .toolbar {
                 ToolbarItem(placement: .navigationBarTrailing) {
                     Button(action: {

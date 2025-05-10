@@ -9,10 +9,10 @@ import SwiftUI
 
 extension Color {
     static let appPrimary = Color(hex: "4A9897")
-    static let appBackground = Color(hex: "#FAD358")//
+    static let appBackground = Color(hex: "#FAD358")
     static let appBeads = Color(hex: "#45968B")
-    static let appAccent = Color(hex: "#000000")//
-    static let appClear = Color(hex: "#FEFEF7")//
+    static let appAccent = Color(hex: "#000000")
+    static let appClear = Color(hex: "#FEFEF7")
 }
 
 

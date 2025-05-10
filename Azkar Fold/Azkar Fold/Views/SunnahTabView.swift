@@ -50,7 +50,7 @@ struct SunnahTabView: View {
                 }
                 .padding()
             }
-            .navigationTitle("Sunnah")
+            //.navigationTitle("Sunnah")
             .background(
                 Image("islamic_pattern")
                     .resizable(resizingMode: .tile)
