@@ -50,11 +50,13 @@ struct SunnahTabView: View {
                 }
                 .padding()
             }
-            //.navigationTitle("Sunnah")
             .background(
                 Image("islamic_pattern")
                     .resizable(resizingMode: .tile)
                     .opacity(0.05)
+            )
+            .background(
+                Color.appBackground.ignoresSafeArea(.all)
             )
             .onAppear {
                 progressStore.resetDailyProgressIfNeeded()
@@ -124,7 +126,7 @@ struct AzkarCard: View {
         .padding()
         .background(
             Rectangle()
-                .fill(isCompleted ? backgroundColor.opacity(0.6) : backgroundColor)
+                .fill(backgroundColor)
                 .shadow(color: .black.opacity(0.3), radius: 0, x: 4, y: 4)
         )
         .cornerRadius(12)

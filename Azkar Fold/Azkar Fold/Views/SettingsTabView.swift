@@ -17,13 +17,14 @@ struct SettingsTabView: View {
                     .fontWeight(.bold)
                     .padding(10)
             }
-            .navigationTitle("Settings")
             .background(
                 Image("islamic_pattern")
                     .resizable(resizingMode: .tile)
                     .opacity(0.05)
             )
         }
-        .background(Color.appBackground.ignoresSafeArea()) 
+        .background(
+            Color.appBackground.ignoresSafeArea(.all)
+        )
     }
 }

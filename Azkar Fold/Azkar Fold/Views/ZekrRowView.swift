@@ -11,11 +11,14 @@ struct ZekrRowView: View {
     let zekr: Zekr
     
     var body: some View {
-        HStack {
+        HStack(spacing: 12) {
+            Spacer()
+
             VStack(alignment: .leading, spacing: 4) {
                 Text(zekr.text)
                     .font(.headline)
                     .fontWeight(.bold)
+                    .foregroundColor(.appPrimary)
                     .lineLimit(1)
                     .environment(\.layoutDirection, .rightToLeft)
                 
@@ -26,7 +29,6 @@ struct ZekrRowView: View {
             }
             .environment(\.layoutDirection, .rightToLeft)
 
-            Spacer()
             
             Text("\(zekr.counter)")
                 .font(.title)
@@ -34,9 +36,11 @@ struct ZekrRowView: View {
                 .foregroundColor(.appPrimary)
                 .padding(10)
                 .background(
-                    RoundedRectangle(cornerRadius: 8)
+                    RoundedRectangle(cornerRadius: 16)
                         .fill(Color.appPrimary.opacity(0.1))
                 )
+                .padding(.trailing, 12)
+            
         }
         .padding(.vertical, 8)
     }

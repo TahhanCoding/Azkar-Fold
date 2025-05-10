@@ -31,27 +31,35 @@ struct AzkaryTabView: View {
                            )
                 } else {
                     VStack {
-                        Text("Daily Sunnah Azkar")
+                        Text("Azkary")
                             .font(.title2)
                             .fontWeight(.bold)
                             .foregroundColor(.appPrimary)
                             .frame(maxWidth: .infinity, alignment: .leading)
                             .padding(.horizontal)
 
-                        List {
-                            ForEach(zekrStore.zekrs) { zekr in
-                                ZekrRowView(zekr: zekr)
-                                    .onTapGesture {
-                                        coordinator.navigate(to: .azkarDetail(id: zekr.id))
-                                    }
+                        ScrollView {
+                            VStack {
+                                ForEach(zekrStore.zekrs) { zekr in
+                                    ZekrRowView(zekr: zekr)
+                                        .background(
+                                            Color.appClear.cornerRadius(16).opacity(0.35)
+                                        )
+                                        .onTapGesture {
+                                            coordinator.navigate(to: .azkarDetail(id: zekr.id))
+                                        }
+                                }
+                                .onDelete(perform: zekrStore.deleteZekr)
+                                .background(
+                                    Image("islamic_pattern")
+                                        .resizable(resizingMode: .tile)
+                                        .opacity(0.55)
+                                )
                             }
-                            .onDelete(perform: zekrStore.deleteZekr)
-                            .background(
-                                Image("islamic_pattern")
-                                    .resizable(resizingMode: .tile)
-                                    .opacity(0.55)
-                            )
+                            .padding(.horizontal, 10)
+                            .padding(.top, 18)
                         }
+                        Spacer()
                     }
                     .background(
                         Color.appBackground.ignoresSafeArea(.all)
@@ -64,9 +72,12 @@ struct AzkaryTabView: View {
                         coordinator.navigate(to: .createZekr)
                     }) {
                         Text("Create")
-                            .font(.title2)
-                            .bold()
-                            .foregroundColor(.appPrimary)
+                            .font(.headline)
+                            .foregroundColor(.white)
+                            .padding(.horizontal, 20)
+                            .padding(.vertical, 10)
+                            .background(Color.appPrimary)
+                            .cornerRadius(8)
                     }
                 }
             }
