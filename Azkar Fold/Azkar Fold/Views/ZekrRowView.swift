@@ -11,38 +11,45 @@ struct ZekrRowView: View {
     let zekr: Zekr
     
     var body: some View {
-        HStack(spacing: 12) {
+        HStack(spacing: 15) {
             Spacer()
 
+            
             VStack(alignment: .leading, spacing: 4) {
                 Text(zekr.text)
                     .font(.headline)
                     .fontWeight(.bold)
-                    .foregroundColor(.appPrimary)
+                    .foregroundColor(.white)
                     .lineLimit(1)
+                    .multilineTextAlignment(.trailing)
                     .environment(\.layoutDirection, .rightToLeft)
                 
                 Text("Last updated: \(formattedDate)")
                     .font(.caption)
-                    .foregroundColor(.secondary)
+                    .foregroundColor(.white.opacity(0.8))
                     .environment(\.layoutDirection, .rightToLeft)
             }
             .environment(\.layoutDirection, .rightToLeft)
 
             
             Text("\(zekr.counter)")
-                .font(.title)
-                .fontWeight(.black)
+                .font(.title2)
+                .fontWeight(.bold)
                 .foregroundColor(.appPrimary)
-                .padding(10)
+                .frame(minWidth: 44, minHeight: 44)
+                .padding(5)
                 .background(
                     RoundedRectangle(cornerRadius: 16)
-                        .fill(Color.appPrimary.opacity(0.1))
+                        .fill(Color.white)
                 )
-                .padding(.trailing, 12)
-            
+                .padding(.trailing, 5)
         }
-        .padding(.vertical, 8)
+        .padding(15)
+        .background(
+            RoundedRectangle(cornerRadius: 12)
+                .fill(Color.appPrimary.opacity(0.9))
+                .shadow(color: Color.black.opacity(0.25), radius: 3, x: 3, y: 3)
+        )
     }
     
     private var formattedDate: String {

@@ -34,7 +34,6 @@ struct AzkaryTabView: View {
                         Text("Azkary")
                             .font(.title2)
                             .fontWeight(.bold)
-                            .foregroundColor(.appPrimary)
                             .frame(maxWidth: .infinity, alignment: .leading)
                             .padding(.horizontal)
 
@@ -42,9 +41,6 @@ struct AzkaryTabView: View {
                             VStack {
                                 ForEach(zekrStore.zekrs) { zekr in
                                     ZekrRowView(zekr: zekr)
-                                        .background(
-                                            Color.appClear.cornerRadius(16).opacity(0.35)
-                                        )
                                         .onTapGesture {
                                             coordinator.navigate(to: .azkarDetail(id: zekr.id))
                                         }

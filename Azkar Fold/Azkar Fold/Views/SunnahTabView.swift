@@ -13,42 +13,46 @@ struct SunnahTabView: View {
     
     var body: some View {
         NavigationView {
-            ScrollView {
-                VStack(spacing: 24) {
-                    Text("Daily Sunnah Azkar")
-                        .font(.title2)
-                        .fontWeight(.bold)
-                        .foregroundColor(.appPrimary)
-                        .frame(maxWidth: .infinity, alignment: .leading)
-                        .padding(.horizontal)
-                    
-                    // Morning Azkar Card
-                    NavigationLink(destination: {
-                        loadSunnahZekrView(for: .morning)
-                    }) {
-                        AzkarCard(
-                            title: "Morning Azkar",
-                            iconName: "sun.max.fill",
-                            isCompleted: isCategoryCompleted(for: .morning),
-                            backgroundColor: .appPrimary
-                        )
+            VStack {
+                Text("Daily Sunnah Azkar")
+                    .font(.title2)
+                    .fontWeight(.bold)
+                    .frame(maxWidth: .infinity, alignment: .leading)
+                    .padding(.horizontal)
+
+                ScrollView {
+                    VStack(spacing: 24) {
+                        
+                        // Morning Azkar Card
+                        NavigationLink(destination: {
+                            loadSunnahZekrView(for: .morning)
+                        }) {
+                            AzkarCard(
+                                title: "Morning Azkar",
+                                iconName: "sun.max.fill",
+                                isCompleted: isCategoryCompleted(for: .morning),
+                                backgroundColor: .appPrimary
+                            )
+                        }
+                        .buttonStyle(PlainButtonStyle())
+                        
+                        // Evening Azkar Card
+                        NavigationLink(destination: {
+                            loadSunnahZekrView(for: .evening)
+                        }) {
+                            AzkarCard(
+                                title: "Evening Azkar",
+                                iconName: "moon.stars.fill",
+                                isCompleted: isCategoryCompleted(for: .evening),
+                                backgroundColor: .appPrimary.opacity(0.8)
+                            )
+                        }
+                        .buttonStyle(PlainButtonStyle())
                     }
-                    .buttonStyle(PlainButtonStyle())
-                    
-                    // Evening Azkar Card
-                    NavigationLink(destination: {
-                        loadSunnahZekrView(for: .evening)
-                    }) {
-                        AzkarCard(
-                            title: "Evening Azkar",
-                            iconName: "moon.stars.fill",
-                            isCompleted: isCategoryCompleted(for: .evening),
-                            backgroundColor: .appPrimary.opacity(0.8)
-                        )
-                    }
-                    .buttonStyle(PlainButtonStyle())
+                    .padding()
                 }
-                .padding()
+                
+                Spacer()
             }
             .background(
                 Image("islamic_pattern")
