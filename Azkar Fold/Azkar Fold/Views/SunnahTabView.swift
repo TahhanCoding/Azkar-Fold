@@ -8,12 +8,13 @@
 import SwiftUI
 
 struct SunnahTabView: View {
+    @EnvironmentObject var coordinator: NavigationCoordinator
     private let azkarService = SunnahAzkarService()
     @StateObject private var progressStore = SunnahProgressStore()
     
     var body: some View {
         NavigationView {
-            VStack {
+            VStack(spacing: 0) {
                 Text("Daily Sunnah Azkar")
                     .font(.title2)
                     .fontWeight(.bold)
@@ -55,15 +56,25 @@ struct SunnahTabView: View {
                 Spacer()
             }
             .background(
-                Image("islamic_pattern")
-                    .resizable(resizingMode: .tile)
-                    .opacity(0.05)
-            )
-            .background(
                 Color.appBackground.ignoresSafeArea(.all)
             )
             .onAppear {
                 progressStore.resetDailyProgressIfNeeded()
+            }
+            .toolbar {
+                ToolbarItem(placement: .navigationBarTrailing) {
+                    Button(action: {
+                        //This button should convert the view to edit mode, where user see a check box in every card instead of the completion check, and he sees full list of sunnah azkar available, checked azkar only should appear, at edit mode, the edit mode should be save button
+                    }) {
+                        Text("Edit")
+                            .font(.headline)
+                            .foregroundColor(.white)
+                            .padding(.horizontal, 20)
+                            .padding(.vertical, 10)
+                            .background(Color.appPrimary)
+                            .cornerRadius(8)
+                    }
+                }
             }
         }
         .environmentObject(progressStore)
