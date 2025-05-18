@@ -42,8 +42,9 @@ struct CreateZekrView: View {
             // Modified button action
             Button(action: {
                 if !zekrText.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty {
-                    zekrStore.addZekr(text: zekrText)
-                    dismiss()
+                    zekrStore.addZekr(text: zekrText) {
+                        dismiss()
+                    }
                 } else {
                     showAlert = true
                 }
@@ -80,13 +81,5 @@ struct CreateZekrView: View {
                 dismissButton: .default(Text("OK"))
             )
         }
-    }
-}
-
-#Preview {
-    NavigationView {
-        CreateZekrView()
-            .environmentObject(NavigationCoordinator())
-            .environmentObject(ZekrStore())
     }
 }

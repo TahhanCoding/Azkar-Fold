@@ -50,11 +50,3 @@ struct AzkarListView: View {
         )
     }
 }
-
-#Preview {
-    NavigationView {
-        AzkarListView()
-            .environmentObject(NavigationCoordinator())
-            .environmentObject(ZekrStore())
-    }
-}

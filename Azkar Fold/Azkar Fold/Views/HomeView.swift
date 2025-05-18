@@ -9,7 +9,7 @@ import SwiftUI
 
 struct HomeView: View {
     @EnvironmentObject var coordinator: NavigationCoordinator
-    @StateObject var zekrStore = ZekrStore()
+    @EnvironmentObject var zekrStore: ZekrStore
     @StateObject var sunnahProgressStore = SunnahProgressStore()
     
     var body: some View {

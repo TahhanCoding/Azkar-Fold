@@ -23,36 +23,60 @@ struct Zekr: Identifiable, Codable, Hashable {
 
 // ViewModel to manage Zekr data
 class ZekrStore: ObservableObject {
-    @Published var zekrs: [Zekr] = []
+    @Published private(set) var zekrs: [Zekr] = []
     private let saveKey = "savedZekrs"
     
     init() {
         loadZekrs()
     }
     
-    func addZekr(text: String) {
+    func addZekr(text: String, completion: @escaping () -> Void) {
         let newZekr = Zekr(text: text)
-        zekrs.append(newZekr)
-        saveZekrs()
+        
+        DispatchQueue.main.async { [weak self] in
+            guard let self = self else { return }
+            
+            self.zekrs.append(newZekr)
+            self.saveZekrs()
+            self.objectWillChange.send()
+            
+            completion()
+        }
     }
-    
+
     func updateCounter(for zekrId: UUID) {
         if let index = zekrs.firstIndex(where: { $0.id == zekrId }) {
-            zekrs[index].counter += 1
-            zekrs[index].lastUpdated = Date()
+            var updatedZekrs = zekrs
+            var updatedZekr = updatedZekrs[index]
+            updatedZekr.counter += 1
+            updatedZekr.lastUpdated = Date()
+            updatedZekrs[index] = updatedZekr
+            zekrs = updatedZekrs
             saveZekrs()
         }
     }
     
     func deleteZekr(at indexSet: IndexSet) {
-        zekrs.remove(atOffsets: indexSet)
+        var updatedZekrs = zekrs
+        updatedZekrs.remove(atOffsets: indexSet)
+        zekrs = updatedZekrs
         saveZekrs()
+        // Explicitly notify observers of the change
+        DispatchQueue.main.async {
+            self.objectWillChange.send()
+        }
     }
     
     func deleteZekr(withId id: UUID) {
         if let index = zekrs.firstIndex(where: { $0.id == id }) {
-            zekrs.remove(at: index)
+            var updatedZekrs = zekrs
+            updatedZekrs.remove(at: index)
+            zekrs = updatedZekrs
             saveZekrs()
+            // Explicitly notify observers of the change
+            DispatchQueue.main.async {
+                self.objectWillChange.send()
+            }
         }
     }
     
@@ -60,6 +84,8 @@ class ZekrStore: ObservableObject {
         do {
             let encoded = try JSONEncoder().encode(zekrs)
             UserDefaults.standard.set(encoded, forKey: saveKey)
+            // Force UserDefaults to save immediately
+            UserDefaults.standard.synchronize()
         } catch {
             print("Error saving zekrs: \(error.localizedDescription)")
         }
@@ -70,6 +96,10 @@ class ZekrStore: ObservableObject {
             do {
                 let decodedZekrs = try JSONDecoder().decode([Zekr].self, from: savedZekrs)
                 zekrs = decodedZekrs
+                // Explicitly notify observers of the change after loading data
+                DispatchQueue.main.async {
+                    self.objectWillChange.send()
+                }
             } catch {
                 print("Error loading zekrs: \(error.localizedDescription)")
             }
