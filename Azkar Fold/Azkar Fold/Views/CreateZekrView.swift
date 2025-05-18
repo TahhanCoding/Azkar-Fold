@@ -10,6 +10,7 @@ import SwiftUI
 struct CreateZekrView: View {
     @EnvironmentObject var coordinator: NavigationCoordinator
     @EnvironmentObject var zekrStore: ZekrStore
+    @Environment(\.dismiss) var dismiss
     @State private var zekrText = ""
     @State private var showAlert = false
     
@@ -37,11 +38,12 @@ struct CreateZekrView: View {
                 )
                 .padding(.horizontal)
             
-            // Create button with neo-brutalism style
+            
+            // Modified button action
             Button(action: {
                 if !zekrText.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty {
                     zekrStore.addZekr(text: zekrText)
-                    coordinator.goBack()
+                    dismiss()
                 } else {
                     showAlert = true
                 }

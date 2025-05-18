@@ -10,6 +10,8 @@ import SwiftUI
 struct AzkaryTabView: View {
     @EnvironmentObject var coordinator: NavigationCoordinator
     @EnvironmentObject var zekrStore: ZekrStore
+    @State private var showingDeleteAlert = false
+    @State private var zekrToDelete: Zekr? = nil
     
     var body: some View {
         NavigationView {
@@ -44,8 +46,12 @@ struct AzkaryTabView: View {
                                         .onTapGesture {
                                             coordinator.navigate(to: .azkarDetail(id: zekr.id))
                                         }
+                                        .onLongPressGesture {
+                                            self.zekrToDelete = zekr
+                                            self.showingDeleteAlert = true
+                                        }
                                 }
-                                .onDelete(perform: zekrStore.deleteZekr)
+                                // .onDelete(perform: zekrStore.deleteZekr) // Removed onDelete
                                 .background(
                                     Image("islamic_pattern")
                                         .resizable(resizingMode: .tile)
@@ -60,6 +66,22 @@ struct AzkaryTabView: View {
                     .background(
                         Color.appBackground.ignoresSafeArea(.all)
                     )
+                    .alert(isPresented: $showingDeleteAlert) {
+                        Alert(
+                            title: Text("Confirm Deletion"),
+                            message: Text("Are you sure you want to delete this Zekr? This action cannot be undone."),
+                            primaryButton: .destructive(Text("Delete")) {
+                                if let zekr = zekrToDelete,
+                                   let index = zekrStore.zekrs.firstIndex(where: { $0.id == zekr.id }) {
+                                    zekrStore.deleteZekr(at: IndexSet(integer: index))
+                                }
+                                zekrToDelete = nil // Reset after action
+                            },
+                            secondaryButton: .cancel() {
+                                zekrToDelete = nil // Reset on cancel
+                            }
+                        )
+                    }
                 }
             }
             .toolbar {

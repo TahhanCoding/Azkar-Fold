@@ -10,7 +10,10 @@ import SwiftUI
 struct SunnahTabView: View {
     @EnvironmentObject var coordinator: NavigationCoordinator
     private let azkarService = SunnahAzkarService()
-    @StateObject private var progressStore = SunnahProgressStore()
+    @EnvironmentObject private var progressStore: SunnahProgressStore // Changed to EnvironmentObject
+    @State private var isEditing = false
+    // Temporary set to store selections in edit mode before saving
+    @State private var temporarySelectedCategories: Set<SunnahAzkarCategory> = []
     
     var body: some View {
         NavigationView {
@@ -22,33 +25,55 @@ struct SunnahTabView: View {
                     .padding(.horizontal)
 
                 ScrollView {
-                    VStack(spacing: 24) {
-                        
-                        // Morning Azkar Card
-                        NavigationLink(destination: {
-                            loadSunnahZekrView(for: .morning)
-                        }) {
-                            AzkarCard(
-                                title: "Morning Azkar",
-                                iconName: "sun.max.fill",
-                                isCompleted: isCategoryCompleted(for: .morning),
-                                backgroundColor: .appPrimary
-                            )
+                    VStack(spacing: 16) {
+                        if isEditing {
+                            ForEach(SunnahAzkarCategory.allCases) { category in
+                                AzkarCard(
+                                    title: category.title,
+                                    iconName: category.iconName,
+                                    isEditing: true,
+                                    isSelectedForEditing: Binding(
+                                        get: { temporarySelectedCategories.contains(category) },
+                                        set: { isSelected in
+                                            if isSelected {
+                                                temporarySelectedCategories.insert(category)
+                                            } else {
+                                                temporarySelectedCategories.remove(category)
+                                            }
+                                        }
+                                    ),
+                                    backgroundColor: category.color
+                                )
+                                .onTapGesture {
+                                    // This gesture ensures the binding is updated if the user taps the whole card
+                                    if temporarySelectedCategories.contains(category) {
+                                        temporarySelectedCategories.remove(category)
+                                    } else {
+                                        temporarySelectedCategories.insert(category)
+                                    }
+                                }
+                            }
+                        } else {
+                            if progressStore.selectedSunnahCategories.isEmpty {
+                                Text("No Sunnah categories selected. Tap 'Edit' to choose categories.")
+                                    .foregroundColor(.secondary)
+                                    .padding()
+                            } else {
+                                ForEach(SunnahAzkarCategory.allCases.filter { progressStore.selectedSunnahCategories.contains($0) }) { category in
+                                    NavigationLink(destination: {
+                                        loadSunnahZekrView(for: category)
+                                    }) {
+                                        AzkarCard(
+                                            title: category.title,
+                                            iconName: category.iconName,
+                                            isCompleted: isCategoryCompleted(for: category),
+                                            backgroundColor: category.color
+                                        )
+                                    }
+                                    .buttonStyle(PlainButtonStyle())
+                                }
+                            }
                         }
-                        .buttonStyle(PlainButtonStyle())
-                        
-                        // Evening Azkar Card
-                        NavigationLink(destination: {
-                            loadSunnahZekrView(for: .evening)
-                        }) {
-                            AzkarCard(
-                                title: "Evening Azkar",
-                                iconName: "moon.stars.fill",
-                                isCompleted: isCategoryCompleted(for: .evening),
-                                backgroundColor: .appPrimary.opacity(0.8)
-                            )
-                        }
-                        .buttonStyle(PlainButtonStyle())
                     }
                     .padding()
                 }
@@ -60,13 +85,23 @@ struct SunnahTabView: View {
             )
             .onAppear {
                 progressStore.resetDailyProgressIfNeeded()
+                progressStore.loadSelectedCategories() // Ensure categories are loaded
+                temporarySelectedCategories = progressStore.selectedSunnahCategories // Initialize on appear
             }
             .toolbar {
                 ToolbarItem(placement: .navigationBarTrailing) {
                     Button(action: {
-                        //This button should convert the view to edit mode, where user see a check box in every card instead of the completion check, and he sees full list of sunnah azkar available, checked azkar only should appear, at edit mode, the edit mode should be save button
+                        if isEditing {
+                            // Save was tapped
+                            progressStore.selectedSunnahCategories = temporarySelectedCategories
+                            progressStore.saveSelectedCategories()
+                        } else {
+                            // Edit was tapped, initialize temporary selections
+                            temporarySelectedCategories = progressStore.selectedSunnahCategories
+                        }
+                        isEditing.toggle()
                     }) {
-                        Text("Edit")
+                        Text(isEditing ? "Save" : "Edit")
                             .font(.headline)
                             .foregroundColor(.white)
                             .padding(.horizontal, 20)
@@ -77,6 +112,7 @@ struct SunnahTabView: View {
                 }
             }
         }
+        .navigationViewStyle(.stack) // Added to potentially fix toolbar item visibility
         .environmentObject(progressStore)
     }
     
@@ -104,12 +140,61 @@ struct SunnahTabView: View {
     }
 }
 
+// Helper extension for SunnahAzkarCategory to provide title, icon, and color
+extension SunnahAzkarCategory {
+    var title: String {
+        switch self {
+        case .morning: return "Morning Azkar"
+        case .evening: return "Evening Azkar"
+        // Add other cases if any
+        }
+    }
+
+    var iconName: String {
+        switch self {
+        case .morning: return "sun.max.fill"
+        case .evening: return "moon.stars.fill"
+        // Add other cases if any
+        }
+    }
+
+    var color: Color {
+        switch self {
+        case .morning: return Color.appPrimary
+        case .evening: return Color.appPrimary.opacity(0.8)
+        // Add other cases if any
+        }
+    }
+}
+
 // Helper view for Azkar cards
 struct AzkarCard: View {
     let title: String
     let iconName: String
-    let isCompleted: Bool
+    var isCompleted: Bool = false // Default value
+    var isEditing: Bool = false
+    @Binding var isSelectedForEditing: Bool
     let backgroundColor: Color
+
+    // Initializer for normal display mode
+    init(title: String, iconName: String, isCompleted: Bool, backgroundColor: Color) {
+        self.title = title
+        self.iconName = iconName
+        self.isCompleted = isCompleted
+        self.backgroundColor = backgroundColor
+        self.isEditing = false
+        self._isSelectedForEditing = .constant(false) // Dummy binding for non-editing mode
+    }
+
+    // Initializer for editing mode
+    init(title: String, iconName: String, isEditing: Bool, isSelectedForEditing: Binding<Bool>, backgroundColor: Color) {
+        self.title = title
+        self.iconName = iconName
+        self.isCompleted = false // Not used in editing mode
+        self.isEditing = isEditing
+        self._isSelectedForEditing = isSelectedForEditing
+        self.backgroundColor = backgroundColor
+    }
     
     var body: some View {
         HStack {
@@ -132,7 +217,11 @@ struct AzkarCard: View {
             
             Spacer()
             
-            if isCompleted {
+            if isEditing {
+                Image(systemName: isSelectedForEditing ? "checkmark.square.fill" : "square")
+                    .foregroundColor(.white)
+                    .font(.system(size: 24))
+            } else if isCompleted {
                 Image(systemName: "checkmark.circle.fill")
                     .font(.system(size: 24))
                     .foregroundColor(.white)

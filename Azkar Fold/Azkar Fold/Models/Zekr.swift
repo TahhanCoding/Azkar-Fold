@@ -49,16 +49,30 @@ class ZekrStore: ObservableObject {
         saveZekrs()
     }
     
-    private func saveZekrs() {
-        if let encoded = try? JSONEncoder().encode(zekrs) {
-            UserDefaults.standard.set(encoded, forKey: saveKey)
+    func deleteZekr(withId id: UUID) {
+        if let index = zekrs.firstIndex(where: { $0.id == id }) {
+            zekrs.remove(at: index)
+            saveZekrs()
         }
     }
     
-    private func loadZekrs() {
-        if let savedZekrs = UserDefaults.standard.data(forKey: saveKey),
-           let decodedZekrs = try? JSONDecoder().decode([Zekr].self, from: savedZekrs) {
-            zekrs = decodedZekrs
+    private func saveZekrs() {
+        do {
+            let encoded = try JSONEncoder().encode(zekrs)
+            UserDefaults.standard.set(encoded, forKey: saveKey)
+        } catch {
+            print("Error saving zekrs: \(error.localizedDescription)")
+        }
+    }
+    
+    func loadZekrs() {
+        if let savedZekrs = UserDefaults.standard.data(forKey: saveKey) {
+            do {
+                let decodedZekrs = try JSONDecoder().decode([Zekr].self, from: savedZekrs)
+                zekrs = decodedZekrs
+            } catch {
+                print("Error loading zekrs: \(error.localizedDescription)")
+            }
         }
     }
 }

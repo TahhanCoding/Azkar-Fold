@@ -29,6 +29,9 @@ struct AzkarListView: View {
             }
         }
         .navigationTitle("Azkar List")
+        .onAppear {
+            zekrStore.loadZekrs()
+        }
         .toolbar {
             ToolbarItem(placement: .navigationBarTrailing) {
                 Button(action: {
