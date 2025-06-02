@@ -10,7 +10,7 @@ struct SunnahZekrView: View {
     @State private var currentRepetition: Int = 0
     @State private var showCompletionAlert: Bool = false
     @State private var animateCounter = false
-
+    @State private var textOnScreen: String = ""
     var currentZekr: SunnahZekrItem? {
         guard !azkarList.isEmpty, azkarList.indices.contains(currentIndex) else {
             return nil
@@ -24,28 +24,21 @@ struct SunnahZekrView: View {
                 if let zekrItem = currentZekr {
                     // Upper half - Zekr text
                     VStack(spacing: 16) {
-                        Text(category.rawValue)
-                            .font(.headline)
-                            .foregroundColor(.appPrimary)
-                            .padding(.top, 8)
-                        
-                        ScrollView {
                             VStack(spacing: 12) {
-                                Text(zekrItem.zekr)
+                                Text(textOnScreen)
                                     .font(.title)
                                     .fontWeight(.bold)
                                     .multilineTextAlignment(.center)
                                     .padding(.horizontal)
-                                
-                                if !zekrItem.en_tr.isEmpty {
-                                    Text(zekrItem.en_tr)
-                                        .font(.body)
-                                        .foregroundColor(.secondary)
-                                        .multilineTextAlignment(.center)
-                                        .padding(.horizontal)
-                                }
+                                    .font(.system(size: 80))
+                                    .minimumScaleFactor(0.3)
+                                    .lineLimit(15)
+                                    .padding(.vertical, 12)
+
                             }
-                        }
+                            .padding(.horizontal, 18)
+                            .padding(.vertical, 12)
+
                     }
                     .frame(height: geometry.size.height * 0.6)
                     .frame(maxWidth: .infinity)
@@ -140,6 +133,145 @@ struct SunnahZekrView: View {
                         }
                         .padding(.horizontal)
                         .padding(.bottom, 20)
+                        
+                        // Replace the existing HStack with buttons with this code:
+
+                        // Text switching controls
+                        VStack(spacing: 12) {
+                            // Primary buttons (Arabic and English)
+                            HStack(spacing: 12) {
+                                Button(action: {
+                                    textOnScreen = zekrItem.zekr
+                                }) {
+                                    HStack(spacing: 6) {
+                                        Image(systemName: "textformat.arabic")
+                                        Text("Arabic")
+                                            .font(.system(size: 14, weight: .medium))
+                                    }
+                                    .frame(maxWidth: .infinity)
+                                    .padding(.vertical, 10)
+                                    .background(
+                                        RoundedRectangle(cornerRadius: 20)
+                                            .fill(textOnScreen == zekrItem.zekr ? Color.appPrimary : Color.gray.opacity(0.2))
+                                    )
+                                    .foregroundColor(textOnScreen == zekrItem.zekr ? .white : .primary)
+                                }
+                                
+                                Button(action: {
+                                    textOnScreen = zekrItem.transliteration
+                                }) {
+                                    HStack(spacing: 4) {
+                                        Image(systemName: "textformat.abc")
+                                        Text("Transliteration")
+                                            .font(.system(size: 12, weight: .medium))
+                                    }
+                                    .frame(maxWidth: .infinity)
+                                    .padding(.vertical, 8)
+                                    .background(
+                                        RoundedRectangle(cornerRadius: 16)
+                                            .fill(textOnScreen == zekrItem.transliteration ? Color.appPrimary.opacity(0.8) : Color.gray.opacity(0.15))
+                                    )
+                                    .foregroundColor(textOnScreen == zekrItem.transliteration ? .white : .secondary)
+                                }
+
+                            }
+                            
+                            // Secondary buttons row
+                            HStack(spacing: 8) {
+                                Button(action: {
+                                    textOnScreen = zekrItem.en_tr
+                                }) {
+                                    HStack(spacing: 6) {
+                                        Image(systemName: "textformat")
+                                        Text("English")
+                                            .font(.system(size: 14, weight: .medium))
+                                    }
+                                    .frame(maxWidth: .infinity)
+                                    .padding(.vertical, 10)
+                                    .background(
+                                        RoundedRectangle(cornerRadius: 20)
+                                            .fill(textOnScreen == zekrItem.en_tr ? Color.appPrimary : Color.gray.opacity(0.2))
+                                    )
+                                    .foregroundColor(textOnScreen == zekrItem.en_tr ? .white : .primary)
+                                }
+
+                                if let bless = zekrItem.bless {
+                                    Button(action: {
+                                        textOnScreen = bless
+                                    }) {
+                                        HStack(spacing: 4) {
+                                            Image(systemName: "star.fill")
+                                            Text("Blessing")
+                                                .font(.system(size: 12, weight: .medium))
+                                        }
+                                        .frame(maxWidth: .infinity)
+                                        .padding(.vertical, 8)
+                                        .background(
+                                            RoundedRectangle(cornerRadius: 16)
+                                                .fill(textOnScreen == bless ? Color.appPrimary.opacity(0.8) : Color.gray.opacity(0.15))
+                                        )
+                                        .foregroundColor(textOnScreen == bless ? .white : .secondary)
+                                    }
+                                }
+                                
+                                if let bless_en = zekrItem.bless_en {
+                                    Button(action: {
+                                        textOnScreen = bless_en
+                                    }) {
+                                        HStack(spacing: 4) {
+                                            Image(systemName: "star")
+                                            Text("Blessing EN")
+                                                .font(.system(size: 12, weight: .medium))
+                                        }
+                                        .frame(maxWidth: .infinity)
+                                        .padding(.vertical, 8)
+                                        .background(
+                                            RoundedRectangle(cornerRadius: 16)
+                                                .fill(textOnScreen == bless_en ? Color.appPrimary.opacity(0.8) : Color.gray.opacity(0.15))
+                                        )
+                                        .foregroundColor(textOnScreen == bless_en ? .white : .secondary)
+                                    }
+                                }
+                            }
+                        }
+                        .padding(.horizontal)
+                        .onAppear {
+                            textOnScreen = zekrItem.zekr
+                        }
+
+                        
+//                        HStack {
+//                            Button("zekr") {
+//                                textOnScreen = zekrItem.zekr
+//                            }
+//                            
+//                                Button("english_translation") {
+//                                    textOnScreen = zekrItem.en_tr
+//                                }
+//
+//                                Button("zekr_transliteration") {
+//                                    textOnScreen = zekrItem.transliteration
+//                                }
+//
+//                            if let bless = zekrItem.bless {
+//                                Button("bless") {
+//                                    textOnScreen = bless
+//                                }
+//                            }
+//                            
+//                            
+//                            if let bless_en = zekrItem.bless_en {
+//                                Button("bless_english_translation") {
+//                                    textOnScreen = bless_en
+//                                }
+//                            }
+//
+//
+//                        }
+//                        .onAppear {
+//                            textOnScreen = zekrItem.zekr
+//                        }
+                        
                     }
                     .frame(height: geometry.size.height * 0.4)
                     .frame(maxWidth: .infinity)
@@ -168,7 +300,7 @@ struct SunnahZekrView: View {
                     .frame(maxWidth: .infinity, maxHeight: .infinity)
                 }
             }
-            .navigationTitle("Sunnah Azkar")
+            .navigationTitle(category.rawValue)
             .navigationBarTitleDisplayMode(.inline)
             .onAppear {
                 resetRepetitions()
