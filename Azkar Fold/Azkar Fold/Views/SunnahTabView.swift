@@ -140,32 +140,6 @@ struct SunnahTabView: View {
     }
 }
 
-// Helper extension for SunnahAzkarCategory to provide title, icon, and color
-extension SunnahAzkarCategory {
-    var title: String {
-        switch self {
-        case .morning: return "Morning Azkar"
-        case .evening: return "Evening Azkar"
-        // Add other cases if any
-        }
-    }
-
-    var iconName: String {
-        switch self {
-        case .morning: return "sun.max.fill"
-        case .evening: return "moon.stars.fill"
-        // Add other cases if any
-        }
-    }
-
-    var color: Color {
-        switch self {
-        case .morning: return Color.appPrimary
-        case .evening: return Color.appPrimary.opacity(0.8)
-        // Add other cases if any
-        }
-    }
-}
 
 // Helper view for Azkar cards
 struct AzkarCard: View {

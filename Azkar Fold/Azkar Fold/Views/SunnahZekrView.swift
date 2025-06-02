@@ -9,6 +9,7 @@ struct SunnahZekrView: View {
     @State private var currentIndex: Int = 0
     @State private var currentRepetition: Int = 0
     @State private var showCompletionAlert: Bool = false
+    @State private var animateCounter = false
 
     var currentZekr: SunnahZekrItem? {
         guard !azkarList.isEmpty, azkarList.indices.contains(currentIndex) else {
@@ -18,86 +19,163 @@ struct SunnahZekrView: View {
     }
 
     var body: some View {
-        VStack(spacing: 20) {
-            if let zekrItem = currentZekr {
-                Text(category.rawValue)
-                    .font(.headline)
-                    .padding(.top)
-
-                ScrollView {
-                    Text(zekrItem.zekr)
-                        .font(.title)
-                        .multilineTextAlignment(.center)
-                        .padding()
-                }
-                .frame(minHeight: 100, maxHeight: .infinity)
-                .background(currentRepetition >= zekrItem.repeat ? Color.green.opacity(0.15) : Color.clear)
-                .cornerRadius(8)
-                
-                Text("Repeat: \(currentRepetition)/\(zekrItem.repeat)")
-                    .font(.headline)
-
-                Button(action: {
-                    if currentRepetition < zekrItem.repeat {
-                        currentRepetition += 1
-                        if currentRepetition == zekrItem.repeat {
-                            progressStore.markAsCompleted(zekr: zekrItem, category: category)
-                            checkIfAllAzkarCompleted()
-                            // Optionally, auto-advance or enable next button
+        GeometryReader { geometry in
+            VStack(spacing: 0) {
+                if let zekrItem = currentZekr {
+                    // Upper half - Zekr text
+                    VStack(spacing: 16) {
+                        Text(category.rawValue)
+                            .font(.headline)
+                            .foregroundColor(.appPrimary)
+                            .padding(.top, 8)
+                        
+                        ScrollView {
+                            VStack(spacing: 12) {
+                                Text(zekrItem.zekr)
+                                    .font(.title)
+                                    .fontWeight(.bold)
+                                    .multilineTextAlignment(.center)
+                                    .padding(.horizontal)
+                                
+                                if !zekrItem.en_tr.isEmpty {
+                                    Text(zekrItem.en_tr)
+                                        .font(.body)
+                                        .foregroundColor(.secondary)
+                                        .multilineTextAlignment(.center)
+                                        .padding(.horizontal)
+                                }
+                            }
                         }
                     }
-                }) {
-                    Text(currentRepetition < zekrItem.repeat ? "Recite (\(currentRepetition + 1))" : "Completed")
-                        .padding()
-                        .frame(maxWidth: .infinity)
-                        .background(currentRepetition < zekrItem.repeat ? Color.blue : Color.green)
-                        .foregroundColor(.white)
-                        .cornerRadius(10)
-                }
-                .disabled(currentRepetition >= zekrItem.repeat)
-
-                HStack {
-                    Button("Previous") {
-                        if currentIndex > 0 {
-                            currentIndex -= 1
-                            resetRepetitions()
-                        }
-                    }
-                    .disabled(currentIndex == 0)
-
-                    Spacer()
+                    .frame(height: geometry.size.height * 0.6)
+                    .frame(maxWidth: .infinity)
+                    .background(
+                        RoundedRectangle(cornerRadius: 33)
+                            .fill(currentRepetition >= zekrItem.repeat ? Color.green.opacity(0.2) : Color.appPrimary.opacity(0.1))
+                            .overlay(
+                                Image("islamic_pattern")
+                                    .resizable(resizingMode: .tile)
+                                    .opacity(0.35)
+                            )
+                            .clipShape(RoundedRectangle(cornerRadius: 33))
+                            .padding(.horizontal, 21)
+                            .padding(.vertical, 21)
+                    )
                     
-                    Text("\(currentIndex + 1) of \(azkarList.count)")
-                        .font(.footnote)
-
-                    Spacer()
-
-                    Button("Next") {
-                        if currentIndex < azkarList.count - 1 {
-                            currentIndex += 1
-                            resetRepetitions()
+                    // Lower half - Counter and controls
+                    VStack(spacing: 16) {
+                        // Counter display
+                        VStack(spacing: 8) {
+                            Text("\(currentRepetition)/\(zekrItem.repeat)")
+                                .font(.system(size: 60, weight: .black, design: .rounded))
+                                .foregroundColor(.appPrimary)
+                                .scaleEffect(animateCounter ? 1.2 : 1.0)
+                                .animation(.spring(response: 0.3, dampingFraction: 0.6), value: animateCounter)
+                            
+                            Text(currentRepetition < zekrItem.repeat ? "Tap to recite" : "Completed!")
+                                .font(.subheadline)
+                                .foregroundColor(.secondary)
                         }
+                        .frame(maxWidth: .infinity)
+                        .contentShape(Rectangle())
+                        .onTapGesture {
+                            if currentRepetition < zekrItem.repeat {
+                                currentRepetition += 1
+                                animateCounter = true
+                                
+                                if currentRepetition == zekrItem.repeat {
+                                    progressStore.markAsCompleted(zekr: zekrItem, category: category)
+                                    checkIfAllAzkarCompleted()
+                                }
+                                
+                                DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
+                                    animateCounter = false
+                                }
+                            }
+                        }
+                        
+                        // Navigation controls
+                        HStack(spacing: 20) {
+                            Button(action: {
+                                if currentIndex > 0 {
+                                    currentIndex -= 1
+                                    resetRepetitions()
+                                }
+                            }) {
+                                HStack {
+                                    Image(systemName: "chevron.left")
+                                    Text("Previous")
+                                }
+                                .padding(.horizontal, 20)
+                                .padding(.vertical, 12)
+                                .background(currentIndex == 0 ? Color.gray.opacity(0.3) : Color.appPrimary)
+                                .foregroundColor(currentIndex == 0 ? .gray : .white)
+                                .cornerRadius(25)
+                            }
+                            .disabled(currentIndex == 0)
+                            
+                            VStack {
+                                Text("\(currentIndex + 1) of \(azkarList.count)")
+                                    .font(.caption)
+                                    .foregroundColor(.secondary)
+                            }
+                            
+                            Button(action: {
+                                if currentIndex < azkarList.count - 1 {
+                                    currentIndex += 1
+                                    resetRepetitions()
+                                }
+                            }) {
+                                HStack {
+                                    Text("Next")
+                                    Image(systemName: "chevron.right")
+                                }
+                                .padding(.horizontal, 20)
+                                .padding(.vertical, 12)
+                                .background((currentIndex == azkarList.count - 1 || currentRepetition < zekrItem.repeat) ? Color.gray.opacity(0.3) : Color.appPrimary)
+                                .foregroundColor((currentIndex == azkarList.count - 1 || currentRepetition < zekrItem.repeat) ? .gray : .white)
+                                .cornerRadius(25)
+                            }
+                            .disabled(currentIndex == azkarList.count - 1 || currentRepetition < zekrItem.repeat)
+                        }
+                        .padding(.horizontal)
+                        .padding(.bottom, 20)
                     }
-                    .disabled(currentIndex == azkarList.count - 1 || currentRepetition < zekrItem.repeat)
-                }
-                .padding()
-
-            } else {
-                Text("No Azkar loaded for this category or index out of bounds.")
-                    .padding()
-                Button("Go Back") {
-                    presentationMode.wrappedValue.dismiss()
+                    .frame(height: geometry.size.height * 0.4)
+                    .frame(maxWidth: .infinity)
+                    .background(
+                        RoundedRectangle(cornerRadius: 0)
+                            .fill(Color.white)
+                            .shadow(color: .black.opacity(0.1), radius: 2, x: 0, y: -2)
+                    )
+                    
+                } else {
+                    VStack {
+                        Text("No Azkar loaded for this category")
+                            .font(.title2)
+                            .foregroundColor(.secondary)
+                            .padding()
+                        
+                        Button("Go Back") {
+                            presentationMode.wrappedValue.dismiss()
+                        }
+                        .padding(.horizontal, 30)
+                        .padding(.vertical, 12)
+                        .background(Color.appPrimary)
+                        .foregroundColor(.white)
+                        .cornerRadius(25)
+                    }
+                    .frame(maxWidth: .infinity, maxHeight: .infinity)
                 }
             }
-        }
-        .padding()
-        .navigationTitle(currentZekr != nil ? "Zekr" : category.rawValue)
-        .navigationBarTitleDisplayMode(.inline)
-        .onAppear {
-            resetRepetitions() // Ensure correct state when view appears
-        }
-        .onChange(of: currentIndex) { _ in // Swift 5.5+ syntax, use older if needed
-            resetRepetitions()
+            .navigationTitle("Sunnah Azkar")
+            .navigationBarTitleDisplayMode(.inline)
+            .onAppear {
+                resetRepetitions()
+            }
+            .onChange(of: currentIndex) { _ in
+                resetRepetitions()
+            }
         }
         .alert("Congratulations!", isPresented: $showCompletionAlert) {
             Button("OK", role: .cancel) {

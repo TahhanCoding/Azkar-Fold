@@ -10,7 +10,7 @@ import SwiftUI
 struct CreateZekrView: View {
     @EnvironmentObject var coordinator: NavigationCoordinator
     @EnvironmentObject var zekrStore: ZekrStore
-    @Environment(\.dismiss) var dismiss
+    @Environment(\.presentationMode) var presentationMode
     @State private var zekrText = ""
     @State private var showAlert = false
     
@@ -43,7 +43,7 @@ struct CreateZekrView: View {
             Button(action: {
                 if !zekrText.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty {
                     zekrStore.addZekr(text: zekrText) {
-                        dismiss()
+                        presentationMode.wrappedValue.dismiss()
                     }
                 } else {
                     showAlert = true
