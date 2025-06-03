@@ -15,6 +15,9 @@ struct SunnahTabView: View {
     // Temporary set to store selections in edit mode before saving
     @State private var temporarySelectedCategories: Set<SunnahAzkarCategory> = []
     
+    @State private var morningAzkarCount: Int = 0
+    @State private var eveningAzkarCount: Int = 0
+
     var body: some View {
         NavigationView {
             VStack(spacing: 0) {
@@ -85,9 +88,13 @@ struct SunnahTabView: View {
             )
             .onAppear {
                 progressStore.resetDailyProgressIfNeeded()
-                progressStore.loadSelectedCategories() // Ensure categories are loaded
-                temporarySelectedCategories = progressStore.selectedSunnahCategories // Initialize on appear
+                progressStore.loadSelectedCategories()
+                temporarySelectedCategories = progressStore.selectedSunnahCategories
+                
+                // Cache the azkar counts
+                loadAzkarCounts()
             }
+            
             .toolbar {
                 ToolbarItem(placement: .navigationBarTrailing) {
                     Button(action: {
@@ -130,14 +137,34 @@ struct SunnahTabView: View {
         }
     }
     
-    private func isCategoryCompleted(for category: SunnahAzkarCategory) -> Bool {
-        switch category {
-        case .morning:
-            return !progressStore.morningAzkarCompleted.isEmpty && progressStore.morningAzkarCompleted.values.allSatisfy { $0 }
-        case .evening:
-            return !progressStore.eveningAzkarCompleted.isEmpty && progressStore.eveningAzkarCompleted.values.allSatisfy { $0 }
+
+    private func loadAzkarCounts() {
+        // Load morning azkar count
+        let morningResult = azkarService.loadAzkar(for: .morning)
+        if case .success(let morningList) = morningResult {
+            morningAzkarCount = morningList.count
+        }
+        
+        // Load evening azkar count
+        let eveningResult = azkarService.loadAzkar(for: .evening)
+        if case .success(let eveningList) = eveningResult {
+            eveningAzkarCount = eveningList.count
         }
     }
+    
+    private func isCategoryCompleted(for category: SunnahAzkarCategory) -> Bool {
+        let totalCount: Int
+        switch category {
+        case .morning:
+            totalCount = morningAzkarCount
+        case .evening:
+            totalCount = eveningAzkarCount
+        }
+        
+        return progressStore.isCategoryFullyCompleted(category: category, totalAzkarCount: totalCount)
+    }
+    
+    
 }
 
 

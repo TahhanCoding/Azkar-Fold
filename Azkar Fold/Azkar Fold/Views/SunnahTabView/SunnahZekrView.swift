@@ -11,17 +11,14 @@ struct SunnahZekrView: View {
     @State private var showCompletionAlert: Bool = false
     @State private var animateCounter = false
     @State private var textOnScreen: String = ""
-    var currentZekr: SunnahZekrItem? {
-        guard !azkarList.isEmpty, azkarList.indices.contains(currentIndex) else {
-            return nil
-        }
+    
+    var zekrItem: SunnahZekrItem {
         return azkarList[currentIndex]
     }
 
     var body: some View {
         GeometryReader { geometry in
             VStack(spacing: 0) {
-                if let zekrItem = currentZekr {
                     // Upper half - Zekr text
                     VStack(spacing: 16) {
                             VStack(spacing: 12) {
@@ -34,6 +31,14 @@ struct SunnahZekrView: View {
                                     .minimumScaleFactor(0.3)
                                     .lineLimit(15)
                                     .padding(.vertical, 12)
+                                    .id(zekrItem.zekr)
+                                
+                                //tap to hard reset progress
+                                /*
+                                 Button("reset") {
+                                     progressStore.hardReset()
+                                 }
+                                 */
 
                             }
                             .padding(.horizontal, 18)
@@ -134,8 +139,6 @@ struct SunnahZekrView: View {
                         .padding(.horizontal)
                         .padding(.bottom, 20)
                         
-                        // Replace the existing HStack with buttons with this code:
-
                         // Text switching controls
                         VStack(spacing: 12) {
                             // Primary buttons (Arabic and English)
@@ -238,40 +241,11 @@ struct SunnahZekrView: View {
                         .onAppear {
                             textOnScreen = zekrItem.zekr
                         }
-
-                        
-//                        HStack {
-//                            Button("zekr") {
-//                                textOnScreen = zekrItem.zekr
-//                            }
-//                            
-//                                Button("english_translation") {
-//                                    textOnScreen = zekrItem.en_tr
-//                                }
-//
-//                                Button("zekr_transliteration") {
-//                                    textOnScreen = zekrItem.transliteration
-//                                }
-//
-//                            if let bless = zekrItem.bless {
-//                                Button("bless") {
-//                                    textOnScreen = bless
-//                                }
-//                            }
-//                            
-//                            
-//                            if let bless_en = zekrItem.bless_en {
-//                                Button("bless_english_translation") {
-//                                    textOnScreen = bless_en
-//                                }
-//                            }
-//
-//
-//                        }
-//                        .onAppear {
-//                            textOnScreen = zekrItem.zekr
-//                        }
-                        
+                        .onChange(of: currentIndex) { _ in
+                            DispatchQueue.main.async {
+                                textOnScreen = zekrItem.zekr
+                            }
+                        }
                     }
                     .frame(height: geometry.size.height * 0.4)
                     .frame(maxWidth: .infinity)
@@ -281,24 +255,7 @@ struct SunnahZekrView: View {
                             .shadow(color: .black.opacity(0.1), radius: 2, x: 0, y: -2)
                     )
                     
-                } else {
-                    VStack {
-                        Text("No Azkar loaded for this category")
-                            .font(.title2)
-                            .foregroundColor(.secondary)
-                            .padding()
-                        
-                        Button("Go Back") {
-                            presentationMode.wrappedValue.dismiss()
-                        }
-                        .padding(.horizontal, 30)
-                        .padding(.vertical, 12)
-                        .background(Color.appPrimary)
-                        .foregroundColor(.white)
-                        .cornerRadius(25)
-                    }
-                    .frame(maxWidth: .infinity, maxHeight: .infinity)
-                }
+                
             }
             .navigationTitle(category.rawValue)
             .navigationBarTitleDisplayMode(.inline)
@@ -331,10 +288,6 @@ struct SunnahZekrView: View {
     }
 
     private func resetRepetitions() {
-        guard let zekrItem = currentZekr else {
-            currentRepetition = 0
-            return
-        }
         // Check if already completed from store, if so, set repetitions to max
         if progressStore.isCompleted(zekr: zekrItem, category: category) {
             currentRepetition = zekrItem.repeat

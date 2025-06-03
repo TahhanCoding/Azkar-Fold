@@ -53,7 +53,9 @@ class SunnahProgressStore: ObservableObject {
 
     // MARK: - Azkar Completion Progress
     func markAsCompleted(zekr: SunnahZekrItem, category: SunnahAzkarCategory) {
-        let zekrId = zekr.zekr // Using zekr text as ID
+        // Create a unique ID that includes the category
+        let zekrId = "\(category.rawValue)_\(zekr.zekr)"
+        
         switch category {
         case .morning:
             morningAzkarCompleted[zekrId] = true
@@ -64,7 +66,8 @@ class SunnahProgressStore: ObservableObject {
     }
 
     func isCompleted(zekr: SunnahZekrItem, category: SunnahAzkarCategory) -> Bool {
-        let zekrId = zekr.zekr
+        let zekrId = "\(category.rawValue)_\(zekr.zekr)"
+        
         switch category {
         case .morning:
             return morningAzkarCompleted[zekrId] ?? false
@@ -73,16 +76,14 @@ class SunnahProgressStore: ObservableObject {
         }
     }
 
-    func getCompletionPercentage(for category: SunnahAzkarCategory, totalAzkar: Int) -> Double {
-        guard totalAzkar > 0 else { return 0.0 }
-        let completedCount: Int
-        switch category {
-        case .morning:
-            completedCount = morningAzkarCompleted.values.filter { $0 }.count
-        case .evening:
-            completedCount = eveningAzkarCompleted.values.filter { $0 }.count
-        }
-        return Double(completedCount) / Double(totalAzkar)
+    func getCompletionPercentage(for category: SunnahAzkarCategory, azkarList: [SunnahZekrItem]) -> Double {
+        guard !azkarList.isEmpty else { return 0.0 }
+        
+        let completedCount = azkarList.filter { zekr in
+            isCompleted(zekr: zekr, category: category)
+        }.count
+        
+        return Double(completedCount) / Double(azkarList.count)
     }
 
     // MARK: - Daily Progress Reset
@@ -90,6 +91,29 @@ class SunnahProgressStore: ObservableObject {
         resetDailyProgressIfNeeded()
     }
     
+    func hardReset() {
+        morningAzkarCompleted.removeAll()
+        eveningAzkarCompleted.removeAll()
+        self.lastResetDate = Date()
+        saveProgress() // Save the reset state and new date
+        print("Daily Sunnah Azkar progress has been reset.")
+    }
+    
+    // Add this to your SunnahProgressStore class
+    func isCategoryFullyCompleted(category: SunnahAzkarCategory, totalAzkarCount: Int) -> Bool {
+        guard totalAzkarCount > 0 else { return false }
+        
+        let completedCount: Int
+        switch category {
+        case .morning:
+            completedCount = morningAzkarCompleted.values.filter { $0 }.count
+        case .evening:
+            completedCount = eveningAzkarCompleted.values.filter { $0 }.count
+        }
+        
+        return completedCount == totalAzkarCount
+    }
+
     func resetDailyProgressIfNeeded() {
         let calendar = Calendar.current
         let now = Date()
