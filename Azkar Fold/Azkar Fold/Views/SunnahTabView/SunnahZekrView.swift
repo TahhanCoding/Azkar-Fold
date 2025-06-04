@@ -9,7 +9,6 @@ struct SunnahZekrView: View {
     @State private var currentIndex: Int = 0
     @State private var currentRepetition: Int = 0
     @State private var showCompletionAlert: Bool = false
-    @State private var animateCounter = false
     @State private var textOnScreen: String = ""
     
     var zekrItem: SunnahZekrItem {
@@ -32,10 +31,13 @@ struct SunnahZekrView: View {
                                     .lineLimit(15)
                                     .padding(.vertical, 12)
                                     .id(zekrItem.zekr)
-                        
                             }
                             .padding(.horizontal, 18)
                             .padding(.vertical, 12)
+                            .onTapGesture {
+                                countUpZekr()
+                            }
+
 
                     }
                     .frame(height: geometry.size.height * 0.6)
@@ -56,37 +58,63 @@ struct SunnahZekrView: View {
                     // Lower half - Counter and controls
                     VStack(spacing: 16) {
                         // Counter display
-                        VStack(spacing: 8) {
-                            Text("\(currentRepetition)/\(zekrItem.repeat)")
-                                .font(.system(size: 60, weight: .black, design: .rounded))
-                                .foregroundColor(.appPrimary)
-                                .scaleEffect(animateCounter ? 1.2 : 1.0)
-                                .animation(.spring(response: 0.3, dampingFraction: 0.6), value: animateCounter)
+                        VStack(spacing: 12) {
+                            // Progress bar
+                            VStack(spacing: 8) {
+                                // Progress bar background and fill
+                                GeometryReader { geometry in
+                                    ZStack(alignment: .leading) {
+                                        // Background
+                                        RoundedRectangle(cornerRadius: 12)
+                                            .fill(Color.gray.opacity(0.2))
+                                            .frame(height: 24)
+                                        
+                                        // Progress fill
+                                        RoundedRectangle(cornerRadius: 12)
+                                            .fill(
+                                                LinearGradient(
+                                                    gradient: Gradient(colors: [Color.appPrimary, Color.appPrimary.opacity(0.8)]),
+                                                    startPoint: .leading,
+                                                    endPoint: .trailing
+                                                )
+                                            )
+                                            .frame(
+                                                width: geometry.size.width * (Double(currentRepetition) / Double(zekrItem.repeat)),
+                                                height: 24
+                                            )
+                                            .animation(.easeInOut(duration: 0.3), value: currentRepetition)
+                                        
+                                        // Progress text overlay
+                                        HStack {
+                                            Spacer()
+                                            Text("\(currentRepetition)/\(zekrItem.repeat)")
+                                                .font(.system(size: 14, weight: .semibold))
+                                                .foregroundColor(.white)
+                                            Spacer()
+                                        }
+                                    }
+                                }
+                                .frame(height: 24)
+                                .padding(.horizontal, 16)
+                                .onTapGesture {
+                                    countUpZekr()
+                                }
+
+                            }
                             
-                            Text(currentRepetition < zekrItem.repeat ? "Tap to recite" : "Completed!")
-                                .font(.subheadline)
-                                .foregroundColor(.secondary)
+                            // Status text and zekr count
+                            VStack(spacing: 4) {
+                                Text("Zekr \(currentIndex + 1) of \(azkarList.count)")
+                                    .font(.caption)
+                                    .foregroundColor(.secondary)
+                            }
+                            .onTapGesture {
+                                countUpZekr()
+                            }
+
                         }
                         .frame(maxWidth: .infinity)
                         .contentShape(Rectangle())
-                        .onTapGesture {
-                            if currentRepetition < zekrItem.repeat {
-                                currentRepetition += 1
-                                animateCounter = true
-                                
-                                // Save partial progress immediately
-                                progressStore.savePartialProgress(zekr: zekrItem, category: category, currentRepetition: currentRepetition)
-                                
-                                if currentRepetition == zekrItem.repeat {
-                                    progressStore.markAsCompleted(zekr: zekrItem, category: category)
-                                    checkIfAllAzkarCompleted()
-                                }
-                                
-                                DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
-                                    animateCounter = false
-                                }
-                            }
-                        }
 
                         // Navigation controls
                         HStack(spacing: 20) {
@@ -316,5 +344,17 @@ struct SunnahZekrView: View {
         return 0
     }
 
-    
+    private func countUpZekr() {
+        if currentRepetition < zekrItem.repeat {
+            currentRepetition += 1
+            
+            // Save partial progress immediately
+            progressStore.savePartialProgress(zekr: zekrItem, category: category, currentRepetition: currentRepetition)
+            
+            if currentRepetition == zekrItem.repeat {
+                progressStore.markAsCompleted(zekr: zekrItem, category: category)
+                checkIfAllAzkarCompleted()
+            }
+        }
+    }
 }
