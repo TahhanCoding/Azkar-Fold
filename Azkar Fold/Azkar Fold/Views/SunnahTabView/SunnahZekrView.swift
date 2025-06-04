@@ -34,11 +34,6 @@ struct SunnahZekrView: View {
                             }
                             .padding(.horizontal, 18)
                             .padding(.vertical, 12)
-                            .onTapGesture {
-                                countUpZekr()
-                            }
-
-
                     }
                     .frame(height: geometry.size.height * 0.6)
                     .frame(maxWidth: .infinity)
@@ -54,7 +49,10 @@ struct SunnahZekrView: View {
                             .padding(.horizontal, 21)
                             .padding(.vertical, 21)
                     )
-                    
+                    .onTapGesture {
+                        countUpZekr()
+                    }
+
                     // Lower half - Counter and controls
                     VStack(spacing: 16) {
                         // Counter display
