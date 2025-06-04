@@ -32,14 +32,7 @@ struct SunnahZekrView: View {
                                     .lineLimit(15)
                                     .padding(.vertical, 12)
                                     .id(zekrItem.zekr)
-                                
-                                //tap to hard reset progress
-                                /*
-                                 Button("reset") {
-                                     progressStore.hardReset()
-                                 }
-                                 */
-
+                        
                             }
                             .padding(.horizontal, 18)
                             .padding(.vertical, 12)
@@ -81,6 +74,9 @@ struct SunnahZekrView: View {
                                 currentRepetition += 1
                                 animateCounter = true
                                 
+                                // Save partial progress immediately
+                                progressStore.savePartialProgress(zekr: zekrItem, category: category, currentRepetition: currentRepetition)
+                                
                                 if currentRepetition == zekrItem.repeat {
                                     progressStore.markAsCompleted(zekr: zekrItem, category: category)
                                     checkIfAllAzkarCompleted()
@@ -91,11 +87,13 @@ struct SunnahZekrView: View {
                                 }
                             }
                         }
-                        
+
                         // Navigation controls
                         HStack(spacing: 20) {
                             Button(action: {
                                 if currentIndex > 0 {
+                                    // Save current progress before moving
+                                    progressStore.savePartialProgress(zekr: zekrItem, category: category, currentRepetition: currentRepetition)
                                     currentIndex -= 1
                                     resetRepetitions()
                                 }
@@ -120,6 +118,8 @@ struct SunnahZekrView: View {
                             
                             Button(action: {
                                 if currentIndex < azkarList.count - 1 {
+                                    // Save current progress before moving
+                                    progressStore.savePartialProgress(zekr: zekrItem, category: category, currentRepetition: currentRepetition)
                                     currentIndex += 1
                                     resetRepetitions()
                                 }
@@ -246,6 +246,10 @@ struct SunnahZekrView: View {
                                 textOnScreen = zekrItem.zekr
                             }
                         }
+                        // Save progress when view disappears
+                        .onDisappear {
+                            progressStore.savePartialProgress(zekr: zekrItem, category: category, currentRepetition: currentRepetition)
+                        }
                     }
                     .frame(height: geometry.size.height * 0.4)
                     .frame(maxWidth: .infinity)
@@ -288,11 +292,15 @@ struct SunnahZekrView: View {
     }
 
     private func resetRepetitions() {
-        // Check if already completed from store, if so, set repetitions to max
+        // Load saved partial progress instead of just checking completion
+        let savedProgress = progressStore.getPartialProgress(zekr: zekrItem, category: category)
+        
+        // If the item is fully completed, set to max repetitions
         if progressStore.isCompleted(zekr: zekrItem, category: category) {
             currentRepetition = zekrItem.repeat
         } else {
-            currentRepetition = 0
+            // Otherwise, restore the saved partial progress
+            currentRepetition = savedProgress
         }
     }
 }
