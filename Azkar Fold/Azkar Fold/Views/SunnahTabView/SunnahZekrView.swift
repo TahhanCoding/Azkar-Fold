@@ -238,9 +238,9 @@ struct SunnahZekrView: View {
                             }
                         }
                         .padding(.horizontal)
-                        .onAppear {
-                            textOnScreen = zekrItem.zekr
-                        }
+//                        .onAppear {
+//                            textOnScreen = zekrItem.zekr
+//                        }
                         .onChange(of: currentIndex) { _ in
                             DispatchQueue.main.async {
                                 textOnScreen = zekrItem.zekr
@@ -264,6 +264,8 @@ struct SunnahZekrView: View {
             .navigationTitle(category.rawValue)
             .navigationBarTitleDisplayMode(.inline)
             .onAppear {
+                currentIndex = findFirstIncompleteIndex()
+                textOnScreen = zekrItem.zekr
                 resetRepetitions()
             }
             .onChange(of: currentIndex) { _ in
@@ -303,4 +305,16 @@ struct SunnahZekrView: View {
             currentRepetition = savedProgress
         }
     }
+    
+    private func findFirstIncompleteIndex() -> Int {
+        for (index, zekr) in azkarList.enumerated() {
+            if !progressStore.isCompleted(zekr: zekr, category: category) {
+                return index
+            }
+        }
+        // If all are completed, return 0 (first item)
+        return 0
+    }
+
+    
 }
