@@ -52,11 +52,6 @@ struct AzkaryTabView: View {
                                         }
                                 }
                                 // .onDelete(perform: zekrStore.deleteZekr) // Removed onDelete
-                                .background(
-                                    Image("islamic_pattern")
-                                        .resizable(resizingMode: .tile)
-                                        .opacity(0.55)
-                                )
                             }
                             .padding(.horizontal, 10)
                             .padding(.top, 18)
@@ -64,8 +59,15 @@ struct AzkaryTabView: View {
                         Spacer()
                     }
                     .background(
-                        Color.appBackground.ignoresSafeArea(.all)
+                        Image("islamic_pattern")
+                            .resizable(resizingMode: .tile)
+                            .opacity(0.55)
+                            .ignoresSafeArea(.all)
                     )
+                    .background(
+                        Color.appBackground.opacity(0.3).ignoresSafeArea(.all)
+                    )
+
                     .alert(isPresented: $showingDeleteAlert) {
                         Alert(
                             title: Text("Confirm Deletion"),

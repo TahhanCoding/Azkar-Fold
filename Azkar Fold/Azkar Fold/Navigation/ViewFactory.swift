@@ -20,10 +20,6 @@ struct ViewFactory {
             ZekrView(zekrId: id)
         case .createZekr:
             CreateZekrView()
-        case .settings:
-            SettingsView()
-        case .about:
-            AboutView()
         case .azkaryTab:
             AzkaryTabView()
         case .sunnahTab:

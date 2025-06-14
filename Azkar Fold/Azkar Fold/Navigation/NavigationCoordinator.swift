@@ -13,8 +13,6 @@ enum Route: Hashable {
     case azkarList
     case azkarDetail(id: UUID)
     case createZekr
-    case settings
-    case about
     
     // Tab views
     case azkaryTab
@@ -52,10 +50,6 @@ class NavigationCoordinator: ObservableObject {
         switch components.path {
         case "/azkar":
             navigate(to: .azkarList)
-        case "/settings":
-            navigate(to: .settings)
-        case "/about":
-            navigate(to: .about)
         default:
             goToRoot()
         }

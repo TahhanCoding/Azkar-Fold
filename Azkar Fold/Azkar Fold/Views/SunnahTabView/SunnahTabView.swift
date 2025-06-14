@@ -84,7 +84,13 @@ struct SunnahTabView: View {
                 Spacer()
             }
             .background(
-                Color.appBackground.ignoresSafeArea(.all)
+                Image("islamic_pattern")
+                    .resizable(resizingMode: .tile)
+                    .opacity(0.55)
+                    .ignoresSafeArea(.all)
+            )
+            .background(
+                Color.appBackground.opacity(0.3).ignoresSafeArea(.all)
             )
             .onAppear {
                 progressStore.resetDailyProgressIfNeeded()

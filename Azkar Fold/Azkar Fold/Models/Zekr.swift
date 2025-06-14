@@ -106,3 +106,31 @@ class ZekrStore: ObservableObject {
         }
     }
 }
+
+extension ZekrStore {
+    // Reset counter to 0
+    func resetCounter(for id: UUID) {
+        if let index = zekrs.firstIndex(where: { $0.id == id }) {
+            var updatedZekrs = zekrs
+            var updatedZekr = updatedZekrs[index]
+            updatedZekr.counter = 0
+            updatedZekr.lastUpdated = Date()
+            updatedZekrs[index] = updatedZekr
+            zekrs = updatedZekrs
+            saveZekrs()
+        }
+    }
+
+    // Update zekr text
+    func updateZekrText(for id: UUID, newText: String) {
+        if let index = zekrs.firstIndex(where: { $0.id == id }) {
+            var updatedZekrs = zekrs
+            var updatedZekr = updatedZekrs[index]
+            updatedZekr.text = newText
+            updatedZekr.lastUpdated = Date()
+            updatedZekrs[index] = updatedZekr
+            zekrs = updatedZekrs
+            saveZekrs()
+        }
+    }
+}

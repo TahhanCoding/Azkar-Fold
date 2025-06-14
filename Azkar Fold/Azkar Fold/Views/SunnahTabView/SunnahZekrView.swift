@@ -31,6 +31,17 @@ struct SunnahZekrView: View {
                                     .lineLimit(15)
                                     .padding(.vertical, 12)
                                     .id(zekrItem.zekr)
+                                
+                                HStack {
+                                    Text("مسلم(١)")
+                                        .font(.system(size: 14))
+                                        .foregroundStyle(.red)
+                                        .padding(.horizontal, 18)
+
+                                    
+                                    
+                                    Spacer()
+                                }
                             }
                             .padding(.horizontal, 18)
                             .padding(.vertical, 12)
@@ -345,7 +356,6 @@ struct SunnahZekrView: View {
     private func countUpZekr() {
         if currentRepetition < zekrItem.repeat {
             currentRepetition += 1
-            
             // Save partial progress immediately
             progressStore.savePartialProgress(zekr: zekrItem, category: category, currentRepetition: currentRepetition)
             
