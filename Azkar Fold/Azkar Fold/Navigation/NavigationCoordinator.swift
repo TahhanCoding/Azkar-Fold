@@ -10,7 +10,6 @@ import SwiftUI
 // Define all possible navigation destinations in the app
 enum Route: Hashable {
     case home
-    case azkarList
     case azkarDetail(id: UUID)
     case createZekr
     
@@ -48,8 +47,6 @@ class NavigationCoordinator: ObservableObject {
         guard let components = URLComponents(url: url, resolvingAgainstBaseURL: true) else { return }
         
         switch components.path {
-        case "/azkar":
-            navigate(to: .azkarList)
         default:
             goToRoot()
         }

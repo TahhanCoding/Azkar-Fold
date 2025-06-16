@@ -14,8 +14,6 @@ struct ViewFactory {
         switch route {
         case .home:
             HomeView()
-        case .azkarList:
-            AzkarListView()
         case .azkarDetail(let id):
             ZekrView(zekrId: id)
         case .createZekr:

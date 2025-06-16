@@ -11,7 +11,7 @@ struct AzkaryTabView: View {
     @EnvironmentObject var coordinator: NavigationCoordinator
     @EnvironmentObject var zekrStore: ZekrStore
     @State private var showingDeleteAlert = false
-    @State private var zekrToDelete: Zekr? = nil
+    @State private var indexSetToDelete: IndexSet?
     
     var body: some View {
         NavigationView {
@@ -19,18 +19,18 @@ struct AzkaryTabView: View {
                 if zekrStore.zekrs.isEmpty {
                     EmptyZekrView()
                         .background(
-                               Image("islamic_pattern")
-                                   .resizable(resizingMode: .tile)
-                                   .opacity(0.55)
-                                   .mask(
-                                       RadialGradient(
-                                           gradient: Gradient(colors: [.white, .clear]),
-                                           center: .center,
-                                           startRadius: 50,
-                                           endRadius: 300
-                                       )
-                                   )
-                           )
+                            Image("islamic_pattern")
+                                .resizable(resizingMode: .tile)
+                                .opacity(0.55)
+                                .mask(
+                                    RadialGradient(
+                                        gradient: Gradient(colors: [.white, .clear]),
+                                        center: .center,
+                                        startRadius: 50,
+                                        endRadius: 300
+                                    )
+                                )
+                        )
                 } else {
                     VStack {
                         Text("Azkary")
@@ -38,24 +38,26 @@ struct AzkaryTabView: View {
                             .fontWeight(.bold)
                             .frame(maxWidth: .infinity, alignment: .leading)
                             .padding(.horizontal)
-
-                        ScrollView {
-                            VStack {
-                                ForEach(zekrStore.zekrs) { zekr in
-                                    ZekrRowView(zekr: zekr)
-                                        .onTapGesture {
-                                            coordinator.navigate(to: .azkarDetail(id: zekr.id))
-                                        }
-                                        .onLongPressGesture {
-                                            self.zekrToDelete = zekr
-                                            self.showingDeleteAlert = true
-                                        }
-                                }
-                                // .onDelete(perform: zekrStore.deleteZekr) // Removed onDelete
+                        
+                        List {
+                            ForEach(zekrStore.zekrs) { zekr in
+                                ZekrRowView(zekr: zekr,
+                                            onDelete: {
+                                                indexSetToDelete = IndexSet([zekrStore.zekrs.firstIndex(of: zekr)!])
+                                                showingDeleteAlert = true
+                                            },
+                                            onTap: {
+                                                coordinator.navigate(to: .azkarDetail(id: zekr.id))
+                                            },
+                                            isAlertPresented: $showingDeleteAlert)
+                                    .listRowBackground(Color.clear)
+                                    .listRowInsets(EdgeInsets())
+                                    .padding(.horizontal, 16)
+                                    .padding(.vertical, 8)
                             }
-                            .padding(.horizontal, 10)
-                            .padding(.top, 18)
                         }
+                        .listStyle(PlainListStyle())
+
                         Spacer()
                     }
                     .background(
@@ -67,20 +69,18 @@ struct AzkaryTabView: View {
                     .background(
                         Color.appBackground.opacity(0.3).ignoresSafeArea(.all)
                     )
-
                     .alert(isPresented: $showingDeleteAlert) {
                         Alert(
                             title: Text("Confirm Deletion"),
-                            message: Text("Are you sure you want to delete this Zekr? This action cannot be undone."),
+                            message: Text("Are you sure you want to delete this Zekr?"),
                             primaryButton: .destructive(Text("Delete")) {
-                                if let zekr = zekrToDelete,
-                                   let index = zekrStore.zekrs.firstIndex(where: { $0.id == zekr.id }) {
-                                    zekrStore.deleteZekr(at: IndexSet(integer: index))
+                                if let indexSet = indexSetToDelete {
+                                    zekrStore.deleteZekr(at: indexSet)
                                 }
-                                zekrToDelete = nil // Reset after action
+                                indexSetToDelete = nil
                             },
                             secondaryButton: .cancel() {
-                                zekrToDelete = nil // Reset on cancel
+                                indexSetToDelete = nil
                             }
                         )
                     }
