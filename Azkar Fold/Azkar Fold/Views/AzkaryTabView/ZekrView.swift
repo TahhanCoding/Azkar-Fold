@@ -55,7 +55,7 @@ struct ZekrView: View {
                 .frame(maxWidth: .infinity)
                 .background(
                     RoundedRectangle(cornerRadius: 33)
-                        .fill(Color.appPrimary.opacity(0.1))
+                        .fill(Color.themePrimary.opacity(0.1))
                         .overlay(
                             Image("islamic_pattern")
                                 .resizable(resizingMode: .tile)
@@ -101,7 +101,7 @@ struct ZekrView: View {
                             .padding(.vertical, 12)
                             .background(
                                 RoundedRectangle(cornerRadius: 25)
-                                    .fill(Color.appPrimary)
+                                    .fill(Color.themePrimary)
                             )
                             .disabled(editedText.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty)
                             .opacity(editedText.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty ? 0.6 : 1.0)
@@ -113,7 +113,7 @@ struct ZekrView: View {
                         if let zekr = zekr {
                             Text("\(zekr.counter)")
                                 .font(.system(size: 80, weight: .black, design: .rounded))
-                                .foregroundColor(.appPrimary)
+                                .foregroundColor(.themePrimary)
                                 .scaleEffect(animateCounter ? 1.2 : 1.0)
                                 .animation(.spring(response: 0.3, dampingFraction: 0.6), value: animateCounter)
                                 .matchedGeometryEffect(id: "mainBuuton", in: nameSpace)
@@ -165,7 +165,7 @@ struct ZekrView: View {
                         }
                     } label: {
                         Image(systemName: "ellipsis")
-                            .foregroundColor(.appPrimary)
+                            .foregroundColor(.themePrimary)
                     }
                     .disabled(isEditMode)
                 }

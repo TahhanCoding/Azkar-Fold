@@ -90,7 +90,7 @@ struct SunnahTabView: View {
                     .ignoresSafeArea(.all)
             )
             .background(
-                Color.appBackground.opacity(0.3).ignoresSafeArea(.all)
+                Color.themeBackground.opacity(0.3).ignoresSafeArea(.all)
             )
             .onAppear {
                 progressStore.resetDailyProgressIfNeeded()
@@ -119,7 +119,7 @@ struct SunnahTabView: View {
                             .foregroundColor(.white)
                             .padding(.horizontal, 20)
                             .padding(.vertical, 10)
-                            .background(Color.appPrimary)
+                            .background(Color.themePrimary)
                             .cornerRadius(8)
                     }
                 }

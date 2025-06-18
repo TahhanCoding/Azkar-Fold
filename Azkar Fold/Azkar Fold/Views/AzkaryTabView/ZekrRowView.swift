@@ -66,7 +66,7 @@ struct ZekrRowView: View {
                 Text("\(zekr.counter)")
                     .font(.title2)
                     .fontWeight(.bold)
-                    .foregroundColor(.appPrimary)
+                    .foregroundColor(.themePrimary)
                     .frame(minWidth: 44, minHeight: 44)
                     .padding(5)
                     .background(
@@ -78,7 +78,7 @@ struct ZekrRowView: View {
             .padding(15)
             .background(
                 RoundedRectangle(cornerRadius: 12)
-                    .fill(Color.appPrimary.opacity(0.9))
+                    .fill(Color.themePrimary.opacity(0.9))
                     .shadow(color: Color.black.opacity(0.25), radius: 3, x: 3, y: 3)
             )
             .offset(x: offset)

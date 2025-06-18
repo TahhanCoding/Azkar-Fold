@@ -33,7 +33,7 @@ struct HomeView: View {
                 }
                 .tag(2)
         }
-        .accentColor(.appPrimary)
+        .accentColor(.themePrimary)
         .environmentObject(zekrStore)
         .environmentObject(sunnahProgressStore)
     }

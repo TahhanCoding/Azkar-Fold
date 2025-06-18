@@ -50,7 +50,7 @@ struct SunnahZekrView: View {
                     .frame(maxWidth: .infinity)
                     .background(
                         RoundedRectangle(cornerRadius: 33)
-                            .fill(currentRepetition >= zekrItem.repeat ? Color.green.opacity(0.2) : Color.appPrimary.opacity(0.1))
+                            .fill(currentRepetition >= zekrItem.repeat ? Color.green.opacity(0.2) : Color.themePrimary.opacity(0.1))
                             .overlay(
                                 Image("islamic_pattern")
                                     .resizable(resizingMode: .tile)
@@ -82,7 +82,7 @@ struct SunnahZekrView: View {
                                         RoundedRectangle(cornerRadius: 12)
                                             .fill(
                                                 LinearGradient(
-                                                    gradient: Gradient(colors: [Color.appPrimary, Color.appPrimary.opacity(0.8)]),
+                                                    gradient: Gradient(colors: [Color.themePrimary, Color.themePrimary.opacity(0.8)]),
                                                     startPoint: .leading,
                                                     endPoint: .trailing
                                                 )
@@ -141,7 +141,7 @@ struct SunnahZekrView: View {
                                 }
                                 .padding(.horizontal, 20)
                                 .padding(.vertical, 12)
-                                .background(currentIndex == 0 ? Color.gray.opacity(0.3) : Color.appPrimary)
+                                .background(currentIndex == 0 ? Color.gray.opacity(0.3) : Color.themePrimary)
                                 .foregroundColor(currentIndex == 0 ? .gray : .white)
                                 .cornerRadius(25)
                             }
@@ -167,7 +167,7 @@ struct SunnahZekrView: View {
                                 }
                                 .padding(.horizontal, 20)
                                 .padding(.vertical, 12)
-                                .background((currentIndex == azkarList.count - 1 || currentRepetition < zekrItem.repeat) ? Color.gray.opacity(0.3) : Color.appPrimary)
+                                .background((currentIndex == azkarList.count - 1 || currentRepetition < zekrItem.repeat) ? Color.gray.opacity(0.3) : Color.themePrimary)
                                 .foregroundColor((currentIndex == azkarList.count - 1 || currentRepetition < zekrItem.repeat) ? .gray : .white)
                                 .cornerRadius(25)
                             }
@@ -192,7 +192,7 @@ struct SunnahZekrView: View {
                                     .padding(.vertical, 10)
                                     .background(
                                         RoundedRectangle(cornerRadius: 20)
-                                            .fill(textOnScreen == zekrItem.zekr ? Color.appPrimary : Color.gray.opacity(0.2))
+                                            .fill(textOnScreen == zekrItem.zekr ? Color.themePrimary : Color.gray.opacity(0.2))
                                     )
                                     .foregroundColor(textOnScreen == zekrItem.zekr ? .white : .primary)
                                 }
@@ -209,7 +209,7 @@ struct SunnahZekrView: View {
                                     .padding(.vertical, 8)
                                     .background(
                                         RoundedRectangle(cornerRadius: 16)
-                                            .fill(textOnScreen == zekrItem.transliteration ? Color.appPrimary.opacity(0.8) : Color.gray.opacity(0.15))
+                                            .fill(textOnScreen == zekrItem.transliteration ? Color.themePrimary.opacity(0.8) : Color.gray.opacity(0.15))
                                     )
                                     .foregroundColor(textOnScreen == zekrItem.transliteration ? .white : .secondary)
                                 }
@@ -230,7 +230,7 @@ struct SunnahZekrView: View {
                                     .padding(.vertical, 10)
                                     .background(
                                         RoundedRectangle(cornerRadius: 20)
-                                            .fill(textOnScreen == zekrItem.en_tr ? Color.appPrimary : Color.gray.opacity(0.2))
+                                            .fill(textOnScreen == zekrItem.en_tr ? Color.themePrimary : Color.gray.opacity(0.2))
                                     )
                                     .foregroundColor(textOnScreen == zekrItem.en_tr ? .white : .primary)
                                 }
@@ -248,7 +248,7 @@ struct SunnahZekrView: View {
                                         .padding(.vertical, 8)
                                         .background(
                                             RoundedRectangle(cornerRadius: 16)
-                                                .fill(textOnScreen == bless ? Color.appPrimary.opacity(0.8) : Color.gray.opacity(0.15))
+                                                .fill(textOnScreen == bless ? Color.themePrimary.opacity(0.8) : Color.gray.opacity(0.15))
                                         )
                                         .foregroundColor(textOnScreen == bless ? .white : .secondary)
                                     }
@@ -267,7 +267,7 @@ struct SunnahZekrView: View {
                                         .padding(.vertical, 8)
                                         .background(
                                             RoundedRectangle(cornerRadius: 16)
-                                                .fill(textOnScreen == bless_en ? Color.appPrimary.opacity(0.8) : Color.gray.opacity(0.15))
+                                                .fill(textOnScreen == bless_en ? Color.themePrimary.opacity(0.8) : Color.gray.opacity(0.15))
                                         )
                                         .foregroundColor(textOnScreen == bless_en ? .white : .secondary)
                                     }

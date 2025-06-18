@@ -18,7 +18,7 @@ struct LaunchScreenView: View {
     var body: some View {
         ZStack {
             // Base layer
-            Color.appBackground
+            Color.themeBackground
                 .ignoresSafeArea()
             
             // Enhanced pattern background with depth layers
@@ -58,7 +58,7 @@ struct LaunchScreenView: View {
                 
             // Glow overlay that pulses
             RoundedRectangle(cornerRadius: 0)
-                .fill(Color.appPrimary.opacity(animationState.glowIntensity * 0.2))
+                .fill(Color.themePrimary.opacity(animationState.glowIntensity * 0.2))
                 .blur(radius: 30)
                 .blendMode(.screen)
                 .ignoresSafeArea()
@@ -69,7 +69,7 @@ struct LaunchScreenView: View {
         Image("launch_pattern")
             .resizable()
             .aspectRatio(contentMode: .fill)
-            .foregroundColor(Color.appPrimary)
+            .foregroundColor(Color.themePrimary)
             .scaleEffect(scale)
             .blur(radius: blurRadius)
             .offset(y: offsetY + (animationState.patternMovement ? movementRange : -movementRange))
@@ -77,7 +77,7 @@ struct LaunchScreenView: View {
             .overlay(
                 // Dynamic wave effect overlay
                 RoundedRectangle(cornerRadius: 0)
-                    .fill(Color.appPrimary.opacity(0.1))
+                    .fill(Color.themePrimary.opacity(0.1))
                     .scaleEffect(1.2)
                     .offset(x: animationState.patternWave, y: 0)
                     .blendMode(.overlay)
@@ -98,7 +98,7 @@ struct LaunchScreenView: View {
                 
                 // Main container with crisp edges
                 Rectangle()
-                    .fill(Color.appBackground)
+                    .fill(Color.themeBackground)
                     .frame(width: 120, height: 120)
                     .rotationEffect(.degrees(animationState.logoRotation))
                     .scaleEffect(animationState.logoPulse ? 1.05 : 1.0)
@@ -107,7 +107,7 @@ struct LaunchScreenView: View {
                 // Logo icon with refined animation
                 Image(systemName: "heart.text.square.fill")
                     .font(.system(size: 80))
-                    .foregroundColor(.appPrimary)
+                    .foregroundColor(.themePrimary)
                     .scaleEffect(animationState.logoScale)
                     .opacity(animationState.logoIconOpacity)
                     .rotationEffect(.degrees(animationState.logoIconRotation))
@@ -115,7 +115,7 @@ struct LaunchScreenView: View {
                 // Subtle accent lines for design flair
                 ForEach(0..<4) { index in
                     RoundedRectangle(cornerRadius: 1)
-                        .fill(Color.appPrimary.opacity(0.7))
+                        .fill(Color.themePrimary.opacity(0.7))
                         .frame(width: 40, height: 2)
                         .offset(y: 50)
                         .rotationEffect(.degrees(Double(index) * 90))
@@ -129,7 +129,7 @@ struct LaunchScreenView: View {
                 // App title with refined animation
                 Text("Azkar Fold")
                     .font(.system(size: 42, weight: .black))
-                    .foregroundColor(.appPrimary)
+                    .foregroundColor(.themePrimary)
                     .opacity(animationState.titleOpacity)
                     .offset(y: animationState.titleOffset)
                     .shadow(color: .black.opacity(0.2), radius: 0, x: 2, y: 2)
@@ -141,7 +141,7 @@ struct LaunchScreenView: View {
                 // Subtitle with staggered animation
                 Text("Your Daily Islamic Remembrance")
                     .font(.headline)
-                    .foregroundColor(.appPrimary.opacity(0.8))
+                    .foregroundColor(.themePrimary.opacity(0.8))
                     .opacity(animationState.subtitleOpacity)
                     .offset(y: animationState.subtitleOffset)
                     .overlay(

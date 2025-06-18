@@ -32,6 +32,39 @@ struct SettingsTabView: View {
         NavigationView {
             List {
                 headerSection
+                
+                // Theme Manager Section
+                Section("Appearance") {
+                    NavigationLink(destination: ThemeManagerView().environmentObject(ThemeManager.shared)) {
+                        HStack {
+                            Image(systemName: "paintbrush.fill")
+                                .foregroundColor(.themePrimary)
+                                .frame(width: 24)
+                            
+                            VStack(alignment: .leading, spacing: 2) {
+                                Text("Theme Manager")
+                                    .font(.headline)
+                                
+                                Text("Customize app colors and themes")
+                                    .font(.caption)
+                                    .foregroundColor(.secondary)
+                            }
+                            
+                            Spacer()
+                            
+                            // Current theme preview
+                            Circle()
+                                .fill(Color.themePrimary)
+                                .frame(width: 20, height: 20)
+                                .overlay(
+                                    Circle()
+                                        .stroke(Color.themeSecondary, lineWidth: 1)
+                                )
+                        }
+                        .padding(.vertical, 4)
+                    }
+                }
+                
                 Section {
                     neoBrutalismButton(title: "Rate This App", icon: "star.fill") {
                         requestAppReview()
@@ -79,7 +112,7 @@ struct SettingsTabView: View {
                     .ignoresSafeArea(.all)
             )
             .background(
-                Color.appBackground.opacity(0.3).ignoresSafeArea(.all)
+                Color.themeBackground.opacity(0.3).ignoresSafeArea(.all)
             )
             .sheet(isPresented: $showingPrivacyPolicy) {
                 WebView(url: "https://yourapp.com/privacy")
@@ -119,10 +152,10 @@ struct SettingsTabView: View {
         VStack(alignment: .leading, spacing: 4) {
             Text("Azkar Fold")
                 .font(.system(size: 28, weight: .black))
-                .foregroundColor(.appPrimary)
+                .foregroundColor(.themePrimary)
             Text(Bundle.main.infoDictionary?["CFBundleShortVersionString"] as? String ?? "1.0")
                 .font(.subheadline)
-                .foregroundColor(.appAccent)
+                .foregroundColor(.themeAccent)
         }
         .padding(.vertical)
         .frame(maxWidth: .infinity, alignment: .leading)
@@ -144,11 +177,11 @@ struct SettingsTabView: View {
                 Text(title)
                     .font(.headline)
             }
-            .foregroundColor(.appClear)
+            .foregroundColor(.clear)
             .frame(maxWidth: .infinity, minHeight: 50)
             .background(
                 Rectangle()
-                    .fill(Color.appPrimary)
+                    .fill(Color.themePrimary)
                     .shadow(color: .black.opacity(0.3), radius: 0, x: 4, y: 4)
             )
             .cornerRadius(8)

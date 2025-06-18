@@ -67,7 +67,7 @@ struct AzkaryTabView: View {
                             .ignoresSafeArea(.all)
                     )
                     .background(
-                        Color.appBackground.opacity(0.3).ignoresSafeArea(.all)
+                        Color.themeBackground.opacity(0.3).ignoresSafeArea(.all)
                     )
                     .alert(isPresented: $showingDeleteAlert) {
                         Alert(
@@ -96,7 +96,7 @@ struct AzkaryTabView: View {
                             .foregroundColor(.white)
                             .padding(.horizontal, 20)
                             .padding(.vertical, 10)
-                            .background(Color.appPrimary)
+                            .background(Color.themePrimary)
                             .cornerRadius(8)
                     }
                 }
