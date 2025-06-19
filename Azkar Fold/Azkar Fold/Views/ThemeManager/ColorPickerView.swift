@@ -59,6 +59,7 @@ struct ColorPickerView: View {
 }
 
 struct ColorPickerSheet: View {
+    @EnvironmentObject var theme: ThemeManager
     let title: String
     @Binding var selectedColor: String
     @Binding var tempColor: Color
@@ -144,7 +145,7 @@ struct ColorPickerSheet: View {
                                     )
                                     .overlay(
                                         Circle()
-                                            .stroke(Color.blue, lineWidth: 2)
+                                            .stroke(theme.currentTheme.primary, lineWidth: 2)
                                             .opacity(color == selectedColor ? 1 : 0)
                                     )
                             }

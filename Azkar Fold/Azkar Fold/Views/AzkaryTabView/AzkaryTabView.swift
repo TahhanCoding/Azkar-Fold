@@ -9,6 +9,7 @@ import SwiftUI
 
 struct AzkaryTabView: View {
     @EnvironmentObject var coordinator: NavigationCoordinator
+    @EnvironmentObject var theme: ThemeManager
     @EnvironmentObject var zekrStore: ZekrStore
     @State private var showingDeleteAlert = false
     @State private var indexSetToDelete: IndexSet?
@@ -67,7 +68,7 @@ struct AzkaryTabView: View {
                             .ignoresSafeArea(.all)
                     )
                     .background(
-                        Color.themeBackground.opacity(0.3).ignoresSafeArea(.all)
+                        theme.currentTheme.background.ignoresSafeArea(.all)
                     )
                     .alert(isPresented: $showingDeleteAlert) {
                         Alert(
@@ -96,7 +97,7 @@ struct AzkaryTabView: View {
                             .foregroundColor(.white)
                             .padding(.horizontal, 20)
                             .padding(.vertical, 10)
-                            .background(Color.themePrimary)
+                            .background(theme.currentTheme.primary)
                             .cornerRadius(8)
                     }
                 }

@@ -8,6 +8,7 @@
 import SwiftUI
 
 struct ZekrRowView: View {
+    @EnvironmentObject var theme: ThemeManager
     let zekr: Zekr
     let onDelete: () -> Void
     let onTap: () -> Void
@@ -30,11 +31,11 @@ struct ZekrRowView: View {
 
                 Button(action: onDelete) {
                     Circle()
-                        .fill(Color.red)
+                        .fill(theme.currentTheme.primary)
                         .frame(width: 50, height: 50)
                         .overlay(
                             Image(systemName: "trash")
-                                .foregroundColor(.white)
+                                .foregroundColor(theme.currentTheme.primary)
                         )
                         .shadow(color: Color.black.opacity(0.25), radius: 3, x: 3, y: 3)
                         .opacity(abs(offset) / deleteButtonWidth)
@@ -51,14 +52,14 @@ struct ZekrRowView: View {
                     Text(zekr.text)
                         .font(.headline)
                         .fontWeight(.bold)
-                        .foregroundColor(.white)
+                        .foregroundColor(theme.currentTheme.primary)
                         .lineLimit(1)
                         .multilineTextAlignment(.trailing)
                         .environment(\.layoutDirection, .rightToLeft)
                     
                     Text("Last updated: \(formattedDate)")
                         .font(.caption)
-                        .foregroundColor(.white.opacity(0.8))
+                        .foregroundColor(theme.currentTheme.primary.opacity(0.8))
                         .environment(\.layoutDirection, .rightToLeft)
                 }
                 .environment(\.layoutDirection, .rightToLeft)
@@ -66,19 +67,19 @@ struct ZekrRowView: View {
                 Text("\(zekr.counter)")
                     .font(.title2)
                     .fontWeight(.bold)
-                    .foregroundColor(.themePrimary)
+                    .foregroundColor(theme.currentTheme.primary)
                     .frame(minWidth: 44, minHeight: 44)
                     .padding(5)
                     .background(
                         RoundedRectangle(cornerRadius: 16)
-                            .fill(Color.white)
+                            .fill(theme.currentTheme.background)
                     )
                     .padding(.trailing, 5)
             }
             .padding(15)
             .background(
                 RoundedRectangle(cornerRadius: 12)
-                    .fill(Color.themePrimary.opacity(0.9))
+                    .fill(theme.currentTheme.primary.opacity(0.9))
                     .shadow(color: Color.black.opacity(0.25), radius: 3, x: 3, y: 3)
             )
             .offset(x: offset)

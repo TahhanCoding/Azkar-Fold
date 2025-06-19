@@ -8,13 +8,14 @@
 import SwiftUI
 
 struct EmptyZekrView: View {
+    @EnvironmentObject var theme: ThemeManager
     @EnvironmentObject var coordinator: NavigationCoordinator
     
     var body: some View {
         VStack(spacing: 20) {
             Image(systemName: "heart.text.square")
                 .font(.system(size: 80))
-                .foregroundColor(.themePrimary.opacity(0.7))
+                .foregroundColor(theme.currentTheme.primary.opacity(0.7))
             
             Text("No custom Azkar created yet")
                 .font(.title2)
@@ -22,7 +23,7 @@ struct EmptyZekrView: View {
             
             Text("Tap the Create button to start your first Zekr")
                 .font(.subheadline)
-                .foregroundColor(.secondary)
+                .foregroundColor(theme.currentTheme.background.opacity(0.7))
                 .multilineTextAlignment(.center)
                 .padding(.horizontal)
             
@@ -34,7 +35,7 @@ struct EmptyZekrView: View {
                     .foregroundColor(.white)
                     .padding(.horizontal, 20)
                     .padding(.vertical, 10)
-                    .background(Color.themePrimary)
+                    .background(theme.currentTheme.primary)
                     .cornerRadius(8)
             }
             .padding(.top, 10)

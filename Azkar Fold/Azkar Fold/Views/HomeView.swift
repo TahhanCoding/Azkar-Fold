@@ -8,6 +8,7 @@
 import SwiftUI
 
 struct HomeView: View {
+    @EnvironmentObject var theme: ThemeManager
     @EnvironmentObject var coordinator: NavigationCoordinator
     @EnvironmentObject var zekrStore: ZekrStore
     @StateObject var sunnahProgressStore = SunnahProgressStore()
@@ -33,7 +34,7 @@ struct HomeView: View {
                 }
                 .tag(2)
         }
-        .accentColor(.themePrimary)
+        .accentColor(theme.currentTheme.primary)
         .environmentObject(zekrStore)
         .environmentObject(sunnahProgressStore)
     }

@@ -8,6 +8,7 @@
 import SwiftUI
 
 struct SunnahTabView: View {
+    @EnvironmentObject var theme: ThemeManager
     @EnvironmentObject var coordinator: NavigationCoordinator
     private let azkarService = SunnahAzkarService()
     @EnvironmentObject private var progressStore: SunnahProgressStore // Changed to EnvironmentObject
@@ -90,7 +91,7 @@ struct SunnahTabView: View {
                     .ignoresSafeArea(.all)
             )
             .background(
-                Color.themeBackground.opacity(0.3).ignoresSafeArea(.all)
+                theme.currentTheme.background.opacity(0.3).ignoresSafeArea(.all)
             )
             .onAppear {
                 progressStore.resetDailyProgressIfNeeded()
@@ -116,10 +117,10 @@ struct SunnahTabView: View {
                     }) {
                         Text(isEditing ? "Save" : "Edit")
                             .font(.headline)
-                            .foregroundColor(.white)
+                            .foregroundColor(theme.currentTheme.primary)
                             .padding(.horizontal, 20)
                             .padding(.vertical, 10)
-                            .background(Color.themePrimary)
+                            .background(theme.currentTheme.primary)
                             .cornerRadius(8)
                     }
                 }
@@ -176,6 +177,8 @@ struct SunnahTabView: View {
 
 // Helper view for Azkar cards
 struct AzkarCard: View {
+    @EnvironmentObject var theme: ThemeManager
+
     let title: String
     let iconName: String
     var isCompleted: Bool = false // Default value
@@ -215,23 +218,23 @@ struct AzkarCard: View {
                 Text(title)
                     .font(.headline)
                     .fontWeight(.bold)
-                    .foregroundColor(.white)
+                    .foregroundColor(theme.currentTheme.primary)
                 
                 Text(isCompleted ? "Completed" : "Not completed yet")
                     .font(.subheadline)
-                    .foregroundColor(.white.opacity(0.8))
+                    .foregroundColor(theme.currentTheme.primary.opacity(0.8))
             }
             
             Spacer()
             
             if isEditing {
                 Image(systemName: isSelectedForEditing ? "checkmark.square.fill" : "square")
-                    .foregroundColor(.white)
+                    .foregroundColor(theme.currentTheme.primary)
                     .font(.system(size: 24))
             } else if isCompleted {
                 Image(systemName: "checkmark.circle.fill")
                     .font(.system(size: 24))
-                    .foregroundColor(.white)
+                    .foregroundColor(theme.currentTheme.primary)
             }
         }
         .padding()
@@ -247,13 +250,14 @@ struct AzkarCard: View {
 
 // Simple error view
 struct ErrorView: View {
+    @EnvironmentObject var theme: ThemeManager
     let error: String
     
     var body: some View {
         VStack(spacing: 20) {
             Image(systemName: "exclamationmark.triangle")
                 .font(.system(size: 50))
-                .foregroundColor(.red)
+                .foregroundColor(theme.currentTheme.primary)
             
             Text("Error")
                 .font(.title)

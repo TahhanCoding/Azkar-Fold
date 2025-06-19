@@ -9,6 +9,7 @@ import SwiftUI
 
 struct CreateZekrView: View {
     @EnvironmentObject var coordinator: NavigationCoordinator
+    @EnvironmentObject var theme: ThemeManager
     @EnvironmentObject var zekrStore: ZekrStore
     @Environment(\.presentationMode) var presentationMode
     @State private var zekrText = ""
@@ -19,7 +20,7 @@ struct CreateZekrView: View {
             Text("Create New Zekr")
                 .font(.title)
                 .fontWeight(.bold)
-                .foregroundColor(.themePrimary)
+                .foregroundColor(theme.currentTheme.primary)
                 .padding(.top)
             
             // Neo-brutalism style text field
@@ -29,11 +30,11 @@ struct CreateZekrView: View {
                 .environment(\.layoutDirection, .rightToLeft)
                 .background(
                     RoundedRectangle(cornerRadius: 8)
-                        .fill(Color.white)
+                        .fill(theme.currentTheme.cardBackground)
                         .shadow(color: .black.opacity(0.2), radius: 0, x: 4, y: 4)
                         .overlay(
                             RoundedRectangle(cornerRadius: 8)
-                                .stroke(Color.themePrimary, lineWidth: 2)
+                                .stroke(theme.currentTheme.primary, lineWidth: 2)
                         )
                 )
                 .padding(.horizontal)
@@ -57,7 +58,7 @@ struct CreateZekrView: View {
                     .padding()
                     .background(
                         Rectangle()
-                            .fill(Color.themePrimary)
+                            .fill(theme.currentTheme.primary)
                             .shadow(color: .black.opacity(0.3), radius: 0, x: 4, y: 4)
                     )
                     .padding(.horizontal)

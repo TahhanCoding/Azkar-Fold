@@ -25,6 +25,7 @@ struct WebView: UIViewRepresentable {
 
 
 struct SettingsTabView: View {
+    @EnvironmentObject var theme: ThemeManager
     @State private var showingPrivacyPolicy = false
     @State private var showingTerms = false
     
@@ -38,7 +39,7 @@ struct SettingsTabView: View {
                     NavigationLink(destination: ThemeManagerView().environmentObject(ThemeManager.shared)) {
                         HStack {
                             Image(systemName: "paintbrush.fill")
-                                .foregroundColor(.themePrimary)
+                                .foregroundColor(theme.currentTheme.primary)
                                 .frame(width: 24)
                             
                             VStack(alignment: .leading, spacing: 2) {
@@ -54,11 +55,11 @@ struct SettingsTabView: View {
                             
                             // Current theme preview
                             Circle()
-                                .fill(Color.themePrimary)
+                                .fill(theme.currentTheme.primary)
                                 .frame(width: 20, height: 20)
                                 .overlay(
                                     Circle()
-                                        .stroke(Color.themeSecondary, lineWidth: 1)
+                                        .stroke(theme.currentTheme.secondary, lineWidth: 1)
                                 )
                         }
                         .padding(.vertical, 4)
@@ -73,7 +74,7 @@ struct SettingsTabView: View {
                         shareApp()
                     }
                 }
-                .listRowBackground(Color.clear)
+                .listRowBackground(theme.currentTheme.background)
                 
                 Section(header: Text("About This App")) {
                     descriptionSection(
@@ -106,14 +107,14 @@ struct SettingsTabView: View {
             .navigationTitle("Settings")
             .listStyle(InsetGroupedListStyle())
             .background(
-                Image("islamic_pattern")
-                    .resizable(resizingMode: .tile)
-                    .opacity(0.55)
-                    .ignoresSafeArea(.all)
-            )
-            .background(
-                Color.themeBackground.opacity(0.3).ignoresSafeArea(.all)
-            )
+                    Image("islamic_pattern")
+                        .resizable(resizingMode: .tile)
+                        .opacity(0.55)
+                        .ignoresSafeArea(.all)
+                )
+                .background(
+                    theme.currentTheme.background.opacity(0.3).ignoresSafeArea(.all)
+                )
             .sheet(isPresented: $showingPrivacyPolicy) {
                 WebView(url: "https://yourapp.com/privacy")
             }
@@ -152,10 +153,10 @@ struct SettingsTabView: View {
         VStack(alignment: .leading, spacing: 4) {
             Text("Azkar Fold")
                 .font(.system(size: 28, weight: .black))
-                .foregroundColor(.themePrimary)
+                .foregroundColor(theme.currentTheme.primary)
             Text(Bundle.main.infoDictionary?["CFBundleShortVersionString"] as? String ?? "1.0")
                 .font(.subheadline)
-                .foregroundColor(.themeAccent)
+                .foregroundColor(theme.currentTheme.accent)
         }
         .padding(.vertical)
         .frame(maxWidth: .infinity, alignment: .leading)
@@ -177,11 +178,11 @@ struct SettingsTabView: View {
                 Text(title)
                     .font(.headline)
             }
-            .foregroundColor(.clear)
+            .foregroundColor(theme.currentTheme.primary)
             .frame(maxWidth: .infinity, minHeight: 50)
             .background(
                 Rectangle()
-                    .fill(Color.themePrimary)
+                    .fill(theme.currentTheme.primary)
                     .shadow(color: .black.opacity(0.3), radius: 0, x: 4, y: 4)
             )
             .cornerRadius(8)

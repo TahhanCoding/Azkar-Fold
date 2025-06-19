@@ -8,6 +8,7 @@
 import SwiftUI
 
 struct ZekrView: View {
+    @EnvironmentObject var theme: ThemeManager
     let zekrId: UUID
     @EnvironmentObject var zekrStore: ZekrStore
     @Environment(\.dismiss) private var dismiss
@@ -35,7 +36,7 @@ struct ZekrView: View {
                                 .fontWeight(.bold)
                                 .multilineTextAlignment(.center)
                                 .padding()
-                                .background(Color.white.opacity(0.8))
+                                .background(theme.currentTheme.cardBackground.opacity(0.8))
                                 .cornerRadius(12)
                                 .padding()
                         } else {
@@ -47,15 +48,15 @@ struct ZekrView: View {
                         }
                     } else {
                         Text("Zekr not found")
-                            .font(.title)
-                            .foregroundColor(.red)
+                                .font(.title)
+                                .foregroundColor(theme.currentTheme.primary)
                     }
                 }
                 .frame(height: geometry.size.height / 2)
                 .frame(maxWidth: .infinity)
                 .background(
                     RoundedRectangle(cornerRadius: 33)
-                        .fill(Color.themePrimary.opacity(0.1))
+                        .fill(theme.currentTheme.primary.opacity(0.1))
                         .overlay(
                             Image("islamic_pattern")
                                 .resizable(resizingMode: .tile)
@@ -79,12 +80,12 @@ struct ZekrView: View {
                             }
                             .font(.title3)
                             .fontWeight(.medium)
-                            .foregroundColor(.gray)
+                            .foregroundColor(theme.currentTheme.background)
                             .padding(.horizontal, 18)
                             .padding(.vertical, 12)
                             .background(
                                 RoundedRectangle(cornerRadius: 25)
-                                    .stroke(Color.gray, lineWidth: 2)
+                                    .stroke(theme.currentTheme.background, lineWidth: 2)
                             )
                             .matchedGeometryEffect(id: "secButton", in: nameSpace)
 
@@ -96,12 +97,12 @@ struct ZekrView: View {
                             }
                             .font(.title2)
                             .fontWeight(.medium)
-                            .foregroundColor(.white)
+                            .foregroundColor(theme.currentTheme.primary)
                             .padding(.horizontal, 30)
                             .padding(.vertical, 12)
                             .background(
                                 RoundedRectangle(cornerRadius: 25)
-                                    .fill(Color.themePrimary)
+                                    .fill(theme.currentTheme.primary)
                             )
                             .disabled(editedText.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty)
                             .opacity(editedText.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty ? 0.6 : 1.0)
@@ -113,7 +114,7 @@ struct ZekrView: View {
                         if let zekr = zekr {
                             Text("\(zekr.counter)")
                                 .font(.system(size: 80, weight: .black, design: .rounded))
-                                .foregroundColor(.themePrimary)
+                                .foregroundColor(theme.currentTheme.primary)
                                 .scaleEffect(animateCounter ? 1.2 : 1.0)
                                 .animation(.spring(response: 0.3, dampingFraction: 0.6), value: animateCounter)
                                 .matchedGeometryEffect(id: "mainBuuton", in: nameSpace)
@@ -121,7 +122,7 @@ struct ZekrView: View {
                         
                         Text("Tap to count")
                             .font(.subheadline)
-                            .foregroundColor(.secondary)
+                            .foregroundColor(theme.currentTheme.background.opacity(0.7))
                             .padding(.top, 5)
                             .matchedGeometryEffect(id: "secButton", in: nameSpace)
 
@@ -141,7 +142,7 @@ struct ZekrView: View {
                 }
                 .background(
                     RoundedRectangle(cornerRadius: 0)
-                        .fill(Color.white)
+                        .fill(theme.currentTheme.background)
                         .shadow(color: .black.opacity(0.1), radius: 2, x: 0, y: -2)
                 )
             }
@@ -165,7 +166,7 @@ struct ZekrView: View {
                         }
                     } label: {
                         Image(systemName: "ellipsis")
-                            .foregroundColor(.themePrimary)
+                            .foregroundColor(theme.currentTheme.primary)
                     }
                     .disabled(isEditMode)
                 }

@@ -1,6 +1,7 @@
 import SwiftUI
 
 struct SunnahZekrView: View {
+    @EnvironmentObject var theme: ThemeManager
     @State var azkarList: [SunnahZekrItem]
     let category: SunnahAzkarCategory
     @ObservedObject var progressStore: SunnahProgressStore
@@ -35,7 +36,7 @@ struct SunnahZekrView: View {
                                 HStack {
                                     Text("مسلم(١)")
                                         .font(.system(size: 14))
-                                        .foregroundStyle(.red)
+                                        .foregroundStyle(theme.currentTheme.primary)
                                         .padding(.horizontal, 18)
 
                                     
@@ -50,7 +51,7 @@ struct SunnahZekrView: View {
                     .frame(maxWidth: .infinity)
                     .background(
                         RoundedRectangle(cornerRadius: 33)
-                            .fill(currentRepetition >= zekrItem.repeat ? Color.green.opacity(0.2) : Color.themePrimary.opacity(0.1))
+                            .fill(currentRepetition >= zekrItem.repeat ? theme.currentTheme.primary.opacity(0.2) : theme.currentTheme.primary.opacity(0.1))
                             .overlay(
                                 Image("islamic_pattern")
                                     .resizable(resizingMode: .tile)
@@ -75,14 +76,14 @@ struct SunnahZekrView: View {
                                     ZStack(alignment: .leading) {
                                         // Background
                                         RoundedRectangle(cornerRadius: 12)
-                                            .fill(Color.gray.opacity(0.2))
+                                            .fill(theme.currentTheme.background.opacity(0.2))
                                             .frame(height: 24)
                                         
                                         // Progress fill
                                         RoundedRectangle(cornerRadius: 12)
                                             .fill(
                                                 LinearGradient(
-                                                    gradient: Gradient(colors: [Color.themePrimary, Color.themePrimary.opacity(0.8)]),
+                                                    gradient: Gradient(colors: [theme.currentTheme.primary, theme.currentTheme.primary.opacity(0.8)]),
                                                     startPoint: .leading,
                                                     endPoint: .trailing
                                                 )
@@ -98,7 +99,7 @@ struct SunnahZekrView: View {
                                             Spacer()
                                             Text("\(currentRepetition)/\(zekrItem.repeat)")
                                                 .font(.system(size: 14, weight: .semibold))
-                                                .foregroundColor(.white)
+                                                .foregroundColor(theme.currentTheme.primary)
                                             Spacer()
                                         }
                                     }
@@ -115,7 +116,7 @@ struct SunnahZekrView: View {
                             VStack(spacing: 4) {
                                 Text("Zekr \(currentIndex + 1) of \(azkarList.count)")
                                     .font(.caption)
-                                    .foregroundColor(.secondary)
+                                    .foregroundColor(theme.currentTheme.background.opacity(0.7))
                             }
                             .onTapGesture {
                                 countUpZekr()
@@ -141,8 +142,8 @@ struct SunnahZekrView: View {
                                 }
                                 .padding(.horizontal, 20)
                                 .padding(.vertical, 12)
-                                .background(currentIndex == 0 ? Color.gray.opacity(0.3) : Color.themePrimary)
-                                .foregroundColor(currentIndex == 0 ? .gray : .white)
+                                .background(currentIndex == 0 ? theme.currentTheme.background.opacity(0.3) : theme.currentTheme.primary)
+                                .foregroundColor(currentIndex == 0 ? theme.currentTheme.background : theme.currentTheme.primary)
                                 .cornerRadius(25)
                             }
                             .disabled(currentIndex == 0)
@@ -150,7 +151,7 @@ struct SunnahZekrView: View {
                             VStack {
                                 Text("\(currentIndex + 1) of \(azkarList.count)")
                                     .font(.caption)
-                                    .foregroundColor(.secondary)
+                                    .foregroundColor(theme.currentTheme.background.opacity(0.7))
                             }
                             
                             Button(action: {
@@ -167,8 +168,8 @@ struct SunnahZekrView: View {
                                 }
                                 .padding(.horizontal, 20)
                                 .padding(.vertical, 12)
-                                .background((currentIndex == azkarList.count - 1 || currentRepetition < zekrItem.repeat) ? Color.gray.opacity(0.3) : Color.themePrimary)
-                                .foregroundColor((currentIndex == azkarList.count - 1 || currentRepetition < zekrItem.repeat) ? .gray : .white)
+                                .background((currentIndex == azkarList.count - 1 || currentRepetition < zekrItem.repeat) ? theme.currentTheme.background.opacity(0.3) : theme.currentTheme.primary)
+                                .foregroundColor((currentIndex == azkarList.count - 1 || currentRepetition < zekrItem.repeat) ? theme.currentTheme.background : theme.currentTheme.primary)
                                 .cornerRadius(25)
                             }
                             .disabled(currentIndex == azkarList.count - 1 || currentRepetition < zekrItem.repeat)
@@ -192,9 +193,9 @@ struct SunnahZekrView: View {
                                     .padding(.vertical, 10)
                                     .background(
                                         RoundedRectangle(cornerRadius: 20)
-                                            .fill(textOnScreen == zekrItem.zekr ? Color.themePrimary : Color.gray.opacity(0.2))
+                                            .fill(textOnScreen == zekrItem.zekr ? theme.currentTheme.primary : theme.currentTheme.background.opacity(0.2))
                                     )
-                                    .foregroundColor(textOnScreen == zekrItem.zekr ? .white : .primary)
+                                    .foregroundColor(textOnScreen == zekrItem.zekr ? theme.currentTheme.primary : theme.currentTheme.background)
                                 }
                                 
                                 Button(action: {
@@ -209,9 +210,9 @@ struct SunnahZekrView: View {
                                     .padding(.vertical, 8)
                                     .background(
                                         RoundedRectangle(cornerRadius: 16)
-                                            .fill(textOnScreen == zekrItem.transliteration ? Color.themePrimary.opacity(0.8) : Color.gray.opacity(0.15))
+                                            .fill(textOnScreen == zekrItem.transliteration ? theme.currentTheme.primary.opacity(0.8) : theme.currentTheme.background.opacity(0.15))
                                     )
-                                    .foregroundColor(textOnScreen == zekrItem.transliteration ? .white : .secondary)
+                                    .foregroundColor(textOnScreen == zekrItem.transliteration ? theme.currentTheme.primary : theme.currentTheme.background.opacity(0.7))
                                 }
 
                             }
@@ -230,9 +231,9 @@ struct SunnahZekrView: View {
                                     .padding(.vertical, 10)
                                     .background(
                                         RoundedRectangle(cornerRadius: 20)
-                                            .fill(textOnScreen == zekrItem.en_tr ? Color.themePrimary : Color.gray.opacity(0.2))
+                                            .fill(textOnScreen == zekrItem.en_tr ? theme.currentTheme.primary : theme.currentTheme.background.opacity(0.2))
                                     )
-                                    .foregroundColor(textOnScreen == zekrItem.en_tr ? .white : .primary)
+                                    .foregroundColor(textOnScreen == zekrItem.en_tr ? theme.currentTheme.primary : theme.currentTheme.background)
                                 }
 
                                 if let bless = zekrItem.bless {
@@ -248,9 +249,9 @@ struct SunnahZekrView: View {
                                         .padding(.vertical, 8)
                                         .background(
                                             RoundedRectangle(cornerRadius: 16)
-                                                .fill(textOnScreen == bless ? Color.themePrimary.opacity(0.8) : Color.gray.opacity(0.15))
+                                                .fill(textOnScreen == bless ? theme.currentTheme.primary.opacity(0.8) : theme.currentTheme.background.opacity(0.15))
                                         )
-                                        .foregroundColor(textOnScreen == bless ? .white : .secondary)
+                                        .foregroundColor(textOnScreen == bless ? theme.currentTheme.primary : theme.currentTheme.background.opacity(0.7))
                                     }
                                 }
                                 
@@ -267,9 +268,9 @@ struct SunnahZekrView: View {
                                         .padding(.vertical, 8)
                                         .background(
                                             RoundedRectangle(cornerRadius: 16)
-                                                .fill(textOnScreen == bless_en ? Color.themePrimary.opacity(0.8) : Color.gray.opacity(0.15))
+                                                .fill(textOnScreen == bless_en ? theme.currentTheme.primary.opacity(0.8) : theme.currentTheme.background.opacity(0.15))
                                         )
-                                        .foregroundColor(textOnScreen == bless_en ? .white : .secondary)
+                                        .foregroundColor(textOnScreen == bless_en ? theme.currentTheme.primary : theme.currentTheme.background.opacity(0.7))
                                     }
                                 }
                             }
@@ -292,7 +293,7 @@ struct SunnahZekrView: View {
                     .frame(maxWidth: .infinity)
                     .background(
                         RoundedRectangle(cornerRadius: 0)
-                            .fill(Color.white)
+                            .fill(theme.currentTheme.background)
                             .shadow(color: .black.opacity(0.1), radius: 2, x: 0, y: -2)
                     )
                     

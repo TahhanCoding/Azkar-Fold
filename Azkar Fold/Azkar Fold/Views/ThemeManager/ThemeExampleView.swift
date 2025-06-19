@@ -33,7 +33,7 @@ struct ThemeExampleView: View {
             }
             .padding()
         }
-        .background(Color.themeBackground)
+        .background(themeManager.currentTheme.background)
         .navigationTitle("Theme Example")
         .navigationBarTitleDisplayMode(.large)
         .alert("Theme Alert", isPresented: $showingAlert) {
@@ -48,19 +48,19 @@ struct ThemeExampleView: View {
             Text("Theme Integration Example")
                 .font(.title)
                 .fontWeight(.bold)
-                .foregroundColor(.themePrimary)
+                .foregroundColor(themeManager.currentTheme.primary)
             
             Text("This view demonstrates how to use theme colors throughout your app")
                 .font(.subheadline)
-                .foregroundColor(.themeText)
+                .foregroundColor(themeManager.currentTheme.background)
                 .multilineTextAlignment(.center)
         }
         .padding()
-        .background(Color.themeCardBackground)
+        .background(themeManager.currentTheme.cardBackground)
         .cornerRadius(12)
         .overlay(
             RoundedRectangle(cornerRadius: 12)
-                .stroke(Color.themePrimary.opacity(0.3), lineWidth: 1)
+                .stroke(themeManager.currentTheme.primary.opacity(0.3), lineWidth: 1)
         )
     }
     
@@ -68,64 +68,64 @@ struct ThemeExampleView: View {
         VStack(alignment: .leading, spacing: 12) {
             Text("Cards")
                 .font(.headline)
-                .foregroundColor(.themeText)
+                .foregroundColor(themeManager.currentTheme.background)
             
             HStack(spacing: 12) {
                 // Primary card
                 VStack {
                     Circle()
-                        .fill(Color.themePrimary)
+                        .fill(themeManager.currentTheme.primary)
                         .frame(width: 40, height: 40)
                         .overlay(
                             Image(systemName: "heart.fill")
-                                .foregroundColor(.themeButtonText)
+                                .foregroundColor(themeManager.currentTheme.primary)
                         )
                     
                     Text("Primary")
                         .font(.caption)
-                        .foregroundColor(.themeText)
+                        .foregroundColor(themeManager.currentTheme.background)
                 }
                 .frame(maxWidth: .infinity)
                 .padding()
-                .background(Color.themeCardBackground)
+                .background(themeManager.currentTheme.cardBackground)
                 .cornerRadius(8)
                 
                 // Secondary card
                 VStack {
                     Circle()
-                        .fill(Color.themeSecondary)
+                        .fill(themeManager.currentTheme.secondary)
                         .frame(width: 40, height: 40)
                         .overlay(
                             Image(systemName: "star.fill")
-                                .foregroundColor(.themeButtonText)
+                                .foregroundColor(themeManager.currentTheme.secondary)
                         )
                     
                     Text("Secondary")
                         .font(.caption)
-                        .foregroundColor(.themeText)
+                        .foregroundColor(themeManager.currentTheme.background)
                 }
                 .frame(maxWidth: .infinity)
                 .padding()
-                .background(Color.themeCardBackground)
+                .background(themeManager.currentTheme.cardBackground)
                 .cornerRadius(8)
                 
                 // Accent card
                 VStack {
                     Circle()
-                        .fill(Color.themeAccent)
+                        .fill(themeManager.currentTheme.accent)
                         .frame(width: 40, height: 40)
                         .overlay(
                             Image(systemName: "gear")
-                                .foregroundColor(.themeCardBackground)
+                                .foregroundColor(themeManager.currentTheme.cardBackground)
                         )
                     
                     Text("Accent")
                         .font(.caption)
-                        .foregroundColor(.themeText)
+                        .foregroundColor(themeManager.currentTheme.background)
                 }
                 .frame(maxWidth: .infinity)
                 .padding()
-                .background(Color.themeCardBackground)
+                .background(themeManager.currentTheme.cardBackground)
                 .cornerRadius(8)
             }
         }
@@ -135,7 +135,7 @@ struct ThemeExampleView: View {
         VStack(alignment: .leading, spacing: 12) {
             Text("Buttons")
                 .font(.headline)
-                .foregroundColor(.themeText)
+                .foregroundColor(themeManager.currentTheme.background)
             
             VStack(spacing: 8) {
                 // Primary button
@@ -143,9 +143,9 @@ struct ThemeExampleView: View {
                     showingAlert = true
                 }
                 .font(.headline)
-                .foregroundColor(.themeButtonText)
+                .foregroundColor(themeManager.currentTheme.primary)
                 .frame(maxWidth: .infinity, minHeight: 44)
-                .background(Color.themePrimary)
+                .background(themeManager.currentTheme.primary)
                 .cornerRadius(8)
                 
                 // Secondary button
@@ -153,13 +153,13 @@ struct ThemeExampleView: View {
                     counter += 1
                 }
                 .font(.headline)
-                .foregroundColor(.themePrimary)
+                .foregroundColor(themeManager.currentTheme.primary)
                 .frame(maxWidth: .infinity, minHeight: 44)
-                .background(Color.themePrimary.opacity(0.1))
+                .background(themeManager.currentTheme.primary.opacity(0.1))
                 .cornerRadius(8)
                 .overlay(
                     RoundedRectangle(cornerRadius: 8)
-                        .stroke(Color.themePrimary, lineWidth: 1)
+                        .stroke(themeManager.currentTheme.primary, lineWidth: 1)
                 )
                 
                 // Accent button
@@ -167,9 +167,9 @@ struct ThemeExampleView: View {
                     counter -= 1
                 }
                 .font(.headline)
-                .foregroundColor(.themeCardBackground)
+                .foregroundColor(themeManager.currentTheme.cardBackground)
                 .frame(maxWidth: .infinity, minHeight: 44)
-                .background(Color.themeAccent)
+                .background(themeManager.currentTheme.accent)
                 .cornerRadius(8)
             }
         }
@@ -179,23 +179,23 @@ struct ThemeExampleView: View {
         VStack(alignment: .leading, spacing: 12) {
             Text("Interactive Elements")
                 .font(.headline)
-                .foregroundColor(.themeText)
+                .foregroundColor(themeManager.currentTheme.background)
             
             VStack(spacing: 16) {
                 // Counter
                 HStack {
                     Text("Counter:")
-                        .foregroundColor(.themeText)
+                        .foregroundColor(themeManager.currentTheme.background)
                     
                     Spacer()
                     
                     Text("\(counter)")
                         .font(.title2)
                         .fontWeight(.bold)
-                        .foregroundColor(.themePrimary)
+                        .foregroundColor(themeManager.currentTheme.primary)
                         .padding(.horizontal, 12)
                         .padding(.vertical, 6)
-                        .background(Color.themePrimary.opacity(0.1))
+                        .background(themeManager.currentTheme.primary.opacity(0.1))
                         .cornerRadius(8)
                 }
                 
@@ -203,34 +203,34 @@ struct ThemeExampleView: View {
                 VStack(alignment: .leading, spacing: 4) {
                     HStack {
                         Text("Progress")
-                            .foregroundColor(.themeText)
+                            .foregroundColor(themeManager.currentTheme.background)
                         
                         Spacer()
                         
                         Text("\(min(abs(counter), 10))/10")
                             .font(.caption)
-                            .foregroundColor(.themeText.opacity(0.7))
+                            .foregroundColor(themeManager.currentTheme.background.opacity(0.7))
                     }
                     
                     ProgressView(value: Double(min(abs(counter), 10)), total: 10)
-                        .progressViewStyle(LinearProgressViewStyle(tint: .themePrimary))
-                        .background(Color.themeAccent.opacity(0.2))
+                        .progressViewStyle(LinearProgressViewStyle(tint: themeManager.currentTheme.primary))
+                        .background(themeManager.currentTheme.accent.opacity(0.2))
                         .cornerRadius(4)
                 }
                 
                 // Toggle
                 HStack {
                     Text("Theme Preview")
-                        .foregroundColor(.themeText)
+                        .foregroundColor(themeManager.currentTheme.background)
                     
                     Spacer()
                     
                     Toggle("", isOn: .constant(true))
-                        .toggleStyle(SwitchToggleStyle(tint: .themePrimary))
+                        .toggleStyle(SwitchToggleStyle(tint: themeManager.currentTheme.primary))
                 }
             }
             .padding()
-            .background(Color.themeCardBackground)
+            .background(themeManager.currentTheme.cardBackground)
             .cornerRadius(12)
         }
     }
@@ -239,33 +239,33 @@ struct ThemeExampleView: View {
         VStack(alignment: .leading, spacing: 12) {
             Text("Typography")
                 .font(.headline)
-                .foregroundColor(.themeText)
+                .foregroundColor(themeManager.currentTheme.background)
             
             VStack(alignment: .leading, spacing: 8) {
                 Text("Primary Text")
                     .font(.title2)
                     .fontWeight(.bold)
-                    .foregroundColor(.themePrimary)
+                    .foregroundColor(themeManager.currentTheme.primary)
                 
                 Text("Secondary Text")
                     .font(.headline)
-                    .foregroundColor(.themeSecondary)
+                    .foregroundColor(themeManager.currentTheme.secondary)
                 
                 Text("Regular body text that adapts to the current theme. This demonstrates how text colors change with different themes.")
                     .font(.body)
-                    .foregroundColor(.themeText)
+                    .foregroundColor(themeManager.currentTheme.background)
                 
                 Text("Accent text for highlights")
                     .font(.subheadline)
                     .fontWeight(.medium)
-                    .foregroundColor(.themeAccent)
+                    .foregroundColor(themeManager.currentTheme.accent)
                 
                 Text("Muted text for less important information")
                     .font(.caption)
-                    .foregroundColor(.themeText.opacity(0.6))
+                    .foregroundColor(themeManager.currentTheme.background.opacity(0.6))
             }
             .padding()
-            .background(Color.themeCardBackground)
+            .background(themeManager.currentTheme.cardBackground)
             .cornerRadius(12)
         }
     }
