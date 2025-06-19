@@ -20,10 +20,11 @@ struct EmptyZekrView: View {
             Text("No custom Azkar created yet")
                 .font(.title2)
                 .fontWeight(.bold)
+                .foregroundColor(theme.currentTheme.text)
             
             Text("Tap the Create button to start your first Zekr")
                 .font(.subheadline)
-                .foregroundColor(theme.currentTheme.background.opacity(0.7))
+                .foregroundColor(theme.currentTheme.text)
                 .multilineTextAlignment(.center)
                 .padding(.horizontal)
             
@@ -32,7 +33,7 @@ struct EmptyZekrView: View {
             }) {
                 Text("Create Zekr")
                     .font(.headline)
-                    .foregroundColor(.white)
+                    .foregroundColor(theme.currentTheme.buttonText)
                     .padding(.horizontal, 20)
                     .padding(.vertical, 10)
                     .background(theme.currentTheme.primary)

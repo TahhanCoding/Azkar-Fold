@@ -21,6 +21,7 @@ struct ThemeManagerView: View {
                 currentThemeCard
             } header: {
                 Text("Current Theme")
+                    .foregroundColor(themeManager.currentTheme.text)
             }
             
             // Default themes section
@@ -45,13 +46,14 @@ struct ThemeManagerView: View {
                 }
             } header: {
                 Text("Default Themes")
+                    .foregroundColor(themeManager.currentTheme.text)
             }
             
             // Custom themes section
             Section {
                 if themeManager.customThemes.isEmpty {
                     Text("No custom themes yet")
-                        .foregroundColor(.secondary)
+                        .foregroundColor(themeManager.currentTheme.text)
                         .font(.subheadline)
                         .padding(.vertical, 8)
                 } else {
@@ -88,14 +90,15 @@ struct ThemeManagerView: View {
                 }) {
                     HStack {
                         Image(systemName: "plus.circle.fill")
-                            .foregroundColor(.blue)
+                            .foregroundColor(themeManager.currentTheme.primary)
                         Text("Create New Theme")
-                            .foregroundColor(.blue)
+                            .foregroundColor(themeManager.currentTheme.primary)
                     }
                     .padding(.vertical, 4)
                 }
             } header: {
                 Text("Custom Themes")
+                    .foregroundColor(themeManager.currentTheme.text)
             }
         }
         .navigationTitle("Theme Manager")
@@ -173,17 +176,17 @@ struct ThemeRowView: View {
                 // Theme info
                 VStack(alignment: .leading, spacing: 2) {
                     Text(theme.name)
-                        .font(.headline)
-                        .foregroundColor(.primary)
+                    .font(.headline)
+                    .foregroundColor(theme.text)
                     
                     if theme.isDefault {
                         Text("Default Theme")
                             .font(.caption)
-                            .foregroundColor(.secondary)
+                            .foregroundColor(theme.text)
                     } else {
                         Text("Custom Theme")
                             .font(.caption)
-                            .foregroundColor(.secondary)
+                            .foregroundColor(theme.text)
                     }
                 }
                 
@@ -192,7 +195,7 @@ struct ThemeRowView: View {
                 // Selection indicator
                 if isSelected {
                     Image(systemName: "checkmark.circle.fill")
-                        .foregroundColor(.blue)
+                        .foregroundColor(theme.primary)
                         .font(.title3)
                 }
                 

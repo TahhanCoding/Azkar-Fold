@@ -8,6 +8,7 @@
 import SwiftUI
 
 struct ColorPickerView: View {
+    @EnvironmentObject var theme: ThemeManager
     let title: String
     @Binding var selectedColor: String
     @State private var showingColorPicker = false
@@ -23,6 +24,7 @@ struct ColorPickerView: View {
         HStack {
             Text(title)
                 .font(.system(size: 16, weight: .medium))
+                .foregroundColor(theme.currentTheme.text)
             
             Spacer()
             
@@ -42,7 +44,7 @@ struct ColorPickerView: View {
                     // Hex value
                     Text(selectedColor.uppercased())
                         .font(.system(size: 14, weight: .medium, design: .monospaced))
-                        .foregroundColor(.secondary)
+                        .foregroundColor(theme.currentTheme.text)
                 }
             }
             .buttonStyle(PlainButtonStyle())
@@ -73,7 +75,7 @@ struct ColorPickerSheet: View {
                 VStack(spacing: 12) {
                     Text("Preview")
                         .font(.headline)
-                        .foregroundColor(.secondary)
+                        .foregroundColor(theme.currentTheme.text)
                     
                     RoundedRectangle(cornerRadius: 12)
                         .fill(tempColor)
@@ -89,7 +91,7 @@ struct ColorPickerSheet: View {
                 VStack(alignment: .leading, spacing: 8) {
                     Text("Select Color")
                         .font(.headline)
-                        .foregroundColor(.secondary)
+                        .foregroundColor(theme.currentTheme.text)
                     
                     ColorPicker("Color", selection: $tempColor, supportsOpacity: false)
                         .labelsHidden()
@@ -101,13 +103,14 @@ struct ColorPickerSheet: View {
                 VStack(alignment: .leading, spacing: 8) {
                     Text("Hex Code")
                         .font(.headline)
-                        .foregroundColor(.secondary)
+                        .foregroundColor(theme.currentTheme.text)
                     
                     HStack {
                         TextField("#RRGGBB", text: $hexInput)
                             .textFieldStyle(RoundedBorderTextFieldStyle())
                             .font(.system(.body, design: .monospaced))
                             .autocapitalization(.allCharacters)
+                            .foregroundColor(theme.currentTheme.text)
                             .onChange(of: hexInput) { newValue in
                                 if isValidHex(newValue) {
                                     tempColor = Color(hex: newValue)
@@ -120,6 +123,7 @@ struct ColorPickerSheet: View {
                             }
                         }
                         .disabled(!isValidHex(hexInput))
+                        .foregroundColor(theme.currentTheme.primary)
                     }
                 }
                 .padding(.horizontal)
@@ -128,7 +132,7 @@ struct ColorPickerSheet: View {
                 VStack(alignment: .leading, spacing: 8) {
                     Text("Preset Colors")
                         .font(.headline)
-                        .foregroundColor(.secondary)
+                        .foregroundColor(theme.currentTheme.text)
                     
                     LazyVGrid(columns: Array(repeating: GridItem(.flexible()), count: 6), spacing: 12) {
                         ForEach(presetColors, id: \.self) { color in
@@ -164,6 +168,7 @@ struct ColorPickerSheet: View {
                     Button("Cancel") {
                         dismiss()
                     }
+                    .foregroundColor(theme.currentTheme.text)
                 }
                 
                 ToolbarItem(placement: .navigationBarTrailing) {
@@ -172,6 +177,7 @@ struct ColorPickerSheet: View {
                         dismiss()
                     }
                     .fontWeight(.semibold)
+                    .foregroundColor(theme.currentTheme.text)
                 }
             }
         }

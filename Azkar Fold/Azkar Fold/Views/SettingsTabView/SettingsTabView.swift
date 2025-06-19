@@ -48,7 +48,7 @@ struct SettingsTabView: View {
                                 
                                 Text("Customize app colors and themes")
                                     .font(.caption)
-                                    .foregroundColor(.secondary)
+                                    .foregroundColor(theme.currentTheme.text)
                             }
                             
                             Spacer()
@@ -76,7 +76,7 @@ struct SettingsTabView: View {
                 }
                 .listRowBackground(theme.currentTheme.background)
                 
-                Section(header: Text("About This App")) {
+                Section(header: Text("About This App").foregroundColor(theme.currentTheme.text)) {
                     descriptionSection(
                         title: "Azkar Fold is an Islamic app designed to help Muslims maintain their daily remembrances (Azkar). The app allows you to create and track your custom Azkar with a simple counter interface."
                     )
@@ -85,9 +85,10 @@ struct SettingsTabView: View {
                 Section(header: Text("Legal")) {
                     HStack {
                         Text("Version")
+                            .foregroundColor(theme.currentTheme.text)
                         Spacer()
                         Text(Bundle.main.infoDictionary?["CFBundleShortVersionString"] as? String ?? "1.0")
-                            .foregroundColor(.secondary)
+                            .foregroundColor(theme.currentTheme.text)
                     }
                     
                     Button("Privacy Policy") {
@@ -156,7 +157,7 @@ struct SettingsTabView: View {
                 .foregroundColor(theme.currentTheme.primary)
             Text(Bundle.main.infoDictionary?["CFBundleShortVersionString"] as? String ?? "1.0")
                 .font(.subheadline)
-                .foregroundColor(theme.currentTheme.accent)
+                .foregroundColor(theme.currentTheme.text)
         }
         .padding(.vertical)
         .frame(maxWidth: .infinity, alignment: .leading)
@@ -166,6 +167,7 @@ struct SettingsTabView: View {
     private func descriptionSection(title: String) -> some View {
         Text(title)
             .font(.body)
+            .foregroundColor(theme.currentTheme.text)
             .fixedSize(horizontal: false, vertical: true)
             .padding(.vertical, 5)
     }
@@ -178,7 +180,7 @@ struct SettingsTabView: View {
                 Text(title)
                     .font(.headline)
             }
-            .foregroundColor(theme.currentTheme.primary)
+            .foregroundColor(theme.currentTheme.buttonText)
             .frame(maxWidth: .infinity, minHeight: 50)
             .background(
                 Rectangle()

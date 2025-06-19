@@ -43,13 +43,14 @@ struct ZekrView: View {
                             Text(zekr.text)
                                 .font(.title)
                                 .fontWeight(.bold)
+                                .foregroundColor(theme.currentTheme.text)
                                 .multilineTextAlignment(.center)
                                 .padding()
                         }
                     } else {
                         Text("Zekr not found")
                                 .font(.title)
-                                .foregroundColor(theme.currentTheme.primary)
+                                .foregroundColor(theme.currentTheme.text)
                     }
                 }
                 .frame(height: geometry.size.height / 2)
@@ -80,7 +81,7 @@ struct ZekrView: View {
                             }
                             .font(.title3)
                             .fontWeight(.medium)
-                            .foregroundColor(theme.currentTheme.background)
+                            .foregroundColor(theme.currentTheme.text)
                             .padding(.horizontal, 18)
                             .padding(.vertical, 12)
                             .background(
@@ -97,7 +98,7 @@ struct ZekrView: View {
                             }
                             .font(.title2)
                             .fontWeight(.medium)
-                            .foregroundColor(theme.currentTheme.primary)
+                            .foregroundColor(theme.currentTheme.buttonText)
                             .padding(.horizontal, 30)
                             .padding(.vertical, 12)
                             .background(
@@ -114,7 +115,7 @@ struct ZekrView: View {
                         if let zekr = zekr {
                             Text("\(zekr.counter)")
                                 .font(.system(size: 80, weight: .black, design: .rounded))
-                                .foregroundColor(theme.currentTheme.primary)
+                                .foregroundColor(theme.currentTheme.text)
                                 .scaleEffect(animateCounter ? 1.2 : 1.0)
                                 .animation(.spring(response: 0.3, dampingFraction: 0.6), value: animateCounter)
                                 .matchedGeometryEffect(id: "mainBuuton", in: nameSpace)
@@ -122,7 +123,7 @@ struct ZekrView: View {
                         
                         Text("Tap to count")
                             .font(.subheadline)
-                            .foregroundColor(theme.currentTheme.background.opacity(0.7))
+                            .foregroundColor(theme.currentTheme.text)
                             .padding(.top, 5)
                             .matchedGeometryEffect(id: "secButton", in: nameSpace)
 
@@ -143,7 +144,7 @@ struct ZekrView: View {
                 .background(
                     RoundedRectangle(cornerRadius: 0)
                         .fill(theme.currentTheme.background)
-                        .shadow(color: .black.opacity(0.1), radius: 2, x: 0, y: -2)
+                        .shadow(color: theme.currentTheme.text.opacity(0.1), radius: 2, x: 0, y: -2)
                 )
             }
             .navigationTitle("Zekr Counter")
@@ -180,6 +181,7 @@ struct ZekrView: View {
                 }
             } message: {
                 Text("Are you sure you want to reset the counter to 0?")
+                    .foregroundColor(theme.currentTheme.text)
             }
             .alert("Delete Zekr", isPresented: $showingDeleteAlert) {
                 Button("Cancel", role: .cancel) { }
@@ -191,6 +193,7 @@ struct ZekrView: View {
                 }
             } message: {
                 Text("Are you sure you want to delete this zekr? This action cannot be undone.")
+                    .foregroundColor(theme.currentTheme.text)
             }
         }
         .ignoresSafeArea(.all, edges: .bottom)

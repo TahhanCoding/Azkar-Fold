@@ -52,7 +52,7 @@ struct ThemeExampleView: View {
             
             Text("This view demonstrates how to use theme colors throughout your app")
                 .font(.subheadline)
-                .foregroundColor(themeManager.currentTheme.background)
+                .foregroundColor(themeManager.currentTheme.text)
                 .multilineTextAlignment(.center)
         }
         .padding()
@@ -68,7 +68,7 @@ struct ThemeExampleView: View {
         VStack(alignment: .leading, spacing: 12) {
             Text("Cards")
                 .font(.headline)
-                .foregroundColor(themeManager.currentTheme.background)
+                .foregroundColor(themeManager.currentTheme.text)
             
             HStack(spacing: 12) {
                 // Primary card
@@ -78,12 +78,12 @@ struct ThemeExampleView: View {
                         .frame(width: 40, height: 40)
                         .overlay(
                             Image(systemName: "heart.fill")
-                                .foregroundColor(themeManager.currentTheme.primary)
+                                .foregroundColor(themeManager.currentTheme.buttonText)
                         )
                     
                     Text("Primary")
                         .font(.caption)
-                        .foregroundColor(themeManager.currentTheme.background)
+                        .foregroundColor(themeManager.currentTheme.text)
                 }
                 .frame(maxWidth: .infinity)
                 .padding()
@@ -97,12 +97,12 @@ struct ThemeExampleView: View {
                         .frame(width: 40, height: 40)
                         .overlay(
                             Image(systemName: "star.fill")
-                                .foregroundColor(themeManager.currentTheme.secondary)
+                                .foregroundColor(themeManager.currentTheme.buttonText)
                         )
                     
                     Text("Secondary")
                         .font(.caption)
-                        .foregroundColor(themeManager.currentTheme.background)
+                        .foregroundColor(themeManager.currentTheme.text)
                 }
                 .frame(maxWidth: .infinity)
                 .padding()
@@ -116,12 +116,12 @@ struct ThemeExampleView: View {
                         .frame(width: 40, height: 40)
                         .overlay(
                             Image(systemName: "gear")
-                                .foregroundColor(themeManager.currentTheme.cardBackground)
+                                .foregroundColor(themeManager.currentTheme.buttonText)
                         )
                     
                     Text("Accent")
                         .font(.caption)
-                        .foregroundColor(themeManager.currentTheme.background)
+                        .foregroundColor(themeManager.currentTheme.text)
                 }
                 .frame(maxWidth: .infinity)
                 .padding()
@@ -135,7 +135,7 @@ struct ThemeExampleView: View {
         VStack(alignment: .leading, spacing: 12) {
             Text("Buttons")
                 .font(.headline)
-                .foregroundColor(themeManager.currentTheme.background)
+                .foregroundColor(themeManager.currentTheme.text)
             
             VStack(spacing: 8) {
                 // Primary button
@@ -143,7 +143,7 @@ struct ThemeExampleView: View {
                     showingAlert = true
                 }
                 .font(.headline)
-                .foregroundColor(themeManager.currentTheme.primary)
+                .foregroundColor(themeManager.currentTheme.buttonText)
                 .frame(maxWidth: .infinity, minHeight: 44)
                 .background(themeManager.currentTheme.primary)
                 .cornerRadius(8)
@@ -153,9 +153,9 @@ struct ThemeExampleView: View {
                     counter += 1
                 }
                 .font(.headline)
-                .foregroundColor(themeManager.currentTheme.primary)
+                .foregroundColor(themeManager.currentTheme.text)
                 .frame(maxWidth: .infinity, minHeight: 44)
-                .background(themeManager.currentTheme.primary.opacity(0.1))
+                .background(themeManager.currentTheme.cardBackground)
                 .cornerRadius(8)
                 .overlay(
                     RoundedRectangle(cornerRadius: 8)
@@ -167,7 +167,7 @@ struct ThemeExampleView: View {
                     counter -= 1
                 }
                 .font(.headline)
-                .foregroundColor(themeManager.currentTheme.cardBackground)
+                .foregroundColor(themeManager.currentTheme.buttonText)
                 .frame(maxWidth: .infinity, minHeight: 44)
                 .background(themeManager.currentTheme.accent)
                 .cornerRadius(8)
@@ -179,13 +179,13 @@ struct ThemeExampleView: View {
         VStack(alignment: .leading, spacing: 12) {
             Text("Interactive Elements")
                 .font(.headline)
-                .foregroundColor(themeManager.currentTheme.background)
+                .foregroundColor(themeManager.currentTheme.text)
             
             VStack(spacing: 16) {
                 // Counter
                 HStack {
                     Text("Counter:")
-                        .foregroundColor(themeManager.currentTheme.background)
+                        .foregroundColor(themeManager.currentTheme.text)
                     
                     Spacer()
                     
@@ -200,23 +200,11 @@ struct ThemeExampleView: View {
                 }
                 
                 // Progress bar
-                VStack(alignment: .leading, spacing: 4) {
-                    HStack {
-                        Text("Progress")
-                            .foregroundColor(themeManager.currentTheme.background)
-                        
-                        Spacer()
-                        
-                        Text("\(min(abs(counter), 10))/10")
-                            .font(.caption)
-                            .foregroundColor(themeManager.currentTheme.background.opacity(0.7))
-                    }
-                    
-                    ProgressView(value: Double(min(abs(counter), 10)), total: 10)
-                        .progressViewStyle(LinearProgressViewStyle(tint: themeManager.currentTheme.primary))
-                        .background(themeManager.currentTheme.accent.opacity(0.2))
-                        .cornerRadius(4)
+                Slider(value: .constant(0.5), in: 0...1) {
+                    Text("Volume")
+                        .foregroundColor(themeManager.currentTheme.text)
                 }
+                .tint(themeManager.currentTheme.primary)
                 
                 // Toggle
                 HStack {
@@ -225,8 +213,11 @@ struct ThemeExampleView: View {
                     
                     Spacer()
                     
-                    Toggle("", isOn: .constant(true))
-                        .toggleStyle(SwitchToggleStyle(tint: themeManager.currentTheme.primary))
+                    Toggle(isOn: .constant(true)) {
+                        Text("Enable Feature")
+                            .foregroundColor(themeManager.currentTheme.text)
+                    }
+                    .tint(themeManager.currentTheme.primary)
                 }
             }
             .padding()
@@ -237,32 +228,31 @@ struct ThemeExampleView: View {
     
     private var textSection: some View {
         VStack(alignment: .leading, spacing: 12) {
-            Text("Typography")
+            Text("Text Examples")
                 .font(.headline)
-                .foregroundColor(themeManager.currentTheme.background)
+                .foregroundColor(themeManager.currentTheme.text)
             
             VStack(alignment: .leading, spacing: 8) {
-                Text("Primary Text")
-                    .font(.title2)
-                    .fontWeight(.bold)
-                    .foregroundColor(themeManager.currentTheme.primary)
+                Text("Headline Text")
+                    .font(.headline)
+                    .foregroundColor(themeManager.currentTheme.text)
                 
                 Text("Secondary Text")
                     .font(.headline)
                     .foregroundColor(themeManager.currentTheme.secondary)
                 
-                Text("Regular body text that adapts to the current theme. This demonstrates how text colors change with different themes.")
+                Text("Body text with some **bold** and *italic* formatting.")
                     .font(.body)
-                    .foregroundColor(themeManager.currentTheme.background)
+                    .foregroundColor(themeManager.currentTheme.text)
                 
                 Text("Accent text for highlights")
                     .font(.subheadline)
                     .fontWeight(.medium)
                     .foregroundColor(themeManager.currentTheme.accent)
                 
-                Text("Muted text for less important information")
+                Text("Caption text for smaller details.")
                     .font(.caption)
-                    .foregroundColor(themeManager.currentTheme.background.opacity(0.6))
+                    .foregroundColor(themeManager.currentTheme.text)
             }
             .padding()
             .background(themeManager.currentTheme.cardBackground)

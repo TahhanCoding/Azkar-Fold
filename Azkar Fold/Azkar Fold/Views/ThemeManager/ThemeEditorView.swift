@@ -35,13 +35,14 @@ struct ThemeEditorView: View {
         NavigationView {
             Form {
                 // Theme name section
-                Section("Theme Name") {
+                Section(header: Text("Theme Name").foregroundColor(themeManager.currentTheme.text)) {
                     TextField("Enter theme name", text: $editingTheme.name)
                         .textFieldStyle(RoundedBorderTextFieldStyle())
+                        .foregroundColor(themeManager.currentTheme.text)
                 }
                 
                 // Color customization section
-                Section("Colors") {
+                Section(header: Text("Colors").foregroundColor(themeManager.currentTheme.text)) {
                     ColorPickerView(title: "Primary Color", selectedColor: $editingTheme.primaryColor)
                     ColorPickerView(title: "Secondary Color", selectedColor: $editingTheme.secondaryColor)
                     ColorPickerView(title: "Background Color", selectedColor: $editingTheme.backgroundColor)
@@ -52,17 +53,19 @@ struct ThemeEditorView: View {
                 }
                 
                 // Preview section
-                Section("Preview") {
+                Section(header: Text("Preview").foregroundColor(themeManager.currentTheme.text)) {
                     Button(action: {
                         showingPreview = true
                     }) {
                         HStack {
                             Image(systemName: "eye")
+                                .foregroundColor(themeManager.currentTheme.primary)
                             Text("View Full Preview")
+                                .foregroundColor(themeManager.currentTheme.text)
                             Spacer()
                             Image(systemName: "chevron.right")
                                 .font(.caption)
-                                .foregroundColor(.secondary)
+                                .foregroundColor(themeManager.currentTheme.text)
                         }
                     }
                     
@@ -78,12 +81,19 @@ struct ThemeEditorView: View {
                         Button("Delete Theme", role: .destructive) {
                             showingDeleteAlert = true
                         }
+                        .foregroundColor(themeManager.currentTheme.text)
+                    }
+                } else if isEditing && originalTheme?.isDefault == true {
+                    Section {
+                        Text("Default themes cannot be deleted.")
+                            .foregroundColor(themeManager.currentTheme.text)
+                            .font(.caption)
                     }
                 }
                 
                 // Validation errors
                 if !validationErrors.isEmpty {
-                    Section("Errors") {
+                    Section(header: Text("Errors").foregroundColor(themeManager.currentTheme.text)) {
                         ForEach(validationErrors, id: \.self) { error in
                             Text(error)
                                 .foregroundColor(.red)
@@ -99,6 +109,7 @@ struct ThemeEditorView: View {
                     Button("Cancel") {
                         dismiss()
                     }
+                    .foregroundColor(themeManager.currentTheme.text)
                 }
                 
                 ToolbarItem(placement: .navigationBarTrailing) {
@@ -107,6 +118,7 @@ struct ThemeEditorView: View {
                     }
                     .fontWeight(.semibold)
                     .disabled(!isValidTheme)
+                    .foregroundColor(themeManager.currentTheme.text)
                 }
             }
         }

@@ -35,9 +35,9 @@ struct ZekrRowView: View {
                         .frame(width: 50, height: 50)
                         .overlay(
                             Image(systemName: "trash")
-                                .foregroundColor(theme.currentTheme.primary)
+                                .foregroundColor(theme.currentTheme.buttonText)
                         )
-                        .shadow(color: Color.black.opacity(0.25), radius: 3, x: 3, y: 3)
+                        .shadow(color: theme.currentTheme.text.opacity(0.25), radius: 3, x: 3, y: 3)
                         .opacity(abs(offset) / deleteButtonWidth)
                 }
                 .offset(x: offset > -deleteButtonWidth ? offset + deleteButtonWidth : 0)
@@ -52,14 +52,14 @@ struct ZekrRowView: View {
                     Text(zekr.text)
                         .font(.headline)
                         .fontWeight(.bold)
-                        .foregroundColor(theme.currentTheme.primary)
+                        .foregroundColor(theme.currentTheme.text)
                         .lineLimit(1)
                         .multilineTextAlignment(.trailing)
                         .environment(\.layoutDirection, .rightToLeft)
                     
                     Text("Last updated: \(formattedDate)")
                         .font(.caption)
-                        .foregroundColor(theme.currentTheme.primary.opacity(0.8))
+                        .foregroundColor(theme.currentTheme.text)
                         .environment(\.layoutDirection, .rightToLeft)
                 }
                 .environment(\.layoutDirection, .rightToLeft)
@@ -67,12 +67,12 @@ struct ZekrRowView: View {
                 Text("\(zekr.counter)")
                     .font(.title2)
                     .fontWeight(.bold)
-                    .foregroundColor(theme.currentTheme.primary)
+                    .foregroundColor(theme.currentTheme.text)
                     .frame(minWidth: 44, minHeight: 44)
                     .padding(5)
                     .background(
                         RoundedRectangle(cornerRadius: 16)
-                            .fill(theme.currentTheme.background)
+                            .fill(theme.currentTheme.cardBackground)
                     )
                     .padding(.trailing, 5)
             }
@@ -80,7 +80,7 @@ struct ZekrRowView: View {
             .background(
                 RoundedRectangle(cornerRadius: 12)
                     .fill(theme.currentTheme.primary.opacity(0.9))
-                    .shadow(color: Color.black.opacity(0.25), radius: 3, x: 3, y: 3)
+                    .shadow(color: theme.currentTheme.text.opacity(0.25), radius: 3, x: 3, y: 3)
             )
             .offset(x: offset)
             .gesture(

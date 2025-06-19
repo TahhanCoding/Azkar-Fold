@@ -25,6 +25,7 @@ struct SunnahZekrView: View {
                                 Text(textOnScreen)
                                     .font(.title)
                                     .fontWeight(.bold)
+                                    .foregroundColor(theme.currentTheme.text)
                                     .multilineTextAlignment(.center)
                                     .padding(.horizontal)
                                     .font(.system(size: 80))
@@ -36,7 +37,7 @@ struct SunnahZekrView: View {
                                 HStack {
                                     Text("مسلم(١)")
                                         .font(.system(size: 14))
-                                        .foregroundStyle(theme.currentTheme.primary)
+                                        .foregroundStyle(theme.currentTheme.text)
                                         .padding(.horizontal, 18)
 
                                     
@@ -83,7 +84,7 @@ struct SunnahZekrView: View {
                                         RoundedRectangle(cornerRadius: 12)
                                             .fill(
                                                 LinearGradient(
-                                                    gradient: Gradient(colors: [theme.currentTheme.primary, theme.currentTheme.primary.opacity(0.8)]),
+                                                    gradient: Gradient(colors: [theme.currentTheme.accent, theme.currentTheme.accent.opacity(0.8)]),
                                                     startPoint: .leading,
                                                     endPoint: .trailing
                                                 )
@@ -99,7 +100,7 @@ struct SunnahZekrView: View {
                                             Spacer()
                                             Text("\(currentRepetition)/\(zekrItem.repeat)")
                                                 .font(.system(size: 14, weight: .semibold))
-                                                .foregroundColor(theme.currentTheme.primary)
+                                                .foregroundColor(theme.currentTheme.buttonText)
                                             Spacer()
                                         }
                                     }
@@ -116,7 +117,7 @@ struct SunnahZekrView: View {
                             VStack(spacing: 4) {
                                 Text("Zekr \(currentIndex + 1) of \(azkarList.count)")
                                     .font(.caption)
-                                    .foregroundColor(theme.currentTheme.background.opacity(0.7))
+                                    .foregroundColor(theme.currentTheme.text)
                             }
                             .onTapGesture {
                                 countUpZekr()
@@ -142,8 +143,8 @@ struct SunnahZekrView: View {
                                 }
                                 .padding(.horizontal, 20)
                                 .padding(.vertical, 12)
-                                .background(currentIndex == 0 ? theme.currentTheme.background.opacity(0.3) : theme.currentTheme.primary)
-                                .foregroundColor(currentIndex == 0 ? theme.currentTheme.background : theme.currentTheme.primary)
+                                .background(currentIndex == 0 ? theme.currentTheme.cardBackground : theme.currentTheme.primary)
+                                .foregroundColor(currentIndex == 0 ? theme.currentTheme.text : theme.currentTheme.buttonText)
                                 .cornerRadius(25)
                             }
                             .disabled(currentIndex == 0)
@@ -151,7 +152,7 @@ struct SunnahZekrView: View {
                             VStack {
                                 Text("\(currentIndex + 1) of \(azkarList.count)")
                                     .font(.caption)
-                                    .foregroundColor(theme.currentTheme.background.opacity(0.7))
+                                    .foregroundColor(theme.currentTheme.text)
                             }
                             
                             Button(action: {
@@ -168,8 +169,8 @@ struct SunnahZekrView: View {
                                 }
                                 .padding(.horizontal, 20)
                                 .padding(.vertical, 12)
-                                .background((currentIndex == azkarList.count - 1 || currentRepetition < zekrItem.repeat) ? theme.currentTheme.background.opacity(0.3) : theme.currentTheme.primary)
-                                .foregroundColor((currentIndex == azkarList.count - 1 || currentRepetition < zekrItem.repeat) ? theme.currentTheme.background : theme.currentTheme.primary)
+                                .background((currentIndex == azkarList.count - 1 || currentRepetition < zekrItem.repeat) ? theme.currentTheme.cardBackground : theme.currentTheme.primary)
+                                .foregroundColor((currentIndex == azkarList.count - 1 || currentRepetition < zekrItem.repeat) ? theme.currentTheme.text : theme.currentTheme.buttonText)
                                 .cornerRadius(25)
                             }
                             .disabled(currentIndex == azkarList.count - 1 || currentRepetition < zekrItem.repeat)
@@ -193,9 +194,9 @@ struct SunnahZekrView: View {
                                     .padding(.vertical, 10)
                                     .background(
                                         RoundedRectangle(cornerRadius: 20)
-                                            .fill(textOnScreen == zekrItem.zekr ? theme.currentTheme.primary : theme.currentTheme.background.opacity(0.2))
+                                            .fill(textOnScreen == zekrItem.zekr ? theme.currentTheme.primary : theme.currentTheme.cardBackground)
                                     )
-                                    .foregroundColor(textOnScreen == zekrItem.zekr ? theme.currentTheme.primary : theme.currentTheme.background)
+                                    .foregroundColor(textOnScreen == zekrItem.zekr ? theme.currentTheme.buttonText : theme.currentTheme.text)
                                 }
                                 
                                 Button(action: {

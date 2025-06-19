@@ -92,7 +92,7 @@ struct LaunchScreenView: View {
             ZStack {
                 // Shadow element with slight offset for depth
                 Rectangle()
-                    .fill(Color.black.opacity(0.6))
+                    .fill(theme.currentTheme.text.opacity(0.6))
                     .frame(width: 120, height: 120)
                     .offset(x: 6, y: 6)
                     .opacity(animationState.logoOpacity * 0.8)
@@ -124,7 +124,7 @@ struct LaunchScreenView: View {
                         .opacity(animationState.accentLinesOpacity)
                 }
             }
-            .shadow(color: .black.opacity(animationState.logoOpacity * 0.2), radius: 0, x: 2, y: 2)
+            .shadow(color: theme.currentTheme.text.opacity(animationState.logoOpacity * 0.2), radius: 0, x: 2, y: 2)
             
             VStack(spacing: 12) {
                 // App title with refined animation
@@ -133,7 +133,7 @@ struct LaunchScreenView: View {
                     .foregroundColor(theme.currentTheme.primary)
                     .opacity(animationState.titleOpacity)
                     .offset(y: animationState.titleOffset)
-                    .shadow(color: .black.opacity(0.2), radius: 0, x: 2, y: 2)
+                    .shadow(color: theme.currentTheme.text.opacity(0.2), radius: 0, x: 2, y: 2)
                     .overlay(
                         // Advanced shimmer effect
                         shimmerOverlay(text: "Azkar Fold", fontSize: 42)
@@ -164,7 +164,7 @@ struct LaunchScreenView: View {
     private func shimmerOverlay(text: String, fontSize: CGFloat) -> some View {
         Text(text)
             .font(.system(size: fontSize, weight: .black))
-            .foregroundColor(Color.white.opacity(0.7))
+            .foregroundColor(theme.currentTheme.buttonText.opacity(0.7))
             .mask(
                 LinearGradient(
                     gradient: Gradient(colors: [.clear, .white.opacity(0.8), .clear]),

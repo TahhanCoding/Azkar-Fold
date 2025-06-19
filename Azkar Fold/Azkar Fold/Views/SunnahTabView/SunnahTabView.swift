@@ -25,6 +25,7 @@ struct SunnahTabView: View {
                 Text("Daily Sunnah Azkar")
                     .font(.title2)
                     .fontWeight(.bold)
+                    .foregroundColor(theme.currentTheme.text)
                     .frame(maxWidth: .infinity, alignment: .leading)
                     .padding(.horizontal)
 
@@ -60,7 +61,7 @@ struct SunnahTabView: View {
                         } else {
                             if progressStore.selectedSunnahCategories.isEmpty {
                                 Text("No Sunnah categories selected. Tap 'Edit' to choose categories.")
-                                    .foregroundColor(.secondary)
+                                    .foregroundColor(theme.currentTheme.text)
                                     .padding()
                             } else {
                                 ForEach(SunnahAzkarCategory.allCases.filter { progressStore.selectedSunnahCategories.contains($0) }) { category in
@@ -117,7 +118,7 @@ struct SunnahTabView: View {
                     }) {
                         Text(isEditing ? "Save" : "Edit")
                             .font(.headline)
-                            .foregroundColor(theme.currentTheme.primary)
+                            .foregroundColor(theme.currentTheme.buttonText)
                             .padding(.horizontal, 20)
                             .padding(.vertical, 10)
                             .background(theme.currentTheme.primary)

@@ -206,8 +206,9 @@ struct ThemePreviewView: View {
             VStack(spacing: 12) {
                 // Primary button
                 Button(action: {}) {
-                    Text("Primary Action")
-                        .font(.headline)
+                    Text("Primary Button")
+                        .font(.subheadline)
+                        .fontWeight(.semibold)
                         .foregroundColor(theme.buttonText)
                         .frame(maxWidth: .infinity, minHeight: 44)
                         .background(theme.primary)
@@ -216,8 +217,9 @@ struct ThemePreviewView: View {
                 
                 // Secondary button
                 Button(action: {}) {
-                    Text("Secondary Action")
-                        .font(.headline)
+                    Text("Secondary Button")
+                        .font(.subheadline)
+                        .fontWeight(.semibold)
                         .foregroundColor(theme.primary)
                         .frame(maxWidth: .infinity, minHeight: 44)
                         .background(theme.primary.opacity(0.1))

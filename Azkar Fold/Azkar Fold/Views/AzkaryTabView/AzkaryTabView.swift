@@ -37,6 +37,7 @@ struct AzkaryTabView: View {
                         Text("Azkary")
                             .font(.title2)
                             .fontWeight(.bold)
+                            .foregroundColor(theme.currentTheme.text)
                             .frame(maxWidth: .infinity, alignment: .leading)
                             .padding(.horizontal)
                         
@@ -74,13 +75,13 @@ struct AzkaryTabView: View {
                         Alert(
                             title: Text("Confirm Deletion"),
                             message: Text("Are you sure you want to delete this Zekr?"),
-                            primaryButton: .destructive(Text("Delete")) {
+                            primaryButton: .destructive(Text("Delete").foregroundColor(.red)) {
                                 if let indexSet = indexSetToDelete {
                                     zekrStore.deleteZekr(at: indexSet)
                                 }
                                 indexSetToDelete = nil
                             },
-                            secondaryButton: .cancel() {
+                            secondaryButton: .cancel(Text("Cancel").foregroundColor(theme.currentTheme.text)) {
                                 indexSetToDelete = nil
                             }
                         )
@@ -94,7 +95,7 @@ struct AzkaryTabView: View {
                     }) {
                         Text("Create")
                             .font(.headline)
-                            .foregroundColor(.white)
+                            .foregroundColor(theme.currentTheme.buttonText)
                             .padding(.horizontal, 20)
                             .padding(.vertical, 10)
                             .background(theme.currentTheme.primary)

@@ -26,6 +26,7 @@ struct CreateZekrView: View {
             // Neo-brutalism style text field
             TextField("سبحان الله وبحمده", text: $zekrText)
                 .font(.headline)
+                .foregroundColor(theme.currentTheme.text)
                 .padding()
                 .environment(\.layoutDirection, .rightToLeft)
                 .background(
@@ -53,7 +54,7 @@ struct CreateZekrView: View {
                 Text("Create Zekr")
                     .font(.headline)
                     .fontWeight(.bold)
-                    .foregroundColor(.white)
+                    .foregroundColor(theme.currentTheme.buttonText)
                     .frame(maxWidth: .infinity)
                     .padding()
                     .background(
@@ -79,7 +80,7 @@ struct CreateZekrView: View {
             Alert(
                 title: Text("Empty Zekr"),
                 message: Text("Please enter some text for your Zekr."),
-                dismissButton: .default(Text("OK"))
+                dismissButton: .default(Text("OK").foregroundColor(theme.currentTheme.text))
             )
         }
     }
