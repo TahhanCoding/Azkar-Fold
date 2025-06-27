@@ -31,7 +31,7 @@ struct ThemeManagerView: View {
                         theme: theme,
                         isSelected: theme.id == themeManager.currentTheme.id,
                         onSelect: {
-                            withAnimation(.easeInOut(duration: 0.3)) {
+                            withAnimation {
                                 themeManager.setCurrentTheme(theme)
                             }
                         },
@@ -62,7 +62,7 @@ struct ThemeManagerView: View {
                             theme: theme,
                             isSelected: theme.id == themeManager.currentTheme.id,
                             onSelect: {
-                                withAnimation(.easeInOut(duration: 0.3)) {
+                                withAnimation {
                                     themeManager.setCurrentTheme(theme)
                                 }
                             },

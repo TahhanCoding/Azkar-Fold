@@ -92,7 +92,7 @@ struct SunnahTabView: View {
                     .ignoresSafeArea(.all)
             )
             .background(
-                theme.currentTheme.background.opacity(0.3).ignoresSafeArea(.all)
+                theme.currentTheme.background.ignoresSafeArea(.all)
             )
             .onAppear {
                 progressStore.resetDailyProgressIfNeeded()
@@ -219,11 +219,11 @@ struct AzkarCard: View {
                 Text(title)
                     .font(.headline)
                     .fontWeight(.bold)
-                    .foregroundColor(theme.currentTheme.primary)
+                    .foregroundColor(theme.currentTheme.buttonText)
                 
                 Text(isCompleted ? "Completed" : "Not completed yet")
                     .font(.subheadline)
-                    .foregroundColor(theme.currentTheme.primary.opacity(0.8))
+                    .foregroundColor(theme.currentTheme.buttonText.opacity(0.7))
             }
             
             Spacer()

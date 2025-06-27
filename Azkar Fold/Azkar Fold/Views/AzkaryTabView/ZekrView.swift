@@ -57,7 +57,7 @@ struct ZekrView: View {
                 .frame(maxWidth: .infinity)
                 .background(
                     RoundedRectangle(cornerRadius: 33)
-                        .fill(theme.currentTheme.primary.opacity(0.1))
+                        .fill(theme.currentTheme.background.opacity(0.65))
                         .overlay(
                             Image("islamic_pattern")
                                 .resizable(resizingMode: .tile)
@@ -149,6 +149,11 @@ struct ZekrView: View {
             }
             .navigationTitle("Zekr Counter")
             .navigationBarTitleDisplayMode(.inline)
+            .background(
+                RoundedRectangle(cornerRadius: 33)
+                    .fill(theme.currentTheme.background.opacity(0.35))
+                    .ignoresSafeArea(.all)
+            )
             .toolbar {
                 ToolbarItem(placement: .navigationBarTrailing) {
                     Menu {

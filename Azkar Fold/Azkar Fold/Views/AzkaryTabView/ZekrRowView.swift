@@ -34,7 +34,7 @@ struct ZekrRowView: View {
                         .fill(theme.currentTheme.primary)
                         .frame(width: 50, height: 50)
                         .overlay(
-                            Image(systemName: "trash")
+                            Image(systemName: "scissors")
                                 .foregroundColor(theme.currentTheme.buttonText)
                         )
                         .shadow(color: theme.currentTheme.text.opacity(0.25), radius: 3, x: 3, y: 3)
@@ -52,9 +52,15 @@ struct ZekrRowView: View {
                     Text(zekr.text)
                         .font(.headline)
                         .fontWeight(.bold)
-                        .foregroundColor(theme.currentTheme.text)
-                        .lineLimit(1)
-                        .multilineTextAlignment(.trailing)
+                        .foregroundColor(theme.currentTheme.buttonText)
+                    
+                        .multilineTextAlignment(.center)
+                        .padding(.horizontal)
+                        .font(.system(size: 80))
+                        .minimumScaleFactor(0.3)
+                        .lineLimit(15)
+
+                    
                         .environment(\.layoutDirection, .rightToLeft)
                     
                     Text("Last updated: \(formattedDate)")
