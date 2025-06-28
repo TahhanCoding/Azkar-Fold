@@ -15,50 +15,21 @@ struct ThemeManagerView: View {
     @State private var themeToDelete: Theme?
     
     var body: some View {
-        List {
+        VStack(alignment: .leading) {
             // Current theme section
-            Section {
-                currentThemeCard
-            } header: {
-                Text("Current Theme")
-                    .foregroundColor(themeManager.currentTheme.text)
-            }
+            currentThemeCard
+                .padding(.horizontal)
+                .padding(.bottom, 10)
             
-            // Default themes section
-            Section {
-                ForEach(Theme.defaultThemes) { theme in
-                    ThemeRowView(
-                        theme: theme,
-                        isSelected: theme.id == themeManager.currentTheme.id,
-                        onSelect: {
-                            withAnimation {
-                                themeManager.setCurrentTheme(theme)
-                            }
-                        },
-                        onEdit: nil,
-                        onDuplicate: {
-                            let duplicatedTheme = themeManager.duplicateTheme(theme)
-                            editingTheme = duplicatedTheme
-                            showingThemeEditor = true
-                        },
-                        onDelete: nil
-                    )
-                }
-            } header: {
-                Text("Default Themes")
-                    .foregroundColor(themeManager.currentTheme.text)
-            }
+            Text("Default Themes")
+                .font(.headline)
+                .foregroundColor(themeManager.currentTheme.text)
+                .padding(.horizontal)
             
-            // Custom themes section
-            Section {
-                if themeManager.customThemes.isEmpty {
-                    Text("No custom themes yet")
-                        .foregroundColor(themeManager.currentTheme.text)
-                        .font(.subheadline)
-                        .padding(.vertical, 8)
-                } else {
-                    ForEach(themeManager.customThemes) { theme in
-                        ThemeRowView(
+            ScrollView(.horizontal, showsIndicators: false) {
+                HStack(spacing: 15) {
+                    ForEach(Theme.defaultThemes) { theme in
+                        ThemeCardView(
                             theme: theme,
                             isSelected: theme.id == themeManager.currentTheme.id,
                             onSelect: {
@@ -66,39 +37,84 @@ struct ThemeManagerView: View {
                                     themeManager.setCurrentTheme(theme)
                                 }
                             },
-                            onEdit: {
-                                editingTheme = theme
-                                showingThemeEditor = true
-                            },
                             onDuplicate: {
                                 let duplicatedTheme = themeManager.duplicateTheme(theme)
                                 editingTheme = duplicatedTheme
                                 showingThemeEditor = true
-                            },
-                            onDelete: {
-                                themeToDelete = theme
-                                showingDeleteAlert = true
                             }
                         )
                     }
                 }
-                
-                // Create new theme button
-                Button(action: {
-                    editingTheme = nil
-                    showingThemeEditor = true
-                }) {
-                    HStack {
-                        Image(systemName: "plus.circle.fill")
-                            .foregroundColor(themeManager.currentTheme.primary)
-                        Text("Create New Theme")
-                            .foregroundColor(themeManager.currentTheme.primary)
+                .padding(.horizontal)
+            }
+            
+            Divider()
+                .padding(.horizontal)
+                .padding(.vertical, 5)
+            
+            Text("Custom Themes")
+                .font(.headline)
+                .foregroundColor(themeManager.currentTheme.text)
+                .padding(.horizontal)
+            
+            ScrollView(.horizontal, showsIndicators: false) {
+                HStack(spacing: 15) {
+                    if themeManager.customThemes.isEmpty {
+                        Text("No custom themes yet")
+                            .foregroundColor(themeManager.currentTheme.text)
+                            .font(.subheadline)
+                            .padding(.vertical, 8)
+                    } else {
+                        ForEach(themeManager.customThemes) { theme in
+                            ThemeCardView(
+                                theme: theme,
+                                isSelected: theme.id == themeManager.currentTheme.id,
+                                onSelect: {
+                                    withAnimation {
+                                        themeManager.setCurrentTheme(theme)
+                                    }
+                                },
+                                onEdit: {
+                                    editingTheme = theme
+                                    showingThemeEditor = true
+                                },
+                                onDuplicate: {
+                                    let duplicatedTheme = themeManager.duplicateTheme(theme)
+                                    editingTheme = duplicatedTheme
+                                    showingThemeEditor = true
+                                },
+                                onDelete: {
+                                    themeToDelete = theme
+                                    showingDeleteAlert = true
+                                }
+                            )
+                        }
                     }
-                    .padding(.vertical, 4)
+                    
+                    // Create new theme button
+                    Button(action: {
+                        editingTheme = nil
+                        showingThemeEditor = true
+                    }) {
+                        VStack {
+                            Image(systemName: "plus.circle.fill")
+                                .resizable()
+                                .frame(width: 50, height: 50)
+                                .foregroundColor(themeManager.currentTheme.primary)
+                            Text("Create New Theme")
+                                .font(.caption)
+                                .foregroundColor(themeManager.currentTheme.primary)
+                        }
+                        .frame(width: 120, height: 120)
+                        .background(themeManager.currentTheme.cardBackground)
+                        .cornerRadius(12)
+                        .overlay(
+                            RoundedRectangle(cornerRadius: 12)
+                                .stroke(themeManager.currentTheme.primary.opacity(0.5), lineWidth: 1)
+                        )
+                    }
                 }
-            } header: {
-                Text("Custom Themes")
-                    .foregroundColor(themeManager.currentTheme.text)
+                .padding(.horizontal)
             }
         }
         .navigationTitle("Theme Manager")
@@ -142,8 +158,8 @@ struct ThemeManagerView: View {
                 }
             }
             
-            ThemePreviewView(theme: themeManager.currentTheme, isCompact: true)
-                .frame(height: 60)
+            ThemePreviewView(theme: themeManager.currentTheme, isCompact: false)
+                .frame(height: 150) // Increased height for full preview
         }
         .padding()
         .background(themeManager.currentTheme.cardBackground)
@@ -155,92 +171,95 @@ struct ThemeManagerView: View {
     }
 }
 
-struct ThemeRowView: View {
+struct ThemeCardView: View {
     let theme: Theme
-    let isSelected: Bool
+    var isSelected: Bool
     let onSelect: () -> Void
-    let onEdit: (() -> Void)?
+    var onEdit: (() -> Void)? = nil
     let onDuplicate: () -> Void
-    let onDelete: (() -> Void)?
-    
-    @State private var showingActionSheet = false
-    
+    var onDelete: (() -> Void)? = nil
+
     var body: some View {
         Button(action: onSelect) {
-            HStack(spacing: 12) {
-                // Theme preview
-                ThemePreviewView(theme: theme, isCompact: true)
-                    .frame(width: 60, height: 40)
-                    .cornerRadius(6)
-                
-                // Theme info
-                VStack(alignment: .leading, spacing: 2) {
-                    Text(theme.name)
-                    .font(.headline)
-                    .foregroundColor(theme.text)
-                    
-                    if theme.isDefault {
-                        Text("Default Theme")
-                            .font(.caption)
-                            .foregroundColor(theme.text)
-                    } else {
-                        Text("Custom Theme")
-                            .font(.caption)
-                            .foregroundColor(theme.text)
+            ThemeMiniCardView(theme: theme, isSelected: isSelected)
+                .contextMenu {
+                    Button("Select") {
+                        onSelect()
+                    }
+                    if let onEdit = onEdit {
+                        Button("Edit") {
+                            onEdit()
+                        }
+                    }
+                    Button("Duplicate") {
+                        onDuplicate()
+                    }
+                    if let onDelete = onDelete {
+                        Button("Delete", role: .destructive) {
+                            onDelete()
+                        }
                     }
                 }
-                
-                Spacer()
-                
-                // Selection indicator
-                if isSelected {
-                    Image(systemName: "checkmark.circle.fill")
-                        .foregroundColor(theme.primary)
-                        .font(.title3)
-                }
-                
-                // More options button
-                Button(action: {
-                    showingActionSheet = true
-                }) {
-                    Image(systemName: "ellipsis")
-                        .foregroundColor(.secondary)
-                        .font(.title3)
-                }
-                .buttonStyle(PlainButtonStyle())
-            }
-            .padding(.vertical, 4)
-        }
-        .buttonStyle(PlainButtonStyle())
-        .confirmationDialog("Theme Options", isPresented: $showingActionSheet) {
-            Button("Select Theme") {
-                onSelect()
-            }
-            
-            if let onEdit = onEdit {
-                Button("Edit Theme") {
-                    onEdit()
-                }
-            }
-            
-            Button("Duplicate Theme") {
-                onDuplicate()
-            }
-            
-            if let onDelete = onDelete {
-                Button("Delete Theme", role: .destructive) {
-                    onDelete()
-                }
-            }
-            
-            Button("Cancel", role: .cancel) { }
         }
     }
 }
 
-#Preview {
-    NavigationView {
-        ThemeManagerView()
-            .environmentObject(ThemeManager.shared)
+struct ThemeMiniCardView: View {
+    let theme: Theme
+    var isSelected: Bool
+
+    var body: some View {
+        VStack(spacing: 0) {
+            // Color preview section
+            themeColorsGrid()
+            
+            // Theme name
+            Text(theme.name)
+                .font(.system(size: 12, weight: .medium))
+                .foregroundColor(theme.text)
+                .padding(.vertical, 5)
+        }
+        .frame(width: 80)
+        .padding(8)
+        .background(theme.background)
+        .cornerRadius(16)
+        .overlay(
+            Group {
+                if isSelected {
+                    RoundedRectangle(cornerRadius: 16)
+                        .stroke(theme.primary, lineWidth: 3)
+                }
+            }
+        )
+        .padding(5)
+    }
+    
+    
+    @ViewBuilder
+    private func themeColorsGrid() -> some View {
+        HStack(spacing: 0) {
+            Rectangle()
+                .fill(theme.primary)
+                .frame(height: 20)
+            Rectangle()
+                .fill(theme.secondary)
+                .frame(height: 20)
+            Rectangle()
+                .fill(theme.accent)
+                .frame(height: 20)
+        }
+        
+        // Color preview section
+        HStack(spacing: 0) {
+            Rectangle()
+                .fill(theme.text)
+                .frame(height: 20)
+            Rectangle()
+                .fill(theme.cardBackground)
+                .frame(height: 20)
+            Rectangle()
+                .fill(theme.buttonText)
+                .frame(height: 20)
+        }
     }
 }
