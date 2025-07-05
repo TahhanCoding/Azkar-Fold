@@ -3,21 +3,18 @@ import UIKit
 import Combine
 
 class SunnahProgressStore: ObservableObject {
-    @Published var morningAzkarCompleted: [String: Bool] = [:]
-    @Published var eveningAzkarCompleted: [String: Bool] = [:]
-    @Published var morningAzkarProgress: [String: Int] = [:]
-    @Published var eveningAzkarProgress: [String: Int] = [:]
+    @Published var azkarCompleted: [SunnahAzkarCategory: [String: Bool]] = [:]
+    @Published var azkarProgress: [SunnahAzkarCategory: [String: Int]] = [:]
     @Published var selectedSunnahCategories: Set<SunnahAzkarCategory> = Set(SunnahAzkarCategory.allCases)
     @Published var lastResetDate: Date? = nil
     
-    private let morningAzkarCompletedKey = "morningAzkarCompletedKey"
-    private let eveningAzkarCompletedKey = "eveningAzkarCompletedKey"
-    private let morningAzkarProgressKey = "morningAzkarProgressKey"
-    private let eveningAzkarProgressKey = "eveningAzkarProgressKey"
+    private let azkarCompletedKeyPrefix = "azkarCompleted_"
+    private let azkarProgressKeyPrefix = "azkarProgress_"
     private let lastResetDateKey = "lastResetDateKey"
     private let selectedCategoriesKey = "selectedSunnahCategories"
     
     init() {
+        initializeCategories()
         loadSelectedCategories()
         loadProgress()
         resetDailyProgressIfNeeded()
@@ -27,6 +24,18 @@ class SunnahProgressStore: ObservableObject {
     
     deinit {
         NotificationCenter.default.removeObserver(self)
+    }
+    
+    // MARK: - Initialize Categories
+    private func initializeCategories() {
+        for category in SunnahAzkarCategory.allCases {
+            if azkarCompleted[category] == nil {
+                azkarCompleted[category] = [:]
+            }
+            if azkarProgress[category] == nil {
+                azkarProgress[category] = [:]
+            }
+        }
     }
     
     // MARK: - Selected Categories Management
@@ -59,51 +68,26 @@ class SunnahProgressStore: ObservableObject {
     func markAsCompleted(zekr: SunnahZekrItem, category: SunnahAzkarCategory) {
         let zekrId = "\(category.rawValue)_\(zekr.zekr)"
         
-        switch category {
-        case .morning:
-            morningAzkarCompleted[zekrId] = true
-            morningAzkarProgress[zekrId] = zekr.repeat // Set to max when completed
-        case .evening:
-            eveningAzkarCompleted[zekrId] = true
-            eveningAzkarProgress[zekrId] = zekr.repeat // Set to max when completed
-        }
+        azkarCompleted[category]?[zekrId] = true
+        azkarProgress[category]?[zekrId] = zekr.repeat // Set to max when completed
         saveProgress()
     }
     
     func isCompleted(zekr: SunnahZekrItem, category: SunnahAzkarCategory) -> Bool {
         let zekrId = "\(category.rawValue)_\(zekr.zekr)"
-        
-        switch category {
-        case .morning:
-            return morningAzkarCompleted[zekrId] ?? false
-        case .evening:
-            return eveningAzkarCompleted[zekrId] ?? false
-        }
+        return azkarCompleted[category]?[zekrId] ?? false
     }
     
     func savePartialProgress(zekr: SunnahZekrItem, category: SunnahAzkarCategory, currentRepetition: Int) {
         let zekrId = "\(category.rawValue)_\(zekr.zekr)"
-        
-        switch category {
-        case .morning:
-            morningAzkarProgress[zekrId] = currentRepetition
-        case .evening:
-            eveningAzkarProgress[zekrId] = currentRepetition
-        }
+        azkarProgress[category]?[zekrId] = currentRepetition
         saveProgress()
     }
     
     func getPartialProgress(zekr: SunnahZekrItem, category: SunnahAzkarCategory) -> Int {
         let zekrId = "\(category.rawValue)_\(zekr.zekr)"
-        
-        switch category {
-        case .morning:
-            return morningAzkarProgress[zekrId] ?? 0
-        case .evening:
-            return eveningAzkarProgress[zekrId] ?? 0
-        }
+        return azkarProgress[category]?[zekrId] ?? 0
     }
-    
     
     func getCompletionPercentage(for category: SunnahAzkarCategory, azkarList: [SunnahZekrItem]) -> Double {
         guard !azkarList.isEmpty else { return 0.0 }
@@ -115,34 +99,26 @@ class SunnahProgressStore: ObservableObject {
         return Double(completedCount) / Double(azkarList.count)
     }
     
+    func isCategoryFullyCompleted(category: SunnahAzkarCategory, totalAzkarCount: Int) -> Bool {
+        guard totalAzkarCount > 0 else { return false }
+        
+        let completedCount = azkarCompleted[category]?.values.filter { $0 }.count ?? 0
+        return completedCount == totalAzkarCount
+    }
+    
     // MARK: - Daily Progress Reset
     @objc func appDidBecomeActive() {
         resetDailyProgressIfNeeded()
     }
     
     func hardReset() {
-        morningAzkarCompleted.removeAll()
-        eveningAzkarCompleted.removeAll()
-        morningAzkarProgress.removeAll()
-        eveningAzkarProgress.removeAll()
+        for category in SunnahAzkarCategory.allCases {
+            azkarCompleted[category]?.removeAll()
+            azkarProgress[category]?.removeAll()
+        }
         self.lastResetDate = Date()
         saveProgress()
         print("Daily Sunnah Azkar progress has been reset.")
-    }
-    
-    // Add this to your SunnahProgressStore class
-    func isCategoryFullyCompleted(category: SunnahAzkarCategory, totalAzkarCount: Int) -> Bool {
-        guard totalAzkarCount > 0 else { return false }
-        
-        let completedCount: Int
-        switch category {
-        case .morning:
-            completedCount = morningAzkarCompleted.values.filter { $0 }.count
-        case .evening:
-            completedCount = eveningAzkarCompleted.values.filter { $0 }.count
-        }
-        
-        return completedCount == totalAzkarCount
     }
     
     func resetDailyProgressIfNeeded() {
@@ -150,10 +126,10 @@ class SunnahProgressStore: ObservableObject {
         let now = Date()
         if let lastReset = lastResetDate {
             if !calendar.isDateInToday(lastReset) {
-                morningAzkarCompleted.removeAll()
-                eveningAzkarCompleted.removeAll()
-                morningAzkarProgress.removeAll()
-                eveningAzkarProgress.removeAll()
+                for category in SunnahAzkarCategory.allCases {
+                    azkarCompleted[category]?.removeAll()
+                    azkarProgress[category]?.removeAll()
+                }
                 self.lastResetDate = now
                 saveProgress()
                 print("Daily Sunnah Azkar progress has been reset.")
@@ -165,34 +141,58 @@ class SunnahProgressStore: ObservableObject {
         }
     }
     
+    // MARK: - Category-specific Helper Methods
+    func getCategoryCompletedCount(category: SunnahAzkarCategory) -> Int {
+        return azkarCompleted[category]?.values.filter { $0 }.count ?? 0
+    }
+    
+    func getCategoryProgressCount(category: SunnahAzkarCategory) -> Int {
+        return azkarProgress[category]?.values.reduce(0, +) ?? 0
+    }
+    
+    func resetCategoryProgress(category: SunnahAzkarCategory) {
+        azkarCompleted[category]?.removeAll()
+        azkarProgress[category]?.removeAll()
+        saveProgress()
+        print("\(category.title) progress has been reset.")
+    }
+    
     // MARK: - Persistence
     private func saveProgress() {
         let defaults = UserDefaults.standard
-        defaults.set(morningAzkarCompleted, forKey: morningAzkarCompletedKey)
-        defaults.set(eveningAzkarCompleted, forKey: eveningAzkarCompletedKey)
-        defaults.set(morningAzkarProgress, forKey: morningAzkarProgressKey)
-        defaults.set(eveningAzkarProgress, forKey: eveningAzkarProgressKey)
+        
+        // Save completion status for each category
+        for category in SunnahAzkarCategory.allCases {
+            let completedKey = azkarCompletedKeyPrefix + category.rawValue
+            let progressKey = azkarProgressKeyPrefix + category.rawValue
+            
+            defaults.set(azkarCompleted[category], forKey: completedKey)
+            defaults.set(azkarProgress[category], forKey: progressKey)
+        }
+        
         defaults.set(lastResetDate, forKey: lastResetDateKey)
         objectWillChange.send()
     }
     
     private func loadProgress() {
         let defaults = UserDefaults.standard
-        if let morningSaved = defaults.dictionary(forKey: morningAzkarCompletedKey) as? [String: Bool] {
-            morningAzkarCompleted = morningSaved
+        
+        // Load completion status for each category
+        for category in SunnahAzkarCategory.allCases {
+            let completedKey = azkarCompletedKeyPrefix + category.rawValue
+            let progressKey = azkarProgressKeyPrefix + category.rawValue
+            
+            if let completedSaved = defaults.dictionary(forKey: completedKey) as? [String: Bool] {
+                azkarCompleted[category] = completedSaved
+            }
+            
+            if let progressSaved = defaults.dictionary(forKey: progressKey) as? [String: Int] {
+                azkarProgress[category] = progressSaved
+            }
         }
-        if let eveningSaved = defaults.dictionary(forKey: eveningAzkarCompletedKey) as? [String: Bool] {
-            eveningAzkarCompleted = eveningSaved
-        }
-        if let morningProgressSaved = defaults.dictionary(forKey: morningAzkarProgressKey) as? [String: Int] {
-            morningAzkarProgress = morningProgressSaved
-        }
-        if let eveningProgressSaved = defaults.dictionary(forKey: eveningAzkarProgressKey) as? [String: Int] {
-            eveningAzkarProgress = eveningProgressSaved
-        }
+        
         if let dateSaved = defaults.object(forKey: lastResetDateKey) as? Date {
             lastResetDate = dateSaved
         }
     }
-    
 }

@@ -1,0 +1,139 @@
+
+{
+    "title": "After-prayer Azkar",
+    "content": [
+      {
+        "id": 1,
+        "zekr_arabic": "أَسْتَغْفِرُ اللَّهَ",
+        "zekr_english": "I seek forgiveness from Allah.",
+        "zekr_english_transliteration": "Astaghfirullah",
+        "to_count": 3,
+        "bless_arabic": "لم يذكر في الحديث تحديد فضل مباشر، ولكن الاستغفار فضله عظيم.",
+        "bless_english": "No specific virtue mentioned in Hadith, but seeking forgiveness has great virtues.",
+        "source": "Sahih Muslim 1/414."
+      },
+      {
+        "id": 2,
+        "zekr_arabic": "اللَّهُمَّ أَنْتَ السَّلاَمُ وَمِنْكَ السَّلاَمُ، تَبَارَكْتَ يَا ذَا الْجَلاَلِ وَالإِكْرَامِ.",
+        "zekr_english": "O Allah, You are As-Salam (the One who is free from all deficiencies and imperfections) and from You is all peace, blessed are You, O Possessor of majesty and honor.",
+        "zekr_english_transliteration": "Allaahumma Antas-Salaamu wa minkas-salaamu, tabaarakta yaa Dhal-jalaali wal-ikraam.",
+        "to_count": 1,
+        "bless_arabic": "لم يذكر في الحديث تحديد فضل مباشر، ولكنها من أذكار الصلاة المأثورة.",
+        "bless_english": "No specific virtue mentioned in Hadith, but it is among the authentic supplications after prayer.",
+        "source": "Sahih Muslim 1/414."
+      },
+      {
+        "id": 3,
+        "zekr_arabic": "لاَ إِلَهَ إِلَّا اللَّهُ وَحْدَهُ لاَ شَرِيكَ لَهُ، لَهُ الْمُلْكُ وَلَهُ الْحَمْدُ وَهُوَ عَلَى كُلِّ شَيْءٍ قَدِيرٌ، اللَّهُمَّ لاَ مَانِعَ لِمَا أَعْطَيْتَ، وَلاَ مُعْطِيَ لِمَا مَنَعْتَ، وَلاَ يَنْفَعُ ذَا الْجَدِّ مِنْكَ الْجَدُّ.",
+        "zekr_english": "There is no god but Allah alone, He has no partners. To Him belongs the dominion and to Him belongs all praise, and He is over all things competent. O Allah, there is none to withhold what You give, and none to give what You withhold, and the might of the mighty will not benefit him against You.",
+        "zekr_english_transliteration": "Laa ilaaha illallaahu wahdahu laa shareeka lahu, lahul-mulku wa lahul-hamdu wa Huwa 'alaa kulli shay'in Qadeer. Allaahumma laa maani'a limaa a'tayta, wa laa mu'tiya limaa mana'ta, wa laa yanfa'u dhal-jaddi minkal-jaddu.",
+        "to_count": 1,
+        "bless_arabic": "كلمات التوحيد والاعتراف بقدرة الله المطلقة.",
+        "bless_english": "Words of monotheism and acknowledgment of Allah's absolute power.",
+        "source": "Sahih Bukhari 1/255, Sahih Muslim 1/414."
+      },
+      {
+        "id": 4,
+        "zekr_arabic": "لاَ إِلَهَ إِلَّا اللَّهُ وَحْدَهُ لاَ شَرِيكَ لَهُ، لَهُ الْمُلْكُ وَلَهُ الْحَمْدُ وَهُوَ عَلَى كُلِّ شَيْءٍ قَدِيرٌ، لاَ حَوْلَ وَلاَ قُوَّةَ إِلَّا بِاللَّهِ، لاَ إِلَهَ إِلَّا اللَّهُ وَلاَ نَعْبُدُ إِلَّا إِيَّاهُ، لَهُ النِّعْمَةُ وَلَهُ الْفَضْلُ وَلَهُ الثَّنَاءُ الْحَسَنُ، لاَ إِلَهَ إِلَّا اللَّهُ مُخْلِصِينَ لَهُ الدِّينَ وَلَوْ كَرِهَ الْكَافِرُونَ.",
+        "zekr_english": "There is no god but Allah alone, He has no partners. To Him belongs the dominion and to Him belongs all praise, and He is over all things competent. There is no might nor power except with Allah. There is no god but Allah, and we worship none but Him. To Him belongs all bounty, and to Him belongs all grace, and to Him belongs all good praise. There is no god but Allah, sincere in devotion to Him, even if the disbelievers detest it.",
+        "zekr_english_transliteration": "Laa ilaaha illallaahu wahdahu laa shareeka lahu, lahul-mulku wa lahul-hamdu wa Huwa 'alaa kulli shay'in Qadeer. Laa hawla wa laa quwwata illaa billaah. Laa ilaaha illallaahu wa laa na'budu illaa iyyaahu. Lahun-ni'matu wa lahul-fadlu wa lahuth-thanaa'ul-hasanu. Laa ilaaha illallaahu mukhliseena lahud-deena wa law karihal-kaafiroon.",
+        "to_count": 1,
+        "bless_arabic": "لم يذكر في الحديث تحديد فضل مباشر، ولكنها من أذكار الصلاة المأثورة.",
+        "bless_english": "No specific virtue mentioned in Hadith, but it is among the authentic supplications after prayer.",
+        "source": "Sahih Muslim 1/415."
+      },
+      {
+        "id": 5,
+        "zekr_arabic": "سُبْحَانَ اللَّهِ",
+        "zekr_english": "Glory be to Allah.",
+        "zekr_english_transliteration": "Subhaanallaah",
+        "to_count": 33,
+        "bless_arabic": "من سبح ثلاثا وثلاثين، وحمد ثلاثا وثلاثين، وكبر ثلاثا وثلاثين، فتلك تسعة وتسعون، وقال تمام المائة: لا إله إلا الله وحده لا شريك له، له الملك وله الحمد وهو على كل شيء قدير، غفرت خطاياه وإن كانت مثل زبد البحر.",
+        "bless_english": "Whoever glorifies Allah thirty-three times, praises Allah thirty-three times, and magnifies Allah thirty-three times, that is ninety-nine, and then says to complete one hundred: 'There is no god but Allah alone, He has no partners. To Him belongs the dominion and to Him belongs all praise, and He is over all things competent,' his sins will be forgiven, even if they are like the foam of the sea.",
+        "source": "Sahih Muslim 1/418."
+      },
+      {
+        "id": 6,
+        "zekr_arabic": "الْحَمْدُ لِلَّهِ",
+        "zekr_english": "All praise is for Allah.",
+        "zekr_english_transliteration": "Alhamdulillah",
+        "to_count": 33,
+        "bless_arabic": "من سبح ثلاثا وثلاثين، وحمد ثلاثا وثلاثين، وكبر ثلاثا وثلاثين، فتلك تسعة وتسعون، وقال تمام المائة: لا إله إلا الله وحده لا شريك له، له الملك وله الحمد وهو على كل شيء قدير، غفرت خطاياه وإن كانت مثل زبد البحر.",
+        "bless_english": "Whoever glorifies Allah thirty-three times, praises Allah thirty-three times, and magnifies Allah thirty-three times, that is ninety-nine, and then says to complete one hundred: 'There is no god but Allah alone, He has no partners. To Him belongs the dominion and to Him belongs all praise, and He is over all things competent,' his sins will be forgiven, even if they are like the foam of the sea.",
+        "source": "Sahih Muslim 1/418."
+      },
+      {
+        "id": 7,
+        "zekr_arabic": "اللَّهُ أَكْبَرُ",
+        "zekr_english": "Allah is the Greatest.",
+        "zekr_english_transliteration": "Allaahu Akbar",
+        "to_count": 33,
+        "bless_arabic": "من سبح ثلاثا وثلاثين، وحمد ثلاثا وثلاثين، وكبر ثلاثا وثلاثين، فتلك تسعة وتسعون، وقال تمام المائة: لا إله إلا الله وحده لا شريك له، له الملك وله الحمد وهو على كل شيء قدير، غفرت خطاياه وإن كانت مثل زبد البحر.",
+        "bless_english": "Whoever glorifies Allah thirty-three times, praises Allah thirty-three times, and magnifies Allah thirty-three times, that is ninety-nine, and then says to complete one hundred: 'There is no god but Allah alone, He has no partners. To Him belongs the dominion and to Him belongs all praise, and He is over all things competent,' his sins will be forgiven, even if they are like the foam of the sea.",
+        "source": "Sahih Muslim 1/418."
+      },
+      {
+        "id": 8,
+        "zekr_arabic": "لاَ إِلَهَ إِلَّا اللَّهُ وَحْدَهُ لاَ شَرِيكَ لَهُ، لَهُ الْمُلْكُ وَلَهُ الْحَمْدُ وَهُوَ عَلَى كُلِّ شَيْءٍ قَدِيرٌ.",
+        "zekr_english": "There is no god but Allah alone, He has no partners. To Him belongs the dominion and to Him belongs all praise, and He is over all things competent.",
+        "zekr_english_transliteration": "Laa ilaaha illallaahu wahdahu laa shareeka lahu, lahul-mulku wa lahul-hamdu wa Huwa 'alaa kulli shay'in Qadeer.",
+        "to_count": 1,
+        "bless_arabic": "تتمة للمائة بعد التسبيح والتحميد والتكبير، ويترتب عليها مغفرة الذنوب.",
+        "bless_english": "Completion of the hundred after Tasbeeh, Tahmeed, and Takbeer, leading to forgiveness of sins.",
+        "source": "Sahih Muslim 1/418."
+      },
+      {
+        "id": 9,
+        "zekr_arabic": "اللَّهُمَّ أَعِنِّي عَلَى ذِكْرِكَ وَشُكْرِكَ وَحُسْنِ عِبَادَتِكَ.",
+        "zekr_english": "O Allah, help me to remember You, to thank You, and to worship You in the best manner.",
+        "zekr_english_transliteration": "Allaahumma a'innee 'alaa dhikrika wa shukrika wa husni 'ibaadatika.",
+        "to_count": 1,
+        "bless_arabic": "وصية النبي صلى الله عليه وسلم لمعاذ بن جبل.",
+        "bless_english": "The Prophet (peace be upon him) advised Mu'adh ibn Jabal to say this.",
+        "source": "Sunan Abu Dawud 2/86, An-Nasa'i 3/53. Graded Sahih by Al-Albani."
+      },
+      {
+        "id": 10,
+        "zekr_arabic": "قُلْ هُوَ اللَّهُ أَحَدٌ. اللَّهُ الصَّمَدُ. لَمْ يَلِدْ وَلَمْ يُولَدْ. وَلَمْ يَكُنْ لَهُ كُفُوًا أَحَدٌ.",
+        "zekr_english": "Say, 'He is Allah, [who is] One, Allah, the Eternal Refuge. He neither begets nor is born, Nor is there to Him any equivalent.'",
+        "zekr_english_transliteration": "Qul Huwallaahu Ahad. Allaahus-Samad. Lam yalid wa lam yoolad. Wa lam yakullahu kufuwan ahad.",
+        "to_count": 1,
+        "bless_arabic": "لمن يقرأها دبر كل صلاة، تكفيه من كل سوء.",
+        "bless_english": "Whoever recites it after every prayer, it will suffice him against all evil.",
+        "source": "Sunan at-Tirmidhi 5/567, Sunan Abu Dawud 4/322. Graded Hasan by Al-Albani. (To be recited with Surah Al-Falaq and An-Nas after Fajr and Maghrib prayer only)."
+      },
+      {
+        "id": 11,
+        "zekr_arabic": "قُلْ أَعُوذُ بِرَبِّ الْفَلَقِ. مِنْ شَرِّ مَا خَلَقَ. وَمِنْ شَرِّ غَاسِقٍ إِذَا وَقَبَ. وَمِنْ شَرِّ النَّفَّاثَاتِ فِي الْعُقَدِ. وَمِنْ شَرِّ حَاسِدٍ إِذَا حَسَدَ.",
+        "zekr_english": "Say, 'I seek refuge in the Lord of daybreak from the evil of that which He created; And from the evil of darkness when it settles; And from the evil of the blowers in knots; And from the evil of an envier when he envies.'",
+        "zekr_english_transliteration": "Qul a'oothu bi Rabbil-falaq. Min sharri maa khalaq. Wa min sharri ghaasiqin ithaa waqab. Wa min sharrin-naffathaati fil-'uqad. Wa min sharri haasidin ithaa hasad.",
+        "to_count": 1,
+        "bless_arabic": "لمن يقرأها دبر كل صلاة، تكفيه من كل سوء.",
+        "bless_english": "Whoever recites it after every prayer, it will suffice him against all evil.",
+        "source": "Sunan at-Tirmidhi 5/567, Sunan Abu Dawud 4/322. Graded Hasan by Al-Albani. (To be recited with Surah Al-Ikhlas and An-Nas after Fajr and Maghrib prayer only)."
+      },
+      {
+        "id": 12,
+        "zekr_arabic": "قُلْ أَعُوذُ بِرَبِّ النَّاسِ. مَلِكِ النَّاسِ. إِلَهِ النَّاسِ. مِنْ شَرِّ الْوَسْوَاسِ الْخَنَّاسِ. الَّذِي يُوَسْوِسُ فِي صُدُورِ النَّاسِ. مِنَ الْجِنَّةِ وَالنَّاسِ.",
+        "zekr_english": "Say, 'I seek refuge in the Lord of mankind, The Sovereign of mankind, The God of mankind, From the evil of the retreating whisperer - Who whispers [evil] into the breasts of mankind - From among the jinn and mankind.'",
+        "zekr_english_transliteration": "Qul a'oothu bi Rabbin-naas. Malikin-naas. Ilaahin-naas. Min sharril-waswaasil-khannaas. Allathee yuwaswisu fee sudoorin-naas. Minal-jinnati wannaas.",
+        "to_count": 1,
+        "bless_arabic": "لمن يقرأها دبر كل صلاة، تكفيه من كل سوء.",
+        "bless_english": "Whoever recites it after every prayer, it will suffice him against all evil.",
+        "source": "Sunan at-Tirmidhi 5/567, Sunan Abu Dawud 4/322. Graded Hasan by Al-Albani. (To be recited with Surah Al-Ikhlas and Al-Falaq after Fajr and Maghrib prayer only)."
+      },
+      {
+        "id": 13,
+        "zekr_arabic": "اللَّهُ لاَ إِلَهَ إِلاَّ هُوَ الْحَيُّ الْقَيُّومُ لاَ تَأْخُذُهُ سِنَةٌ وَلاَ نَوْمٌ لَهُ مَا فِي السَّمَوَاتِ وَمَا فِي الأَرْضِ مَنْ ذَا الَّذِي يَشْفَعُ عِنْدَهُ إِلاَّ بِإِذْنِهِ يَعْلَمُ مَا بَيْنَ أَيْدِيهِمْ وَمَا خَلْفَهُمْ وَلاَ يُحِيطُونَ بِشَيْءٍ مِنْ عِلْمِهِ إِلاَّ بِمَا شَاءَ وَسِعَ كُرْسِيُّهُ السَّمَوَاتِ وَالأَرْضَ وَلاَ يَئُودُهُ حِفْظُهُمَا وَهُوَ الْعَلِيُّ الْعَظِيمُ.",
+        "zekr_english": "Allah! There is no god but He, the Ever-Living, the Sustainer of [all] existence. Neither slumber nor sleep overtakes Him. To Him belongs whatever is in the heavens and whatever is on the earth. Who is it that can intercede with Him except by His permission? He knows what is before them and what will be after them, and they encompass not a thing of His knowledge except for what He wills. His Kursi extends over the heavens and the earth, and He is not wearied by their preservation. And He is the Most High, the Most Great.",
+        "zekr_english_transliteration": "Allaahu laa ilaaha illaa Huwal-Hayyul-Qayyoomu laa ta'khuthuhu sinatun wa laa nawmun lahu maa fis-samaawaati wa maa fil-ardi man thal-lathee yashfa'u 'indahu illaa bi'ithnihi ya'lamu maa bayna aydeehim wa maa khalfahum wa laa yuheetoona bishay'in min 'ilmihi illaa bimaa shaa'a wasi'a kursiyyuhus-samaawaati wal-arda wa laa ya'ooduhu hifthuhumaa wa Huwal-'Aliyyul-'Adheem.",
+        "to_count": 1,
+        "bless_arabic": "من قرأ آية الكرسي دبر كل صلاة مكتوبة لم يمنعه من دخول الجنة إلا أن يموت.",
+        "bless_english": "Whoever recites Ayat al-Kursi after every prescribed prayer, nothing will prevent him from entering Paradise except death.",
+        "source": "An-Nasa'i in Al-Kubra, Ibn As-Sunni, graded Sahih by Al-Albani in Sahih Al-Jaami' no. 6464."
+      }
+    ]
+}
+
+
+

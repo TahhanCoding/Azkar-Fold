@@ -9,9 +9,6 @@ import SwiftUI
 
 struct HomeView: View {
     @EnvironmentObject var theme: ThemeManager
-    @EnvironmentObject var coordinator: NavigationCoordinator
-    @EnvironmentObject var zekrStore: ZekrStore
-    @StateObject var sunnahProgressStore = SunnahProgressStore()
     
     var body: some View {
         TabView {
@@ -35,7 +32,5 @@ struct HomeView: View {
                 .tag(2)
         }
         .accentColor(theme.currentTheme.primary)
-        .environmentObject(zekrStore)
-        .environmentObject(sunnahProgressStore)
     }
 }

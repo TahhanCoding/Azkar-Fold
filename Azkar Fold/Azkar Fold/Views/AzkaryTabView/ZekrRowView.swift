@@ -65,7 +65,7 @@ struct ZekrRowView: View {
                     
                     Text("Last updated: \(formattedDate)")
                         .font(.caption)
-                        .foregroundColor(theme.currentTheme.text)
+                        .foregroundColor(theme.currentTheme.buttonText.opacity(0.35))
                         .environment(\.layoutDirection, .rightToLeft)
                 }
                 .environment(\.layoutDirection, .rightToLeft)
@@ -73,7 +73,7 @@ struct ZekrRowView: View {
                 Text("\(zekr.counter)")
                     .font(.title2)
                     .fontWeight(.bold)
-                    .foregroundColor(theme.currentTheme.text)
+                    .foregroundColor(theme.currentTheme.primary)
                     .frame(minWidth: 44, minHeight: 44)
                     .padding(5)
                     .background(

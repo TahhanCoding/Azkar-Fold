@@ -11,7 +11,8 @@ struct RootView: View {
     @StateObject private var coordinator = NavigationCoordinator()
     @StateObject private var zekrStore = ZekrStore()
     @StateObject private var themeManager = ThemeManager.shared
-    
+    @StateObject private var progressStore = SunnahProgressStore()
+
     var body: some View {
         NavigationStack(path: $coordinator.path) {
             HomeView()
@@ -22,6 +23,7 @@ struct RootView: View {
         .environmentObject(coordinator)
         .environmentObject(zekrStore)
         .environmentObject(themeManager)
+        .environmentObject(progressStore)
     }
 }
 

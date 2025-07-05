@@ -33,7 +33,7 @@ struct SettingsTabView: View {
             headerSection
             preferencesSection
             actionsSection
-            aboutSection
+            //aboutSection
             legalSection
         }
         .navigationTitle("Settings")
@@ -41,7 +41,7 @@ struct SettingsTabView: View {
         .scrollContentBackground(.hidden)
         .background(backgroundView)
         .sheet(isPresented: $showingPrivacyPolicy) {
-            WebView(url: "https://yourapp.com/privacy")
+            WebView(url: "https://www.azkarfold.com/privacy")
                 .background(theme.currentTheme.background.ignoresSafeArea())
         }
         .sheet(isPresented: $showingTerms) {
@@ -54,7 +54,7 @@ struct SettingsTabView: View {
     
     private var headerSection: some View {
         Section {
-            VStack(alignment: .leading, spacing: 8) {
+            VStack(alignment: .center, spacing: 8) {
                 Text("Azkar Fold")
                     .font(.system(size: 32, weight: .black))
                     .foregroundColor(theme.currentTheme.primary)
@@ -70,7 +70,7 @@ struct SettingsTabView: View {
             .padding(.vertical, 8)
             .frame(maxWidth: .infinity, alignment: .leading)
         }
-        .listRowBackground(theme.currentTheme.background)
+        .listRowBackground(Color.clear)
     }
     
     private var preferencesSection: some View {
@@ -122,15 +122,18 @@ struct SettingsTabView: View {
     
     private var legalSection: some View {
         Section("Legal") {
-            Button("Privacy Policy") {
-                showingPrivacyPolicy = true
-            }
-            .foregroundColor(theme.currentTheme.text)
+            actionButton(
+                title: "Privacy Policy",
+                icon: "person.badge.shield.checkmark.fill",
+                action: {showingPrivacyPolicy = true}
+            )
+
             
-            Button("Terms of Service") {
-                showingTerms = true
-            }
-            .foregroundColor(theme.currentTheme.text)
+            actionButton(
+                title: "Terms of Service",
+                icon: "newspaper.fill",
+                action: {showingTerms = true}
+            )
         }
         .listRowBackground(theme.currentTheme.background)
     }
