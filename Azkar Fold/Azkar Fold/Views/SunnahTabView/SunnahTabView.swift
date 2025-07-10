@@ -24,7 +24,8 @@ struct SunnahTabView: View {
             contentView
             Spacer()
         }
-        .background(backgroundView)
+        .frame(maxWidth: .infinity, maxHeight: .infinity)
+        .background(BackgroundView())
         .onAppear {
             progressStore.resetDailyProgressIfNeeded()
             progressStore.loadSelectedCategories()
@@ -58,16 +59,6 @@ struct SunnahTabView: View {
             }
         }
         .padding(.horizontal)
-    }
-    private var backgroundView: some View {
-        ZStack {
-            Image("islamic_pattern")
-                .resizable(resizingMode: .tile)
-                .opacity(0.55)
-                .ignoresSafeArea(.all)
-
-            theme.currentTheme.background.ignoresSafeArea(.all)
-        }
     }
     private var contentView: some View {
         ScrollView {

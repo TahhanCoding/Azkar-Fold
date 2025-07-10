@@ -7,21 +7,6 @@
 
 import SwiftUI
 import StoreKit
-import WebKit
-
-struct WebView: UIViewRepresentable {
-    let url: String
-    
-    func makeUIView(context: Context) -> WKWebView {
-        let webView = WKWebView()
-        if let url = URL(string: url) {
-            webView.load(URLRequest(url: url))
-        }
-        return webView
-    }
-    
-    func updateUIView(_ uiView: WKWebView, context: Context) {}
-}
 
 struct SettingsTabView: View {
     @EnvironmentObject var theme: ThemeManager
@@ -29,17 +14,90 @@ struct SettingsTabView: View {
     @State private var showingTerms = false
     
     var body: some View {
-        List {
-            headerSection
-            preferencesSection
-            actionsSection
-            //aboutSection
-            legalSection
+        ScrollView {
+            VStack(spacing: 0) {
+                headerSection
+                    .padding(.vertical, 20)
+                
+                Group {
+                    sectionHeader("Preferences")
+                    themeNavigationLink
+                        .padding(.vertical, 12)
+                }
+                .padding(.horizontal)
+                
+                
+                sectionHeader("Actions")
+                    .padding(.horizontal)
+
+
+                VStack {
+                    actionButton(
+                        title: "Rate This App",
+                        icon: "star.fill",
+                        action: requestAppReview
+                    )
+                    
+                    Divider()
+                        .background(.gray.opacity(0.3))
+                        .padding(.horizontal, 32)
+
+                    actionButton(
+                        title: "Share With Friends",
+                        icon: "square.and.arrow.up",
+                        action: shareApp
+                    )
+                    
+                    Divider()
+                        .background(.gray.opacity(0.3))
+                        .padding(.horizontal, 32)
+
+                    actionButton(
+                        title: "Contact Support",
+                        icon: "envelope.fill",
+                        action: sendEmail
+                    )
+                }
+                .padding(.vertical, 12)
+                .background(theme.currentTheme.background)
+                .cornerRadius(12)
+                .padding(.horizontal, 14)
+
+                Divider()
+                    .background(theme.currentTheme.secondary.opacity(0.2))
+                
+                sectionHeader("Legal")
+                    .padding(.horizontal)
+
+
+                VStack {
+                    actionButton(
+                        title: "Privacy Policy",
+                        icon: "person.badge.shield.checkmark.fill",
+                        action: { showingPrivacyPolicy = true }
+                    )
+                    
+                    Divider()
+                        .background(.gray.opacity(0.3))
+                        .padding(.horizontal, 32)
+
+                    actionButton(
+                        title: "Terms of Service",
+                        icon: "newspaper.fill",
+                        action: { showingTerms = true }
+                    )
+                }
+                .padding(.vertical, 12)
+                .background(theme.currentTheme.background)
+                .cornerRadius(12)
+                .padding(.horizontal, 14)
+
+            }
+            .padding(.bottom, 20)
         }
         .navigationTitle("Settings")
-        .listStyle(.insetGrouped)
         .scrollContentBackground(.hidden)
-        .background(backgroundView)
+        .background(BackgroundView())
         .sheet(isPresented: $showingPrivacyPolicy) {
             WebView(url: "https://www.azkarfold.com/privacy")
                 .background(theme.currentTheme.background.ignoresSafeArea())
@@ -52,90 +110,27 @@ struct SettingsTabView: View {
     
     // MARK: - Sections
     
+    private func sectionHeader(_ title: String) -> some View {
+        HStack {
+            Text(title)
+                .font(.subheadline)
+                .foregroundColor(theme.currentTheme.text.opacity(0.7))
+                .padding(.vertical, 8)
+            Spacer()
+        }
+    }
+    
     private var headerSection: some View {
-        Section {
-            VStack(alignment: .center, spacing: 8) {
-                Text("Azkar Fold")
-                    .font(.system(size: 32, weight: .black))
-                    .foregroundColor(theme.currentTheme.primary)
-                
-                Text("Your Islamic Remembrance Companion")
-                    .font(.subheadline)
-                    .foregroundColor(theme.currentTheme.text.opacity(0.8))
-                
-                Text("Version \(appVersion)")
-                    .font(.caption)
-                    .foregroundColor(theme.currentTheme.text.opacity(0.6))
-            }
-            .padding(.vertical, 8)
-            .frame(maxWidth: .infinity, alignment: .leading)
+        VStack(alignment: .center, spacing: 8) {
+            Text("Azkar Fold")
+                .font(.system(size: 28, weight: .black))
+                .foregroundColor(theme.currentTheme.primary)
+                        
+            Text("Version \(appVersion)")
+                .font(.caption)
+                .foregroundColor(theme.currentTheme.text.opacity(0.6))
         }
-        .listRowBackground(Color.clear)
-    }
-    
-    private var preferencesSection: some View {
-        Section("Preferences") {
-            themeNavigationLink
-        }
-        .listRowBackground(theme.currentTheme.background)
-    }
-    
-    private var actionsSection: some View {
-        Section("Actions") {
-            actionButton(
-                title: "Rate This App",
-                icon: "star.fill",
-                action: requestAppReview
-            )
-            
-            actionButton(
-                title: "Share With Friends",
-                icon: "square.and.arrow.up",
-                action: shareApp
-            )
-            
-            actionButton(
-                title: "Contact Support",
-                icon: "envelope.fill",
-                action: sendEmail
-            )
-        }
-        .listRowBackground(theme.currentTheme.background)
-    }
-    
-    private var aboutSection: some View {
-        Section("About This App") {
-            VStack(alignment: .leading, spacing: 12) {
-                Text("Azkar Fold is an Islamic app designed to help Muslims maintain their daily remembrances (Azkar).")
-                    .font(.body)
-                    .foregroundColor(theme.currentTheme.text)
-                
-                Text("The app allows you to create and track your custom Azkar with a simple counter interface, helping you stay connected to your faith throughout the day.")
-                    .font(.body)
-                    .foregroundColor(theme.currentTheme.text.opacity(0.8))
-            }
-            .padding(.vertical, 4)
-            .fixedSize(horizontal: false, vertical: true)
-        }
-        .listRowBackground(theme.currentTheme.background)
-    }
-    
-    private var legalSection: some View {
-        Section("Legal") {
-            actionButton(
-                title: "Privacy Policy",
-                icon: "person.badge.shield.checkmark.fill",
-                action: {showingPrivacyPolicy = true}
-            )
-
-            
-            actionButton(
-                title: "Terms of Service",
-                icon: "newspaper.fill",
-                action: {showingTerms = true}
-            )
-        }
-        .listRowBackground(theme.currentTheme.background)
+        .frame(maxWidth: .infinity)
     }
     
     // MARK: - Subviews
@@ -161,7 +156,10 @@ struct SettingsTabView: View {
                 
                 themePreviewCircle
             }
-            .padding(.vertical, 4)
+            .padding(.vertical, 12)
+            .padding(.horizontal, 14)
+            .background(theme.currentTheme.background)
+            .cornerRadius(12)
         }
     }
     
@@ -174,18 +172,7 @@ struct SettingsTabView: View {
                     .stroke(theme.currentTheme.secondary, lineWidth: 1)
             )
     }
-    
-    private var backgroundView: some View {
-        ZStack {
-            theme.currentTheme.background.opacity(0.5).ignoresSafeArea()
-            
-            Image("islamic_pattern")
-                .resizable(resizingMode: .tile)
-                .opacity(0.55)
-                .ignoresSafeArea(.all)
-        }
-    }
-    
+        
     private func actionButton(title: String, icon: String, action: @escaping () -> Void) -> some View {
         Button(action: action) {
             HStack(spacing: 12) {
@@ -204,7 +191,8 @@ struct SettingsTabView: View {
                     .font(.caption)
                     .foregroundColor(theme.currentTheme.text.opacity(0.5))
             }
-            .padding(.vertical, 8)
+            .padding(.vertical, 7)
+            .padding(.horizontal, 12)
             .contentShape(Rectangle())
         }
         .buttonStyle(PlainButtonStyle())
@@ -258,3 +246,7 @@ struct SettingsTabView: View {
     }
 }
 
+#Preview {
+    SettingsTabView()
+        .environmentObject(ThemeManager.shared)
+}

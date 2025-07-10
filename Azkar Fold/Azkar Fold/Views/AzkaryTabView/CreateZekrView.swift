@@ -72,9 +72,7 @@ struct CreateZekrView: View {
         .navigationTitle("Create Zekr")
         .navigationBarTitleDisplayMode(.inline)
         .background(
-            Image("islamic_pattern")
-                .resizable(resizingMode: .tile)
-                .opacity(0.05)
+            BackgroundView()
         )
         .alert(isPresented: $showAlert) {
             Alert(

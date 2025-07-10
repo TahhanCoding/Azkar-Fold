@@ -31,9 +31,11 @@ struct SunnahZekrView: View {
     }
     
     var body: some View {
-        VStack(spacing: 12) {
-            
+        VStack{
             zekrView
+                .padding(.top, 16)
+            
+            Spacer()
             
             VStack(spacing: 16) {
                 progressBar
@@ -103,21 +105,18 @@ struct SunnahZekrView: View {
     
     //MARK: - Zekr View
     private var zekrView: some View {
-        ZStack(alignment: .bottom) {
-            VStack {
-                Text(textOnScreen)
-                    .font(.title)
-                    .fontWeight(.bold)
-                    .foregroundColor(theme.currentTheme.text)
-                    .multilineTextAlignment(.center)
-                    .padding(.horizontal)
-                    .font(.system(size: 80))
-                    .minimumScaleFactor(0.3)
-                    .lineLimit(15)
-                    .padding(.vertical, 12)
-                    .id(zekrItem.zekr)
-            }
-            
+        VStack {
+            Text(textOnScreen)
+                .font(.title)
+                .fontWeight(.bold)
+                .foregroundColor(theme.currentTheme.text)
+                .multilineTextAlignment(.center)
+                .padding(.horizontal)
+                .font(.system(size: 80))
+                .minimumScaleFactor(0.3)
+                .lineLimit(15)
+                .padding(.vertical, 12)
+                .id(zekrItem.zekr)
         }
         .padding(.horizontal, 18)
         .frame(height: screenHeight * 0.5)
@@ -126,7 +125,7 @@ struct SunnahZekrView: View {
             RoundedRectangle(cornerRadius: 33)
                 .fill(currentRepetition >= zekrItem.repeat ? theme.currentTheme.background.opacity(0.65) : theme.currentTheme.background.opacity(0.45))
                 .overlay(
-                    Image("islamic_pattern")
+                    Image("Islamic-Geometric-Tile")
                         .resizable(resizingMode: .tile)
                         .opacity(0.35)
                 )

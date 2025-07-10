@@ -59,7 +59,7 @@ struct ZekrView: View {
                     RoundedRectangle(cornerRadius: 33)
                         .fill(theme.currentTheme.background.opacity(0.65))
                         .overlay(
-                            Image("islamic_pattern")
+                            Image("Islamic-Geometric-Tile")
                                 .resizable(resizingMode: .tile)
                                 .opacity(0.35)
                         )

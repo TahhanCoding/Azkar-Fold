@@ -19,19 +19,6 @@ struct AzkaryTabView: View {
             VStack {
                 if zekrStore.zekrs.isEmpty {
                     EmptyZekrView()
-                        .background(
-                            Image("islamic_pattern")
-                                .resizable(resizingMode: .tile)
-                                .opacity(0.55)
-                                .mask(
-                                    RadialGradient(
-                                        gradient: Gradient(colors: [.white, .clear]),
-                                        center: .center,
-                                        startRadius: 50,
-                                        endRadius: 300
-                                    )
-                                )
-                        )
                 } else {
                     VStack {
                         Text("Azkary")
@@ -62,15 +49,6 @@ struct AzkaryTabView: View {
 
                         Spacer()
                     }
-                    .background(
-                        Image("islamic_pattern")
-                            .resizable(resizingMode: .tile)
-                            .opacity(0.55)
-                            .ignoresSafeArea(.all)
-                    )
-                    .background(
-                        theme.currentTheme.background.ignoresSafeArea(.all)
-                    )
                     .alert(isPresented: $showingDeleteAlert) {
                         Alert(
                             title: Text("Confirm Deletion"),
@@ -88,6 +66,8 @@ struct AzkaryTabView: View {
                     }
                 }
             }
+            .frame(maxWidth: .infinity, maxHeight: .infinity)
+            .background(BackgroundView())
             .toolbar {
                 ToolbarItem(placement: .navigationBarTrailing) {
                     Button(action: {

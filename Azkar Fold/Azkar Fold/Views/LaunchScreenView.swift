@@ -19,8 +19,7 @@ struct LaunchScreenView: View {
     var body: some View {
         ZStack {
             // Base layer
-            theme.currentTheme.background
-                .ignoresSafeArea()
+            BackgroundView()
             
             // Enhanced pattern background with depth layers
             backgroundLayers
