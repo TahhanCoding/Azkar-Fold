@@ -9,6 +9,7 @@ import SwiftUI
 
 struct SunnahZekrView: View {
     @EnvironmentObject var theme: ThemeManager
+    @EnvironmentObject var patternManager: PatternManager
     @State var azkarList: [SunnahZekrItem]
     let category: SunnahAzkarCategory
     @ObservedObject var progressStore: SunnahProgressStore
@@ -125,7 +126,7 @@ struct SunnahZekrView: View {
             RoundedRectangle(cornerRadius: 33)
                 .fill(currentRepetition >= zekrItem.repeat ? theme.currentTheme.background.opacity(0.65) : theme.currentTheme.background.opacity(0.45))
                 .overlay(
-                    Image("Islamic-Geometric-Tile")
+                    Image(patternManager.currentPattern)
                         .resizable(resizingMode: .tile)
                         .opacity(0.35)
                 )
@@ -240,9 +241,8 @@ struct SunnahZekrView: View {
                     textOnScreen = zekrItem.zekr
                 }) {
                     HStack(spacing: 6) {
-                        Image(systemName: "textformat.arabic")
                         Text("Arabic")
-                            .font(.system(size: 14, weight: .medium))
+                            .font(.system(size: 12, weight: .medium))
                     }
                     .frame(maxWidth: .infinity)
                     .padding(.vertical, 10)
@@ -257,8 +257,7 @@ struct SunnahZekrView: View {
                     textOnScreen = zekrItem.transliteration
                 }) {
                     HStack(spacing: 4) {
-                        Image(systemName: "textformat.abc")
-                        Text("Transliteration")
+                        Text("Spelling")
                             .font(.system(size: 12, weight: .medium))
                     }
                     .frame(maxWidth: .infinity)
@@ -274,7 +273,6 @@ struct SunnahZekrView: View {
                     textOnScreen = zekrItem.source
                 }) {
                     HStack(spacing: 4) {
-                        Image(systemName: "pencil.tip")
                         Text("Source")
                             .font(.system(size: 12, weight: .medium))
                     }
@@ -294,9 +292,8 @@ struct SunnahZekrView: View {
                     textOnScreen = zekrItem.en_tr
                 }) {
                     HStack(spacing: 6) {
-                        Image(systemName: "textformat")
                         Text("English")
-                            .font(.system(size: 14, weight: .medium))
+                            .font(.system(size: 12, weight: .medium))
                     }
                     .frame(maxWidth: .infinity)
                     .padding(.vertical, 10)
@@ -312,8 +309,7 @@ struct SunnahZekrView: View {
                         textOnScreen = bless
                     }) {
                         HStack(spacing: 4) {
-                            Image(systemName: "star.fill")
-                            Text("Blessing")
+                            Text("Bless_ar")
                                 .font(.system(size: 12, weight: .medium))
                         }
                         .frame(maxWidth: .infinity)
@@ -331,8 +327,7 @@ struct SunnahZekrView: View {
                         textOnScreen = bless_en
                     }) {
                         HStack(spacing: 4) {
-                            Image(systemName: "star")
-                            Text("Blessing EN")
+                            Text("Bless_en")
                                 .font(.system(size: 12, weight: .medium))
                         }
                         .frame(maxWidth: .infinity)

@@ -9,12 +9,13 @@ import SwiftUI
 
 struct BackgroundView: View {
     @EnvironmentObject var theme: ThemeManager
-    
+    @EnvironmentObject var patternManager: PatternManager
+
     var body: some View {
         ZStack {
             theme.currentTheme.background.opacity(0.5).ignoresSafeArea()
             
-            Image("Islamic-Geometric-Tile")
+            Image(patternManager.currentPattern)
                 .resizable(resizingMode: .tile)
                 .opacity(0.55)
                 .ignoresSafeArea(.all)

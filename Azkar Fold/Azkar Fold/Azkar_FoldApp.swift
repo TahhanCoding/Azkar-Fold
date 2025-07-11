@@ -21,6 +21,7 @@ struct Azkar_FoldApp: App {
                 if showLaunchScreen {
                     LaunchScreenView()
                         .environmentObject(ThemeManager.shared)
+                        .environmentObject(PatternManager.shared)
                         .transition(.opacity)
                         .onAppear {
                             // Dismiss launch screen after animations complete

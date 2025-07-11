@@ -59,12 +59,7 @@ struct ThemeManagerView: View {
             
             ScrollView(.horizontal, showsIndicators: false) {
                 HStack(spacing: 15) {
-                    if themeManager.customThemes.isEmpty {
-                        Text("No custom themes yet")
-                            .foregroundColor(themeManager.currentTheme.text)
-                            .font(.subheadline)
-                            .padding(.vertical, 8)
-                    } else {
+                    if !themeManager.customThemes.isEmpty {
                         ForEach(themeManager.customThemes) { theme in
                             ThemeCardView(
                                 theme: theme,

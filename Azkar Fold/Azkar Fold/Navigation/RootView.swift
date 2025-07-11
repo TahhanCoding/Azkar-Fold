@@ -11,6 +11,7 @@ struct RootView: View {
     @StateObject private var coordinator = NavigationCoordinator()
     @StateObject private var zekrStore = ZekrStore()
     @StateObject private var themeManager = ThemeManager.shared
+    @StateObject private var patternManager = PatternManager.shared
     @StateObject private var progressStore = SunnahProgressStore()
 
     var body: some View {
@@ -23,6 +24,7 @@ struct RootView: View {
         .environmentObject(coordinator)
         .environmentObject(zekrStore)
         .environmentObject(themeManager)
+        .environmentObject(patternManager)
         .environmentObject(progressStore)
     }
 }

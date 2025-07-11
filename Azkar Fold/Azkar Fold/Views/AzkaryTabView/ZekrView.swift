@@ -9,6 +9,7 @@ import SwiftUI
 
 struct ZekrView: View {
     @EnvironmentObject var theme: ThemeManager
+    @EnvironmentObject var patternManager: PatternManager
     let zekrId: UUID
     @EnvironmentObject var zekrStore: ZekrStore
     @Environment(\.dismiss) private var dismiss
@@ -59,7 +60,7 @@ struct ZekrView: View {
                     RoundedRectangle(cornerRadius: 33)
                         .fill(theme.currentTheme.background.opacity(0.65))
                         .overlay(
-                            Image("Islamic-Geometric-Tile")
+                            Image(patternManager.currentPattern)
                                 .resizable(resizingMode: .tile)
                                 .opacity(0.35)
                         )
