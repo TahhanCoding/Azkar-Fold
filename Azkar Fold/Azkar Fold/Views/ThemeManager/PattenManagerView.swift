@@ -13,10 +13,10 @@ struct PattenManagerView: View {
     var body: some View {
         ZStack {
             // Use the current pattern as background
-            Image(patternManager.currentPattern)
-                .resizable()
-                .aspectRatio(contentMode: .fill)
-                .edgesIgnoringSafeArea(.all)
+//            Image(patternManager.currentPattern)
+//                .resizable()
+//                .aspectRatio(contentMode: .fill)
+//                .edgesIgnoringSafeArea(.all)
             
             // Pattern selection interface
             VStack {

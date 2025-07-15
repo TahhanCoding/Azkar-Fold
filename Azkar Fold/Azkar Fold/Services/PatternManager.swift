@@ -20,11 +20,9 @@ class PatternManager: ObservableObject {
     private init() {
         // Initialize with default patterns
         availablePatterns = [
-            "Islamic-Geometric-Tile",
-            "Islamic-Geometric-Tile2",
-            "Islamic-Geometric-Tile3",
-            "Islamic-Geometric-Tile4",
-            "Islamic-Geometric-Tile5"
+            "Islamic-Geometric-Tile_1",
+            "Islamic-Geometric-Tile_2",
+            "Islamic-Geometric-Tile_3",
         ]
         
         // Load current pattern from UserDefaults

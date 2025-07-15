@@ -9,108 +9,16 @@ import SwiftUI
 
 struct ThemeManagerView: View {
     @EnvironmentObject var themeManager: ThemeManager
+    @EnvironmentObject var patternManager: PatternManager
     @State private var showingThemeEditor = false
     @State private var editingTheme: Theme?
     @State private var showingDeleteAlert = false
     @State private var themeToDelete: Theme?
     
     var body: some View {
-        VStack(alignment: .leading) {
-            // Current theme section
-            currentThemeCard
-                .padding(.horizontal)
-                .padding(.bottom, 10)
-            
-            Text("Default Themes")
-                .font(.headline)
-                .foregroundColor(themeManager.currentTheme.text)
-                .padding(.horizontal)
-            
-            ScrollView(.horizontal, showsIndicators: false) {
-                HStack(spacing: 15) {
-                    ForEach(Theme.defaultThemes) { theme in
-                        ThemeCardView(
-                            theme: theme,
-                            isSelected: theme.id == themeManager.currentTheme.id,
-                            onSelect: {
-                                withAnimation {
-                                    themeManager.setCurrentTheme(theme)
-                                }
-                            },
-                            onDuplicate: {
-                                let duplicatedTheme = themeManager.duplicateTheme(theme)
-                                editingTheme = duplicatedTheme
-                                showingThemeEditor = true
-                            }
-                        )
-                    }
-                }
-                .padding(.horizontal)
-            }
-            
-            Divider()
-                .padding(.horizontal)
-                .padding(.vertical, 5)
-            
-            Text("Custom Themes")
-                .font(.headline)
-                .foregroundColor(themeManager.currentTheme.text)
-                .padding(.horizontal)
-            
-            ScrollView(.horizontal, showsIndicators: false) {
-                HStack(spacing: 15) {
-                    if !themeManager.customThemes.isEmpty {
-                        ForEach(themeManager.customThemes) { theme in
-                            ThemeCardView(
-                                theme: theme,
-                                isSelected: theme.id == themeManager.currentTheme.id,
-                                onSelect: {
-                                    withAnimation {
-                                        themeManager.setCurrentTheme(theme)
-                                    }
-                                },
-                                onEdit: {
-                                    editingTheme = theme
-                                    showingThemeEditor = true
-                                },
-                                onDuplicate: {
-                                    let duplicatedTheme = themeManager.duplicateTheme(theme)
-                                    editingTheme = duplicatedTheme
-                                    showingThemeEditor = true
-                                },
-                                onDelete: {
-                                    themeToDelete = theme
-                                    showingDeleteAlert = true
-                                }
-                            )
-                        }
-                    }
-                    
-                    // Create new theme button
-                    Button(action: {
-                        editingTheme = nil
-                        showingThemeEditor = true
-                    }) {
-                        VStack {
-                            Image(systemName: "plus.circle.fill")
-                                .resizable()
-                                .frame(width: 50, height: 50)
-                                .foregroundColor(themeManager.currentTheme.primary)
-                            Text("Create New Theme")
-                                .font(.caption)
-                                .foregroundColor(themeManager.currentTheme.primary)
-                        }
-                        .frame(width: 120, height: 120)
-                        .background(themeManager.currentTheme.cardBackground)
-                        .cornerRadius(12)
-                        .overlay(
-                            RoundedRectangle(cornerRadius: 12)
-                                .stroke(themeManager.currentTheme.primary.opacity(0.5), lineWidth: 1)
-                        )
-                    }
-                }
-                .padding(.horizontal)
-            }
+        ZStack {
+            BackgroundPatternView()
+            MainContentView()
         }
         .navigationTitle("Theme Manager")
         .navigationBarTitleDisplayMode(.large)
@@ -119,21 +27,88 @@ struct ThemeManagerView: View {
                 .environmentObject(themeManager)
         }
         .alert("Delete Theme", isPresented: $showingDeleteAlert) {
-            Button("Cancel", role: .cancel) {
-                themeToDelete = nil
-            }
-            Button("Delete", role: .destructive) {
-                if let theme = themeToDelete {
-                    themeManager.deleteCustomTheme(theme)
-                }
-                themeToDelete = nil
-            }
+            DeleteThemeAlert()
         } message: {
             Text("Are you sure you want to delete \"\(themeToDelete?.name ?? "this theme")\"? This action cannot be undone.")
         }
     }
+}
+
+// MARK: - Background Pattern View
+extension ThemeManagerView {
+    @ViewBuilder
+    private func BackgroundPatternView() -> some View {
+        GeometryReader { geometry in
+            Image(patternManager.currentPattern)
+                .resizable()
+                .aspectRatio(contentMode: .fill)
+                .frame(width: geometry.size.width, height: geometry.size.height)
+                .clipped()
+        }
+        .ignoresSafeArea(.all)
+        .opacity(0.1)
+    }
+}
+
+// MARK: - Main Content View
+extension ThemeManagerView {
+    @ViewBuilder
+    private func MainContentView() -> some View {
+        ScrollView {
+            VStack(alignment: .center, spacing: 24) {
+                BackgroundPatternSection()
+                CurrentThemeSection()
+                DefaultThemesSection()
+                CustomThemesSection()
+            }
+            .padding(.horizontal, 16)
+            .padding(.bottom, 20)
+        }
+        .safeAreaInset(edge: .top) {
+            Color.clear.frame(height: 0)
+        }
+    }
+}
+
+// MARK: - Background Pattern Section
+extension ThemeManagerView {
+    @ViewBuilder
+    private func BackgroundPatternSection() -> some View {
+        VStack(alignment: .leading, spacing: 12) {
+            SectionHeaderView(title: "Background Pattern")
+            
+            ScrollView(.horizontal, showsIndicators: false) {
+                LazyHStack(spacing: 12) {
+                    ForEach(patternManager.availablePatterns, id: \.self) { pattern in
+                        PatternCardView(
+                            pattern: pattern,
+                            isSelected: patternManager.currentPattern == pattern,
+                            onSelect: {
+                                withAnimation(.easeInOut(duration: 0.3)) {
+                                    patternManager.setCurrentPattern(pattern)
+                                }
+                            }
+                        )
+                    }
+                }
+                .padding(.horizontal, 16)
+            }
+        }
+    }
+}
+
+// MARK: - Current Theme Section
+extension ThemeManagerView {
+    @ViewBuilder
+    private func CurrentThemeSection() -> some View {
+        VStack(alignment: .leading, spacing: 12) {
+            SectionHeaderView(title: "Current Theme")
+            CurrentThemeCard()
+        }
+    }
     
-    private var currentThemeCard: some View {
+    @ViewBuilder
+    private func CurrentThemeCard() -> some View {
         VStack(alignment: .leading, spacing: 12) {
             HStack {
                 Text(themeManager.currentTheme.name)
@@ -143,78 +118,289 @@ struct ThemeManagerView: View {
                 Spacer()
                 
                 if themeManager.currentTheme.isDefault {
-                    Text("Default")
-                        .font(.caption)
-                        .padding(.horizontal, 8)
-                        .padding(.vertical, 4)
-                        .background(themeManager.currentTheme.primary.opacity(0.2))
-                        .foregroundColor(themeManager.currentTheme.primary)
-                        .cornerRadius(8)
+                    DefaultThemeBadge()
                 }
             }
             
             ThemePreviewView(theme: themeManager.currentTheme, isCompact: false)
-                .frame(height: 150) // Increased height for full preview
+                .frame(height: 150)
         }
-        .padding()
-        .background(themeManager.currentTheme.cardBackground)
-        .cornerRadius(12)
+        .padding(16)
+        .background(themeManager.currentTheme.cardBackground.opacity(0.9))
+        .cornerRadius(16)
         .overlay(
-            RoundedRectangle(cornerRadius: 12)
+            RoundedRectangle(cornerRadius: 16)
                 .stroke(themeManager.currentTheme.primary, lineWidth: 2)
         )
     }
+    
+    @ViewBuilder
+    private func DefaultThemeBadge() -> some View {
+        Text("Default")
+            .font(.caption)
+            .padding(.horizontal, 8)
+            .padding(.vertical, 4)
+            .background(themeManager.currentTheme.primary.opacity(0.2))
+            .foregroundColor(themeManager.currentTheme.primary)
+            .cornerRadius(8)
+    }
 }
 
+// MARK: - Default Themes Section
+extension ThemeManagerView {
+    @ViewBuilder
+    private func DefaultThemesSection() -> some View {
+        VStack(alignment: .leading, spacing: 12) {
+            SectionHeaderView(title: "Default Themes")
+            
+            ScrollView(.horizontal, showsIndicators: false) {
+                LazyHStack(spacing: 15) {
+                    ForEach(Theme.defaultThemes) { theme in
+                        ThemeCardView(
+                            theme: theme,
+                            isSelected: theme.id == themeManager.currentTheme.id,
+                            onSelect: {
+                                withAnimation(.easeInOut(duration: 0.3)) {
+                                    themeManager.setCurrentTheme(theme)
+                                }
+                            },
+                            onDuplicate: {
+                                duplicateTheme(theme)
+                            }
+                        )
+                    }
+                }
+                .padding(.horizontal, 16)
+            }
+        }
+    }
+}
+
+// MARK: - Custom Themes Section
+extension ThemeManagerView {
+    @ViewBuilder
+    private func CustomThemesSection() -> some View {
+        VStack(alignment: .leading, spacing: 12) {
+            SectionHeaderView(title: "Custom Themes")
+            
+            ScrollView(.horizontal, showsIndicators: false) {
+                LazyHStack(spacing: 15) {
+                    CustomThemeCards()
+                    CreateNewThemeButton()
+                }
+                .padding(.horizontal, 16)
+            }
+        }
+    }
+    
+    @ViewBuilder
+    private func CustomThemeCards() -> some View {
+        ForEach(themeManager.customThemes) { theme in
+            ThemeCardView(
+                theme: theme,
+                isSelected: theme.id == themeManager.currentTheme.id,
+                onSelect: {
+                    withAnimation(.easeInOut(duration: 0.3)) {
+                        themeManager.setCurrentTheme(theme)
+                    }
+                },
+                onEdit: {
+                    editTheme(theme)
+                },
+                onDuplicate: {
+                    duplicateTheme(theme)
+                },
+                onDelete: {
+                    deleteTheme(theme)
+                }
+            )
+        }
+    }
+    
+    @ViewBuilder
+    private func CreateNewThemeButton() -> some View {
+        Button(action: createNewTheme) {
+            VStack(spacing: 8) {
+                Image(systemName: "plus.circle.fill")
+                    .resizable()
+                    .frame(width: 50, height: 50)
+                    .foregroundColor(themeManager.currentTheme.primary)
+                
+                Text("Create New Theme")
+                    .font(.caption)
+                    .foregroundColor(themeManager.currentTheme.primary)
+                    .multilineTextAlignment(.center)
+            }
+            .frame(width: 120, height: 120)
+            .background(themeManager.currentTheme.cardBackground.opacity(0.8))
+            .cornerRadius(16)
+            .overlay(
+                RoundedRectangle(cornerRadius: 16)
+                    .stroke(themeManager.currentTheme.primary.opacity(0.5), lineWidth: 1)
+            )
+        }
+        .buttonStyle(PlainButtonStyle())
+    }
+}
+
+// MARK: - Helper Views
+extension ThemeManagerView {
+    @ViewBuilder
+    private func SectionHeaderView(title: String) -> some View {
+        Text(title)
+            .font(.headline)
+            .foregroundColor(themeManager.currentTheme.text)
+    }
+    
+    @ViewBuilder
+    private func DeleteThemeAlert() -> some View {
+        Group {
+            Button("Cancel", role: .cancel) {
+                themeToDelete = nil
+            }
+            Button("Delete", role: .destructive) {
+                performDeleteTheme()
+            }
+        }
+    }
+}
+
+// MARK: - Actions
+extension ThemeManagerView {
+    private func createNewTheme() {
+        editingTheme = nil
+        showingThemeEditor = true
+    }
+    
+    private func editTheme(_ theme: Theme) {
+        editingTheme = theme
+        showingThemeEditor = true
+    }
+    
+    private func duplicateTheme(_ theme: Theme) {
+        let duplicatedTheme = themeManager.duplicateTheme(theme)
+        editingTheme = duplicatedTheme
+        showingThemeEditor = true
+    }
+    
+    private func deleteTheme(_ theme: Theme) {
+        themeToDelete = theme
+        showingDeleteAlert = true
+    }
+    
+    private func performDeleteTheme() {
+        if let theme = themeToDelete {
+            themeManager.deleteCustomTheme(theme)
+        }
+        themeToDelete = nil
+    }
+}
+
+// MARK: - Pattern Card View
+struct PatternCardView: View {
+    let pattern: String
+    let isSelected: Bool
+    let onSelect: () -> Void
+    @EnvironmentObject var themeManager: ThemeManager
+    
+    var body: some View {
+        Button(action: onSelect) {
+            VStack(spacing: 8) {
+                Image(pattern)
+                    .resizable()
+                    .aspectRatio(contentMode: .fill)
+                    .frame(width: 60, height: 60)
+                    .cornerRadius(12)
+                    .clipped()
+            }
+            .background(themeManager.currentTheme.cardBackground.opacity(0.8))
+            .cornerRadius(12)
+            .overlay(
+                RoundedRectangle(cornerRadius: 12)
+                    .stroke(
+                        isSelected ? themeManager.currentTheme.primary : themeManager.currentTheme.primary.opacity(0.3),
+                        lineWidth: isSelected ? 2 : 1
+                    )
+            )
+            .padding(7)
+        }
+        .buttonStyle(PlainButtonStyle())
+        .scaleEffect(isSelected ? 1.15 : 1.0)
+        .animation(.easeInOut(duration: 0.2), value: isSelected)
+    }
+}
+
+// MARK: - Theme Card View
 struct ThemeCardView: View {
     let theme: Theme
-    var isSelected: Bool
+    let isSelected: Bool
     let onSelect: () -> Void
-    var onEdit: (() -> Void)? = nil
+    let onEdit: (() -> Void)?
     let onDuplicate: () -> Void
-    var onDelete: (() -> Void)? = nil
-
+    let onDelete: (() -> Void)?
+    
+    init(theme: Theme, isSelected: Bool, onSelect: @escaping () -> Void, onEdit: (() -> Void)? = nil, onDuplicate: @escaping () -> Void, onDelete: (() -> Void)? = nil) {
+        self.theme = theme
+        self.isSelected = isSelected
+        self.onSelect = onSelect
+        self.onEdit = onEdit
+        self.onDuplicate = onDuplicate
+        self.onDelete = onDelete
+    }
+    
     var body: some View {
         Button(action: onSelect) {
             ThemeMiniCardView(theme: theme, isSelected: isSelected)
                 .contextMenu {
-                    Button("Select") {
-                        onSelect()
-                    }
-                    if let onEdit = onEdit {
-                        Button("Edit") {
-                            onEdit()
-                        }
-                    }
-                    Button("Duplicate") {
-                        onDuplicate()
-                    }
-                    if let onDelete = onDelete {
-                        Button("Delete", role: .destructive) {
-                            onDelete()
-                        }
-                    }
+                    ContextMenuItems()
                 }
+        }
+        .buttonStyle(PlainButtonStyle())
+    }
+    
+    @ViewBuilder
+    private func ContextMenuItems() -> some View {
+        Group {
+            Button("Select") {
+                onSelect()
+            }
+            
+            if let onEdit = onEdit {
+                Button("Edit") {
+                    onEdit()
+                }
+            }
+            
+            Button("Duplicate") {
+                onDuplicate()
+            }
+            
+            if let onDelete = onDelete {
+                Button("Delete", role: .destructive) {
+                    onDelete()
+                }
+            }
         }
     }
 }
 
+// MARK: - Theme Mini Card View
 struct ThemeMiniCardView: View {
     let theme: Theme
-    var isSelected: Bool
-
+    let isSelected: Bool
+    
     var body: some View {
         VStack(spacing: 0) {
-            // Color preview section
-            themeColorsGrid()
+            ThemeColorsGrid()
             
-            // Theme name
             Text(theme.name)
                 .font(.system(size: 12, weight: .medium))
                 .foregroundColor(theme.text)
-                .padding(.vertical, 5)
+                .padding(.vertical, 8)
+                .lineLimit(2)
+                .multilineTextAlignment(.center)
         }
-        .frame(width: 80)
+        .frame(width: 90)
         .padding(8)
         .background(theme.background)
         .cornerRadius(16)
@@ -226,35 +412,36 @@ struct ThemeMiniCardView: View {
                 }
             }
         )
-        .padding(5)
+        .shadow(color: theme.primary.opacity(isSelected ? 0.3 : 0), radius: 8, x: 0, y: 4)
     }
     
-    
     @ViewBuilder
-    private func themeColorsGrid() -> some View {
-        HStack(spacing: 0) {
-            Rectangle()
-                .fill(theme.primary)
-                .frame(height: 20)
-            Rectangle()
-                .fill(theme.secondary)
-                .frame(height: 20)
-            Rectangle()
-                .fill(theme.accent)
-                .frame(height: 20)
+    private func ThemeColorsGrid() -> some View {
+        VStack(spacing: 0) {
+            HStack(spacing: 0) {
+                Rectangle()
+                    .fill(theme.primary)
+                    .frame(height: 20)
+                Rectangle()
+                    .fill(theme.secondary)
+                    .frame(height: 20)
+                Rectangle()
+                    .fill(theme.accent)
+                    .frame(height: 20)
+            }
+            
+            HStack(spacing: 0) {
+                Rectangle()
+                    .fill(theme.text)
+                    .frame(height: 20)
+                Rectangle()
+                    .fill(theme.cardBackground)
+                    .frame(height: 20)
+                Rectangle()
+                    .fill(theme.buttonText)
+                    .frame(height: 20)
+            }
         }
-        
-        // Color preview section
-        HStack(spacing: 0) {
-            Rectangle()
-                .fill(theme.text)
-                .frame(height: 20)
-            Rectangle()
-                .fill(theme.cardBackground)
-                .frame(height: 20)
-            Rectangle()
-                .fill(theme.buttonText)
-                .frame(height: 20)
-        }
+        .cornerRadius(8)
     }
 }
