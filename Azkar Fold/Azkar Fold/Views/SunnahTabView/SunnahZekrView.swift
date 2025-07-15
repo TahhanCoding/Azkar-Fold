@@ -126,9 +126,13 @@ struct SunnahZekrView: View {
             RoundedRectangle(cornerRadius: 33)
                 .fill(currentRepetition >= zekrItem.repeat ? theme.currentTheme.background.opacity(0.65) : theme.currentTheme.background.opacity(0.45))
                 .overlay(
-                    Image(patternManager.currentPattern)
-                        .resizable(resizingMode: .tile)
-                        .opacity(0.35)
+                    Group {
+                        if patternManager.currentPattern != "none" {
+                            Image(patternManager.currentPattern)
+                                .resizable(resizingMode: .tile)
+                                .opacity(0.35)
+                        }
+                    }
                 )
                 .clipShape(RoundedRectangle(cornerRadius: 33))
                 .padding(.horizontal, 21)

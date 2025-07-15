@@ -39,11 +39,16 @@ extension ThemeManagerView {
     @ViewBuilder
     private func BackgroundPatternView() -> some View {
         GeometryReader { geometry in
-            Image(patternManager.currentPattern)
-                .resizable()
-                .aspectRatio(contentMode: .fill)
-                .frame(width: geometry.size.width, height: geometry.size.height)
-                .clipped()
+            if patternManager.currentPattern == "none" {
+                Color.clear
+                    .frame(width: geometry.size.width, height: geometry.size.height)
+            } else {
+                Image(patternManager.currentPattern)
+                    .resizable()
+                    .aspectRatio(contentMode: .fill)
+                    .frame(width: geometry.size.width, height: geometry.size.height)
+                    .clipped()
+            }
         }
         .ignoresSafeArea(.all)
         .opacity(0.1)
@@ -221,17 +226,12 @@ extension ThemeManagerView {
     private func CreateNewThemeButton() -> some View {
         Button(action: createNewTheme) {
             VStack(spacing: 8) {
-                Image(systemName: "plus.circle.fill")
+                Image(systemName: "paintbrush.pointed.fill")
                     .resizable()
-                    .frame(width: 50, height: 50)
+                    .frame(width: 35, height: 35)
                     .foregroundColor(themeManager.currentTheme.primary)
-                
-                Text("Create New Theme")
-                    .font(.caption)
-                    .foregroundColor(themeManager.currentTheme.primary)
-                    .multilineTextAlignment(.center)
             }
-            .frame(width: 120, height: 120)
+            .frame(width: 90, height: 80)
             .background(themeManager.currentTheme.cardBackground.opacity(0.8))
             .cornerRadius(16)
             .overlay(
@@ -240,6 +240,7 @@ extension ThemeManagerView {
             )
         }
         .buttonStyle(PlainButtonStyle())
+        .padding(12)
     }
 }
 
@@ -306,12 +307,27 @@ struct PatternCardView: View {
     var body: some View {
         Button(action: onSelect) {
             VStack(spacing: 8) {
-                Image(pattern)
-                    .resizable()
-                    .aspectRatio(contentMode: .fill)
+                if pattern == "none" {
+                    ZStack {
+                        Color.clear
+                        Text("None")
+                            .font(.caption)
+                            .foregroundColor(themeManager.currentTheme.text)
+                    }
                     .frame(width: 60, height: 60)
                     .cornerRadius(12)
-                    .clipped()
+                    .overlay(
+                        RoundedRectangle(cornerRadius: 12)
+                            .stroke(themeManager.currentTheme.text.opacity(0.5), style: .init(dash: [2, 2]))
+                    )
+                } else {
+                    Image(pattern)
+                        .resizable()
+                        .aspectRatio(contentMode: .fill)
+                        .frame(width: 60, height: 60)
+                        .cornerRadius(12)
+                        .clipped()
+                }
             }
             .background(themeManager.currentTheme.cardBackground.opacity(0.8))
             .cornerRadius(12)

@@ -18,8 +18,9 @@ class PatternManager: ObservableObject {
     private let currentPatternKey = "currentPattern"
     
     private init() {
-        // Initialize with default patterns
+        // Initialize with default patterns including "none" option
         availablePatterns = [
+            "none",
             "Islamic-Geometric-Tile_1",
             "Islamic-Geometric-Tile_2",
             "Islamic-Geometric-Tile_3",
@@ -30,7 +31,7 @@ class PatternManager: ObservableObject {
            availablePatterns.contains(savedPattern) {
             self.currentPattern = savedPattern
         } else {
-            self.currentPattern = availablePatterns.first ?? "Islamic-Geometric-Tile1"
+            self.currentPattern = availablePatterns.first ?? "none"
         }
     }
     

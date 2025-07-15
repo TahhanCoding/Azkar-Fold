@@ -15,10 +15,12 @@ struct BackgroundView: View {
         ZStack {
             theme.currentTheme.background.opacity(0.5).ignoresSafeArea()
             
-            Image(patternManager.currentPattern)
-                .resizable(resizingMode: .tile)
-                .opacity(0.55)
-                .ignoresSafeArea(.all)
+            if patternManager.currentPattern != "none" {
+                Image(patternManager.currentPattern)
+                    .resizable(resizingMode: .tile)
+                    .opacity(0.55)
+                    .ignoresSafeArea(.all)
+            }
         }
     }
 }
