@@ -13,6 +13,7 @@ struct RootView: View {
     @StateObject private var themeManager = ThemeManager.shared
     @StateObject private var patternManager = PatternManager.shared
     @StateObject private var progressStore = SunnahProgressStore()
+    @StateObject private var purchaseManager = PurchaseManager()
 
     var body: some View {
         NavigationStack(path: $coordinator.path) {
@@ -26,6 +27,12 @@ struct RootView: View {
         .environmentObject(themeManager)
         .environmentObject(patternManager)
         .environmentObject(progressStore)
+        .environmentObject(purchaseManager)
+        
+        // this should be related to if user not premium and trying to access premium
+        .task {
+            await purchaseManager.loadProducts()
+        }
     }
 }
 

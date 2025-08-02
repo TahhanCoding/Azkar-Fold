@@ -6,8 +6,13 @@
 	objectVersion = 77;
 	objects = {
 
+/* Begin PBXBuildFile section */
+		32F902CD2E2BA986005BEE00 /* StoreKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 32F902CC2E2BA986005BEE00 /* StoreKit.framework */; };
+/* End PBXBuildFile section */
+
 /* Begin PBXFileReference section */
 		329D042C2DC5653500ED5D7E /* Azkar Fold.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "Azkar Fold.app"; sourceTree = BUILT_PRODUCTS_DIR; };
+		32F902CC2E2BA986005BEE00 /* StoreKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = StoreKit.framework; path = System/Library/Frameworks/StoreKit.framework; sourceTree = SDKROOT; };
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedRootGroup section */
@@ -23,6 +28,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				32F902CD2E2BA986005BEE00 /* StoreKit.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -33,6 +39,7 @@
 			isa = PBXGroup;
 			children = (
 				329D042E2DC5653500ED5D7E /* Azkar Fold */,
+				32F902CB2E2BA986005BEE00 /* Frameworks */,
 				329D042D2DC5653500ED5D7E /* Products */,
 			);
 			sourceTree = "<group>";
@@ -43,6 +50,14 @@
 				329D042C2DC5653500ED5D7E /* Azkar Fold.app */,
 			);
 			name = Products;
+			sourceTree = "<group>";
+		};
+		32F902CB2E2BA986005BEE00 /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				32F902CC2E2BA986005BEE00 /* StoreKit.framework */,
+			);
+			name = Frameworks;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */

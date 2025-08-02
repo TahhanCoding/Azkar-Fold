@@ -22,8 +22,7 @@ class PatternManager: ObservableObject {
         availablePatterns = [
             "none",
             "Islamic-Geometric-Tile_1",
-            "Islamic-Geometric-Tile_2",
-            "Islamic-Geometric-Tile_3",
+            "Islamic-Geometric-Tile_2"
         ]
         
         // Load current pattern from UserDefaults

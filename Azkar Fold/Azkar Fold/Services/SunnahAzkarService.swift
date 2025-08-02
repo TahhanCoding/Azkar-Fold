@@ -10,52 +10,84 @@ class SunnahAzkarService {
     }
 
     func loadAzkar(for category: SunnahAzkarCategory) -> Result<[SunnahZekrItem], AzkarLoadingError> {
-        guard let bundlePath = Bundle.main.path(forResource: category.fileName, ofType: nil, inDirectory: "Resources") else {
-            // Fallback for cases where app is not running from main bundle (e.g. previews, tests)
-            // This assumes the JSON files are in a 'Resources' subdirectory relative to this Swift file's directory during development.
-            // Adjust the relative path as necessary if your project structure is different.
-            let fileManager = FileManager.default
-            let currentFilePath = #file // Path to this SunnahAzkarService.swift file
-            // Navigate up to the project root or appropriate base directory to find Resources
-            // This example assumes Resources is at 'Azkar Fold/Azkar Fold/Resources/' relative to project root
-            // And 'Services' is at 'Azkar Fold/Azkar Fold/Services/'
-            // So, from 'Services', go up one level to 'Azkar Fold/Azkar Fold/', then into 'Resources/'
-            let projectRootPath = URL(fileURLWithPath: currentFilePath)
-                .deletingLastPathComponent() // Remove 'SunnahAzkarService.swift'
-                .deletingLastPathComponent() // Remove 'Services'
-            let resourcePath = projectRootPath.appendingPathComponent("Resources").appendingPathComponent(category.fileName).path
-
-            if !fileManager.fileExists(atPath: resourcePath) {
-                 print("JSON Loading Debug - File check:\n• Bundle path: \(Bundle.main.bundlePath)\n• Resource path attempted: \(resourcePath)\n• File exists in bundle: \(Bundle.main.path(forResource: category.fileName, ofType: nil) != nil ? "Yes" : "No")\n• Development path exists: \(FileManager.default.fileExists(atPath: resourcePath) ? "Yes" : "No"))")
+        // First, try to get the file from the main bundle using proper resource loading
+        guard let url = Bundle.main.url(forResource: category.fileNameWithoutExtension,
+                                       withExtension: category.fileExtension,
+                                       subdirectory: "Resources") else {
+            
+            // Alternative approach: try without subdirectory
+            guard let fallbackUrl = Bundle.main.url(forResource: category.fileNameWithoutExtension,
+                                                   withExtension: category.fileExtension) else {
+                
+                // Debug information
+                printBundleDebugInfo(for: category)
                 return .failure(.fileNotFound)
             }
             
-            do {
-                let data = try Data(contentsOf: URL(fileURLWithPath: resourcePath))
-                let decoder = JSONDecoder()
-                let azkar = try decoder.decode(SunnahAzkar.self, from: data)
-                return .success(azkar.content)
-            } catch let error as DecodingError {
-                print("Decoding Error Details:\n\(String(describing: error))")
-                return .failure(.parsingFailed(error))
-            } catch {
-                print("Data Loading Error:\n\(String(describing: error))\nPath: \(resourcePath)\nFile exists: \(FileManager.default.fileExists(atPath: resourcePath) ? "Yes" : "No"))")
-                return .failure(.unknownError)
-            }
+            return loadAzkarFromURL(fallbackUrl)
         }
-
+        
+        return loadAzkarFromURL(url)
+    }
+    
+    private func loadAzkarFromURL(_ url: URL) -> Result<[SunnahZekrItem], AzkarLoadingError> {
         do {
-            let url = URL(fileURLWithPath: bundlePath)
             let data = try Data(contentsOf: url)
             let decoder = JSONDecoder()
-            let azkar = try decoder.decode([SunnahZekrItem].self, from: data)
-            return .success(azkar)
+            
+            // Try decoding as array first (based on your success case)
+            if let azkar = try? decoder.decode([SunnahZekrItem].self, from: data) {
+                return .success(azkar)
+            }
+            
+            // Fallback: try decoding as SunnahAzkar wrapper
+            let azkarWrapper = try decoder.decode(SunnahAzkar.self, from: data)
+            return .success(azkarWrapper.content)
+            
         } catch let error as DecodingError {
-            print("Error decoding JSON from bundle: \(error)")
+            print("JSON Decoding Error: \(error)")
             return .failure(.parsingFailed(error))
         } catch {
-            print("Error loading data from bundle: \(error)")
+            print("Data Loading Error: \(error)")
             return .failure(.unknownError)
         }
+    }
+    
+    private func printBundleDebugInfo(for category: SunnahAzkarCategory) {
+        print("=== Bundle Debug Info ===")
+        print("Bundle path: \(Bundle.main.bundlePath)")
+        print("Looking for file: \(category.fileName)")
+        
+        // List all files in the bundle
+        if let bundleContents = try? FileManager.default.contentsOfDirectory(atPath: Bundle.main.bundlePath) {
+            print("Bundle root contents: \(bundleContents)")
+        }
+        
+        // Check if Resources directory exists in bundle
+        let resourcesPath = Bundle.main.bundlePath + "/Resources"
+        if FileManager.default.fileExists(atPath: resourcesPath) {
+            if let resourceContents = try? FileManager.default.contentsOfDirectory(atPath: resourcesPath) {
+                print("Resources directory contents: \(resourceContents)")
+            }
+        } else {
+            print("Resources directory does not exist in bundle")
+        }
+        
+        // Try different resource loading approaches
+        print("Resource loading attempts:")
+        print("• With subdirectory: \(Bundle.main.url(forResource: category.fileNameWithoutExtension, withExtension: category.fileExtension, subdirectory: "Resources") != nil)")
+        print("• Without subdirectory: \(Bundle.main.url(forResource: category.fileNameWithoutExtension, withExtension: category.fileExtension) != nil)")
+        print("• Path-based lookup: \(Bundle.main.path(forResource: category.fileName, ofType: nil) != nil)")
+    }
+}
+
+// Extension to help with file name handling
+extension SunnahAzkarCategory {
+    var fileNameWithoutExtension: String {
+        return (fileName as NSString).deletingPathExtension
+    }
+    
+    var fileExtension: String {
+        return (fileName as NSString).pathExtension
     }
 }

@@ -118,6 +118,15 @@ struct SunnahZekrView: View {
                 .lineLimit(15)
                 .padding(.vertical, 12)
                 .id(zekrItem.zekr)
+            
+            // Footer text for sharing
+            if takeSnapshot {
+                Spacer()
+                Text("azkarfold.com")
+                    .font(.system(size: 16, weight: .medium))
+                    .foregroundColor(theme.currentTheme.text.opacity(0.7))
+                    .padding(.bottom, 16)
+            }
         }
         .padding(.horizontal, 18)
         .frame(height: screenHeight * 0.5)

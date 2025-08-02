@@ -10,9 +10,11 @@ import SwiftUI
 struct AzkaryTabView: View {
     @EnvironmentObject var coordinator: NavigationCoordinator
     @EnvironmentObject var theme: ThemeManager
+    @EnvironmentObject var purchaseManager: PurchaseManager
     @EnvironmentObject var zekrStore: ZekrStore
     @State private var showingDeleteAlert = false
     @State private var indexSetToDelete: IndexSet?
+    
     
     var body: some View {
         NavigationView {
@@ -44,6 +46,10 @@ struct AzkaryTabView: View {
                                     .padding(.horizontal, 16)
                                     .padding(.vertical, 8)
                             }
+                            
+                            
+                            
+                            //Text("sub statues \(purchaseManager.isPremium)")
                         }
                         .listStyle(PlainListStyle())
 
@@ -71,7 +77,12 @@ struct AzkaryTabView: View {
             .toolbar {
                 ToolbarItem(placement: .navigationBarTrailing) {
                     Button(action: {
-                        coordinator.navigate(to: .createZekr)
+                        if purchaseManager.hasPremiumAccess {
+                            coordinator.navigate(to: .createZekr)
+                        } else {
+                            purchaseManager.showPayWall = true
+                        }
+                        
                     }) {
                         Text("Create")
                             .font(.headline)
@@ -82,6 +93,11 @@ struct AzkaryTabView: View {
                             .cornerRadius(8)
                     }
                 }
+            }
+            .sheet(isPresented: $purchaseManager.showPayWall) {
+                PaywallView(onDismiss: { purchaseManager.showPayWall = false })
+                    .environmentObject(purchaseManager)
+                    .environmentObject(theme)
             }
         }
     }

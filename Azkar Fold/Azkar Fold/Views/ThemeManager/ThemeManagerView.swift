@@ -34,6 +34,8 @@ struct ThemeManagerView: View {
     }
 }
 
+
+
 // MARK: - Background Pattern View
 extension ThemeManagerView {
     @ViewBuilder
@@ -44,14 +46,12 @@ extension ThemeManagerView {
                     .frame(width: geometry.size.width, height: geometry.size.height)
             } else {
                 Image(patternManager.currentPattern)
-                    .resizable()
-                    .aspectRatio(contentMode: .fill)
-                    .frame(width: geometry.size.width, height: geometry.size.height)
-                    .clipped()
+                    .resizable(resizingMode: .tile)
+                    .opacity(0.55)
+                    .ignoresSafeArea(.all)
             }
         }
         .ignoresSafeArea(.all)
-        .opacity(0.1)
     }
 }
 
@@ -83,7 +83,7 @@ extension ThemeManagerView {
             SectionHeaderView(title: "Background Pattern")
             
             ScrollView(.horizontal, showsIndicators: false) {
-                LazyHStack(spacing: 12) {
+                HStack {
                     ForEach(patternManager.availablePatterns, id: \.self) { pattern in
                         PatternCardView(
                             pattern: pattern,
@@ -96,7 +96,7 @@ extension ThemeManagerView {
                         )
                     }
                 }
-                .padding(.horizontal, 16)
+                .padding()
             }
         }
     }
