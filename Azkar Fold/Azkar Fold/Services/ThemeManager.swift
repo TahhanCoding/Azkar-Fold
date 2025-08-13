@@ -40,9 +40,11 @@ class ThemeManager: ObservableObject {
     // MARK: - Theme Management
     
     func setCurrentTheme(_ theme: Theme) {
-        saveCurrentTheme {
-            self.currentTheme = theme
+        self.currentTheme = theme
+        if let encoded = try? JSONEncoder().encode(currentTheme) {
+            userDefaults.set(encoded, forKey: currentThemeKey)
         }
+        userDefaults.synchronize()
     }
     
     func addCustomTheme(_ theme: Theme) {
@@ -88,17 +90,11 @@ class ThemeManager: ObservableObject {
         allThemes = Theme.defaultThemes + customThemes
     }
     
-    private func saveCurrentTheme(completion: @escaping () -> Void) {
-        if let encoded = try? JSONEncoder().encode(currentTheme) {
-            userDefaults.set(encoded, forKey: currentThemeKey)
-            userDefaults.synchronize()
-            completion()
-        }
-    }
 
     private func saveCustomThemes() {
         if let encoded = try? JSONEncoder().encode(customThemes) {
             userDefaults.set(encoded, forKey: customThemesKey)
+            userDefaults.synchronize()
         }
     }
     
