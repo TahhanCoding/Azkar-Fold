@@ -46,10 +46,6 @@ struct AzkaryTabView: View {
                                     .padding(.horizontal, 16)
                                     .padding(.vertical, 8)
                             }
-                            
-                            
-                            
-                            //Text("sub statues \(purchaseManager.isPremium)")
                         }
                         .listStyle(PlainListStyle())
 

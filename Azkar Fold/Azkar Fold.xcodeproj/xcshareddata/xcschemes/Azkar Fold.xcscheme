@@ -50,6 +50,13 @@
             ReferencedContainer = "container:Azkar Fold.xcodeproj">
          </BuildableReference>
       </BuildableProductRunnable>
+      <AdditionalOptions>
+         <AdditionalOption
+            key = "APP_DISTRIBUTOR_ID_OVERRIDE"
+            value = "com.apple.AppStore"
+            isEnabled = "YES">
+         </AdditionalOption>
+      </AdditionalOptions>
       <StoreKitConfigurationFileReference
          identifier = "../../Azkar Fold/Subscriptions/StoreKit.storekit">
       </StoreKitConfigurationFileReference>
@@ -72,7 +79,7 @@
       </BuildableProductRunnable>
    </ProfileAction>
    <AnalyzeAction
-      buildConfiguration = "Debug">
+      buildConfiguration = "Release">
    </AnalyzeAction>
    <ArchiveAction
       buildConfiguration = "Release"
