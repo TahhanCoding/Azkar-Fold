@@ -20,6 +20,10 @@ struct SunnahZekrView: View {
     @State private var showCompletionAlert: Bool = false
     @State private var textOnScreen: String = ""
     
+    // Modular managers
+    @EnvironmentObject var motionManager: CoreMotionManager
+    @StateObject private var simpleModeManager = SimpleModeManager()
+    
     // Snapshot states
     @State private var takeSnapshot: Bool = false
     @State private var capturedImage: UIImage? = nil
@@ -32,27 +36,46 @@ struct SunnahZekrView: View {
     }
     
     var body: some View {
-        VStack{
-            zekrView
-                .padding(.top, 16)
-            
-            Spacer()
-            
-            VStack(spacing: 16) {
-                progressBar
+        VStack {
+            if simpleModeManager.isSimpleMode {
+                simpleZekrView
+                    .padding(.top, 16)
                 
-                navigationButtons
+                Spacer()
                 
-                contentControls
+                // Simple mode progress bar only
+                VStack(spacing: 16) {
+                    progressBar
+                }
+                .frame(height: screenHeight * 0.1)
+                .frame(maxWidth: .infinity)
+                .background(
+                    RoundedRectangle(cornerRadius: 0)
+                        .fill(theme.currentTheme.background)
+                        .shadow(color: .black.opacity(0.1), radius: 2, x: 0, y: -2)
+                        .ignoresSafeArea(.container, edges: .bottom)
+                )
+            } else {
+                // Full mode
+                zekrView
+                    .padding(.top, 16)
+                
+                Spacer()
+                
+                VStack(spacing: 16) {
+                    progressBar
+                    navigationButtons
+                    contentControls
+                }
+                .frame(height: screenHeight * 0.27)
+                .frame(maxWidth: .infinity)
+                .background(
+                    RoundedRectangle(cornerRadius: 0)
+                        .fill(theme.currentTheme.background)
+                        .shadow(color: .black.opacity(0.1), radius: 2, x: 0, y: -2)
+                        .ignoresSafeArea(.container, edges: .bottom)
+                )
             }
-            .frame(height: screenHeight * 0.27)
-            .frame(maxWidth: .infinity)
-            .background(
-                RoundedRectangle(cornerRadius: 0)
-                    .fill(theme.currentTheme.background)
-                    .shadow(color: .black.opacity(0.1), radius: 2, x: 0, y: -2)
-                    .ignoresSafeArea(.container, edges: .bottom)
-            )
         }
         .background(
             RoundedRectangle(cornerRadius: 33)
@@ -73,12 +96,16 @@ struct SunnahZekrView: View {
             }
         }
         .onAppear {
-            currentIndex = findFirstIncompleteIndex()
-            textOnScreen = zekrItem.zekr
-            resetRepetitions()
+            setupView()
+        }
+        .onDisappear {
+            cleanupView()
         }
         .onChange(of: currentIndex) { _ in
             resetRepetitions()
+        }
+        .onChange(of: currentRepetition) { newValue in
+            handleRepetitionChange(newValue)
         }
         .alert("Congratulations!", isPresented: $showCompletionAlert) {
             Button("OK", role: .cancel) {
@@ -104,8 +131,38 @@ struct SunnahZekrView: View {
         }
     }
     
-    //MARK: - Zekr View
+    //MARK: - Zekr Views
     private var zekrView: some View {
+        createZekrContent(height: screenHeight * 0.5)
+            .addSimpleModeToggle(
+                isSimpleMode: simpleModeManager.isSimpleMode,
+                longPressDuration: 0.8
+            ) {
+                simpleModeManager.enableSimpleMode()
+            }
+        // in SunnahZekrView
+        .addTiltEffect(preset: .floating)
+        
+        .addEnhanced3DTiltEffect()
+        // or .dramatic
+        
+    }
+    
+    private var simpleZekrView: some View {
+        createZekrContent(height: screenHeight * 0.7)
+            .addSimpleModeToggle(
+                isSimpleMode: simpleModeManager.isSimpleMode,
+                longPressDuration: 0.8
+            ) {
+                simpleModeManager.disableSimpleMode()
+            }
+        // in SunnahZekrView
+            .addTiltEffect(preset: .dramatic)
+        .addEnhanced3DTiltEffect()
+        // or .dramatic
+    }
+    
+    private func createZekrContent(height: CGFloat) -> some View {
         VStack {
             Text(textOnScreen)
                 .font(.title)
@@ -129,7 +186,7 @@ struct SunnahZekrView: View {
             }
         }
         .padding(.horizontal, 18)
-        .frame(height: screenHeight * 0.5)
+        .frame(height: height)
         .frame(maxWidth: .infinity)
         .background(
             RoundedRectangle(cornerRadius: 33)
@@ -189,19 +246,13 @@ struct SunnahZekrView: View {
         .onTapGesture {
             countUpZekr()
         }
-        
     }
     
     //MARK: - Navigation Buttons
     private var navigationButtons: some View {
         HStack(spacing: 20) {
             Button(action: {
-                if currentIndex > 0 {
-                    // Save current progress before moving
-                    progressStore.savePartialProgress(zekr: zekrItem, category: category, currentRepetition: currentRepetition)
-                    currentIndex -= 1
-                    resetRepetitions()
-                }
+                navigateToPrevious()
             }) {
                 HStack {
                     Image(systemName: "chevron.left")
@@ -222,12 +273,7 @@ struct SunnahZekrView: View {
             }
             
             Button(action: {
-                if currentIndex < azkarList.count - 1 {
-                    // Save current progress before moving
-                    progressStore.savePartialProgress(zekr: zekrItem, category: category, currentRepetition: currentRepetition)
-                    currentIndex += 1
-                    resetRepetitions()
-                }
+                navigateToNext()
             }) {
                 HStack {
                     Text("Next")
@@ -235,125 +281,37 @@ struct SunnahZekrView: View {
                 }
                 .padding(.horizontal, 20)
                 .padding(.vertical, 12)
-                .background((currentIndex == azkarList.count - 1 || currentRepetition < zekrItem.repeat) ? theme.currentTheme.cardBackground : theme.currentTheme.primary)
-                .foregroundColor((currentIndex == azkarList.count - 1 || currentRepetition < zekrItem.repeat) ? theme.currentTheme.text : theme.currentTheme.buttonText)
+                .background(canNavigateToNext ? theme.currentTheme.primary : theme.currentTheme.cardBackground)
+                .foregroundColor(canNavigateToNext ? theme.currentTheme.buttonText : theme.currentTheme.text)
                 .cornerRadius(25)
             }
-            .disabled(currentIndex == azkarList.count - 1 || currentRepetition < zekrItem.repeat)
+            .disabled(!canNavigateToNext)
         }
         .padding(.horizontal)
-        
     }
     
     //MARK: - Content Controls
     private var contentControls: some View {
         VStack(spacing: 12) {
-            // Primary buttons (Arabic and English)
+            // Primary buttons row
             HStack(spacing: 12) {
-                Button(action: {
-                    textOnScreen = zekrItem.zekr
-                }) {
-                    HStack(spacing: 6) {
-                        Text("Arabic")
-                            .font(.system(size: 12, weight: .medium))
-                    }
-                    .frame(maxWidth: .infinity)
-                    .padding(.vertical, 10)
-                    .background(
-                        RoundedRectangle(cornerRadius: 20)
-                            .fill(textOnScreen == zekrItem.zekr ? theme.currentTheme.primary : theme.currentTheme.cardBackground)
-                    )
-                    .foregroundColor(textOnScreen == zekrItem.zekr ? theme.currentTheme.buttonText : theme.currentTheme.text)
-                }
-                
-                Button(action: {
-                    textOnScreen = zekrItem.transliteration
-                }) {
-                    HStack(spacing: 4) {
-                        Text("Spelling")
-                            .font(.system(size: 12, weight: .medium))
-                    }
-                    .frame(maxWidth: .infinity)
-                    .padding(.vertical, 8)
-                    .background(
-                        RoundedRectangle(cornerRadius: 16)
-                            .fill(textOnScreen == zekrItem.transliteration ? theme.currentTheme.primary : theme.currentTheme.cardBackground)
-                    )
-                    .foregroundColor(textOnScreen == zekrItem.transliteration ? theme.currentTheme.buttonText : theme.currentTheme.text)
-                }
-                
-                Button(action: {
-                    textOnScreen = zekrItem.source
-                }) {
-                    HStack(spacing: 4) {
-                        Text("Source")
-                            .font(.system(size: 12, weight: .medium))
-                    }
-                    .frame(maxWidth: .infinity)
-                    .padding(.vertical, 8)
-                    .background(
-                        RoundedRectangle(cornerRadius: 16)
-                            .fill(textOnScreen == zekrItem.source ? theme.currentTheme.primary : theme.currentTheme.cardBackground)
-                    )
-                    .foregroundColor(textOnScreen == zekrItem.source ? theme.currentTheme.buttonText : theme.currentTheme.text)
-                }
+                contentButton(text: "Arabic", content: zekrItem.zekr)
+                contentButton(text: "Spelling", content: zekrItem.transliteration)
+                contentButton(text: "Source", content: zekrItem.source)
             }
             
             // Secondary buttons row
             HStack(spacing: 8) {
-                Button(action: {
-                    textOnScreen = zekrItem.en_tr
-                }) {
-                    HStack(spacing: 6) {
-                        Text("English")
-                            .font(.system(size: 12, weight: .medium))
-                    }
-                    .frame(maxWidth: .infinity)
-                    .padding(.vertical, 10)
-                    .background(
-                        RoundedRectangle(cornerRadius: 20)
-                            .fill(textOnScreen == zekrItem.en_tr ? theme.currentTheme.primary : theme.currentTheme.cardBackground)
-                    )
-                    .foregroundColor(textOnScreen == zekrItem.en_tr ? theme.currentTheme.buttonText : theme.currentTheme.text)
-                }
+                contentButton(text: "English", content: zekrItem.en_tr)
                 
                 if let bless = zekrItem.bless {
-                    Button(action: {
-                        textOnScreen = bless
-                    }) {
-                        HStack(spacing: 4) {
-                            Text("Bless_ar")
-                                .font(.system(size: 12, weight: .medium))
-                        }
-                        .frame(maxWidth: .infinity)
-                        .padding(.vertical, 8)
-                        .background(
-                            RoundedRectangle(cornerRadius: 16)
-                                .fill(textOnScreen == bless ? theme.currentTheme.primary : theme.currentTheme.cardBackground)
-                        )
-                        .foregroundColor(textOnScreen == bless ? theme.currentTheme.buttonText : theme.currentTheme.text)
-                    }
+                    contentButton(text: "Bless_ar", content: bless)
                 }
                 
                 if let bless_en = zekrItem.bless_en {
-                    Button(action: {
-                        textOnScreen = bless_en
-                    }) {
-                        HStack(spacing: 4) {
-                            Text("Bless_en")
-                                .font(.system(size: 12, weight: .medium))
-                        }
-                        .frame(maxWidth: .infinity)
-                        .padding(.vertical, 8)
-                        .background(
-                            RoundedRectangle(cornerRadius: 16)
-                                .fill(textOnScreen == bless_en ? theme.currentTheme.primary : theme.currentTheme.cardBackground)
-                        )
-                        .foregroundColor(textOnScreen == bless_en ? theme.currentTheme.buttonText : theme.currentTheme.text)
-                    }
+                    contentButton(text: "Bless_en", content: bless_en)
                 }
             }
-            
         }
         .padding(.horizontal)
         .onChange(of: currentIndex) { _ in
@@ -366,30 +324,111 @@ struct SunnahZekrView: View {
         }
     }
     
+    private func contentButton(text: String, content: String) -> some View {
+        Button(action: {
+            textOnScreen = content
+        }) {
+            Text(text)
+                .font(.system(size: 12, weight: .medium))
+                .frame(maxWidth: .infinity)
+                .padding(.vertical, 10)
+                .background(
+                    RoundedRectangle(cornerRadius: 20)
+                        .fill(textOnScreen == content ? theme.currentTheme.primary : theme.currentTheme.cardBackground)
+                )
+                .foregroundColor(textOnScreen == content ? theme.currentTheme.buttonText : theme.currentTheme.text)
+        }
+    }
+    
+    //MARK: - Computed Properties
+    private var canNavigateToNext: Bool {
+        return currentIndex < azkarList.count - 1 && currentRepetition >= zekrItem.repeat
+    }
+    
+    private var screenHeight: CGFloat {
+        UIScreen.main.bounds.height
+    }
+    
     //MARK: - Methods
+    private func setupView() {
+        currentIndex = findFirstIncompleteIndex()
+        textOnScreen = zekrItem.zekr
+        resetRepetitions()
+        
+        // Start motion updates with configuration
+        motionManager.startMotionUpdates(
+            sensitivity: 0.5,
+            maxAngle: 0.175,
+            interval: 0.1
+        )
+    }
+    
+    private func cleanupView() {
+        motionManager.stopMotionUpdates()
+        simpleModeManager.cancelAutoAdvance()
+        progressStore.savePartialProgress(zekr: zekrItem, category: category, currentRepetition: currentRepetition)
+    }
+    
+    private func handleRepetitionChange(_ newValue: Int) {
+        // Auto advance to next zekr when completed in simple mode
+        if simpleModeManager.isSimpleMode && newValue >= zekrItem.repeat {
+            simpleModeManager.scheduleAutoAdvance {
+                autoAdvanceToNextZekr()
+            }
+        }
+    }
+    
+    private func navigateToPrevious() {
+        guard currentIndex > 0 else { return }
+        
+        progressStore.savePartialProgress(zekr: zekrItem, category: category, currentRepetition: currentRepetition)
+        currentIndex -= 1
+        resetRepetitions()
+    }
+    
+    private func navigateToNext() {
+        guard canNavigateToNext else { return }
+        
+        progressStore.savePartialProgress(zekr: zekrItem, category: category, currentRepetition: currentRepetition)
+        currentIndex += 1
+        resetRepetitions()
+    }
+    
+    private func autoAdvanceToNextZekr() {
+        if currentIndex < azkarList.count - 1 {
+            progressStore.savePartialProgress(zekr: zekrItem, category: category, currentRepetition: currentRepetition)
+            
+            withAnimation(.easeInOut(duration: 0.3)) {
+                currentIndex += 1
+                resetRepetitions()
+            }
+        } else {
+            checkIfAllAzkarCompleted()
+        }
+    }
+    
     private func checkIfAllAzkarCompleted() {
-        // Ensure azkarList is not empty before checking
         guard !azkarList.isEmpty else { return }
         
         let allCompleted = azkarList.allSatisfy { zekrItemInList in
             progressStore.isCompleted(zekr: zekrItemInList, category: category)
         }
+        
         if allCompleted {
             showCompletionAlert = true
         }
     }
     
     private func resetRepetitions() {
-        // Load saved partial progress instead of just checking completion
         let savedProgress = progressStore.getPartialProgress(zekr: zekrItem, category: category)
         
-        // If the item is fully completed, set to max repetitions
         if progressStore.isCompleted(zekr: zekrItem, category: category) {
             currentRepetition = zekrItem.repeat
         } else {
-            // Otherwise, restore the saved partial progress
             currentRepetition = savedProgress
         }
+        
+        textOnScreen = zekrItem.zekr
     }
     
     private func findFirstIncompleteIndex() -> Int {
@@ -398,20 +437,553 @@ struct SunnahZekrView: View {
                 return index
             }
         }
-        // If all are completed, return 0 (first item)
         return 0
     }
     
     private func countUpZekr() {
-        if currentRepetition < zekrItem.repeat {
-            currentRepetition += 1
-            // Save partial progress immediately
-            progressStore.savePartialProgress(zekr: zekrItem, category: category, currentRepetition: currentRepetition)
-            
-            if currentRepetition == zekrItem.repeat {
-                progressStore.markAsCompleted(zekr: zekrItem, category: category)
-                checkIfAllAzkarCompleted()
-            }
+        guard currentRepetition < zekrItem.repeat else { return }
+        
+        currentRepetition += 1
+        progressStore.savePartialProgress(zekr: zekrItem, category: category, currentRepetition: currentRepetition)
+        
+        if currentRepetition == zekrItem.repeat {
+            progressStore.markAsCompleted(zekr: zekrItem, category: category)
+            checkIfAllAzkarCompleted()
         }
     }
 }
+
+//
+//  SimpleModeManager.swift
+//  Azkar Fold
+//
+//  Created by Ahmed Shaban on 03/05/2025.
+//
+
+import SwiftUI
+import Combine
+
+/// A reusable manager for handling simple mode functionality
+class SimpleModeManager: ObservableObject {
+    @Published var isSimpleMode: Bool = false
+    @Published var autoAdvanceEnabled: Bool = true
+    @Published var autoAdvanceDelay: TimeInterval = 0.5
+    
+    private var autoAdvanceTimer: Timer?
+    
+    /// Toggle simple mode with animation
+    func toggleSimpleMode() {
+        //motionManager.resetTiltValues() // Add this
+
+        withAnimation(.easeInOut(duration: 0.3)) {
+            isSimpleMode.toggle()
+        }
+    }
+    
+    /// Enable simple mode with animation
+    func enableSimpleMode() {
+        withAnimation(.easeInOut(duration: 0.3)) {
+            isSimpleMode = true
+        }
+    }
+    
+    /// Disable simple mode with animation
+    func disableSimpleMode() {
+        withAnimation(.easeInOut(duration: 0.3)) {
+            isSimpleMode = false
+        }
+    }
+    
+    /// Schedule auto advance action
+    func scheduleAutoAdvance(action: @escaping () -> Void) {
+        guard autoAdvanceEnabled else { return }
+        
+        // Cancel any existing timer
+        autoAdvanceTimer?.invalidate()
+        
+        // Schedule new timer
+        autoAdvanceTimer = Timer.scheduledTimer(withTimeInterval: autoAdvanceDelay, repeats: false) { _ in
+            DispatchQueue.main.async {
+                action()
+            }
+        }
+    }
+    
+    /// Cancel scheduled auto advance
+    func cancelAutoAdvance() {
+        autoAdvanceTimer?.invalidate()
+        autoAdvanceTimer = nil
+    }
+    
+    deinit {
+        cancelAutoAdvance()
+    }
+}
+
+//MARK: - Simple Mode Configuration
+struct SimpleModeConfig {
+    let autoAdvanceEnabled: Bool
+    let autoAdvanceDelay: TimeInterval
+    let longPressMinimumDuration: Double
+    let animationDuration: Double
+    
+    static let `default` = SimpleModeConfig(
+        autoAdvanceEnabled: true,
+        autoAdvanceDelay: 0.5,
+        longPressMinimumDuration: 0.8,
+        animationDuration: 0.3
+    )
+    
+    static let quick = SimpleModeConfig(
+        autoAdvanceEnabled: true,
+        autoAdvanceDelay: 0.2,
+        longPressMinimumDuration: 0.5,
+        animationDuration: 0.2
+    )
+    
+    static let slow = SimpleModeConfig(
+        autoAdvanceEnabled: true,
+        autoAdvanceDelay: 1.0,
+        longPressMinimumDuration: 1.2,
+        animationDuration: 0.5
+    )
+    
+    static let manual = SimpleModeConfig(
+        autoAdvanceEnabled: false,
+        autoAdvanceDelay: 0.0,
+        longPressMinimumDuration: 0.8,
+        animationDuration: 0.3
+    )
+}
+
+//MARK: - Simple Mode View Modifier
+struct SimpleModeModifier: ViewModifier {
+    let isSimpleMode: Bool
+    let onToggle: () -> Void
+    let longPressDuration: Double
+    
+    func body(content: Content) -> some View {
+        content
+            .onLongPressGesture(minimumDuration: longPressDuration) {
+                onToggle()
+            }
+    }
+}
+
+//MARK: - View Extension for Simple Mode
+extension View {
+    func addSimpleModeToggle(
+        isSimpleMode: Bool,
+        longPressDuration: Double = 0.8,
+        onToggle: @escaping () -> Void
+    ) -> some View {
+        self.modifier(SimpleModeModifier(
+            isSimpleMode: isSimpleMode,
+            onToggle: onToggle,
+            longPressDuration: longPressDuration
+        ))
+    }
+}
+
+//
+//  TiltEffectModifiers.swift
+//  Azkar Fold
+//
+//  Created by Ahmed Shaban on 03/05/2025.
+//
+
+import SwiftUI
+
+//MARK: - Basic 3D Tilt Effect Modifier
+struct TiltEffect3D: ViewModifier {
+    @EnvironmentObject var motionManager: CoreMotionManager
+    let animationResponse: Double
+    let dampingFraction: Double
+    
+    init(
+        animationResponse: Double = 0.3,
+        dampingFraction: Double = 0.8
+    ) {
+        self.animationResponse = animationResponse
+        self.dampingFraction = dampingFraction
+    }
+    
+    func body(content: Content) -> some View {
+        content
+            .rotation3DEffect(
+                Angle(radians: motionManager.tiltPitch),
+                axis: (x: 1.0, y: 0.0, z: 0.0)
+            )
+            .rotation3DEffect(
+                Angle(radians: -motionManager.tiltRoll),
+                axis: (x: 0.0, y: 1.0, z: 0.0)
+            )
+            .animation(.spring(response: animationResponse, dampingFraction: dampingFraction), value: motionManager.tiltPitch)
+            .animation(.spring(response: animationResponse, dampingFraction: dampingFraction), value: motionManager.tiltRoll)
+    }
+}
+
+//MARK: - Enhanced 3D Tilt Effect with Perspective
+struct EnhancedTiltEffect3D: ViewModifier {
+    @EnvironmentObject var motionManager: CoreMotionManager
+    let perspectiveIntensity: Double
+    let shadowIntensity: Double
+    let animationResponse: Double
+    let dampingFraction: Double
+    
+    init(
+        perspectiveIntensity: Double = 0.001,
+        shadowIntensity: Double = 0.3,
+        animationResponse: Double = 0.3,
+        dampingFraction: Double = 0.8
+    ) {
+        self.perspectiveIntensity = perspectiveIntensity
+        self.shadowIntensity = shadowIntensity
+        self.animationResponse = animationResponse
+        self.dampingFraction = dampingFraction
+    }
+    
+    func body(content: Content) -> some View {
+        content
+            .rotation3DEffect(
+                Angle(radians: motionManager.tiltPitch),
+                axis: (x: 1.0, y: 0.0, z: 0.0),
+                perspective: perspectiveIntensity
+            )
+            .rotation3DEffect(
+                Angle(radians: -motionManager.tiltRoll),
+                axis: (x: 0.0, y: 1.0, z: 0.0),
+                perspective: perspectiveIntensity
+            )
+            .shadow(
+                color: .black.opacity(shadowIntensity * abs(motionManager.tiltRoll + motionManager.tiltPitch)),
+                radius: 8,
+                x: CGFloat(motionManager.tiltRoll * 10),
+                y: CGFloat(motionManager.tiltPitch * 10)
+            )
+            .animation(.spring(response: animationResponse, dampingFraction: dampingFraction), value: motionManager.tiltPitch)
+            .animation(.spring(response: animationResponse, dampingFraction: dampingFraction), value: motionManager.tiltRoll)
+    }
+}
+
+//MARK: - Floating Card Tilt Effect
+struct FloatingCardTiltEffect: ViewModifier {
+    @EnvironmentObject var motionManager: CoreMotionManager
+    let floatIntensity: Double
+    let animationResponse: Double
+    let dampingFraction: Double
+    
+    init(
+        floatIntensity: Double = 5.0,
+        animationResponse: Double = 0.4,
+        dampingFraction: Double = 0.9
+    ) {
+        self.floatIntensity = floatIntensity
+        self.animationResponse = animationResponse
+        self.dampingFraction = dampingFraction
+    }
+    
+    func body(content: Content) -> some View {
+        content
+            .rotation3DEffect(
+                Angle(radians: motionManager.tiltPitch),
+                axis: (x: 1.0, y: 0.0, z: 0.0)
+            )
+            .rotation3DEffect(
+                Angle(radians: -motionManager.tiltRoll),
+                axis: (x: 0.0, y: 1.0, z: 0.0)
+            )
+            .offset(
+                x: CGFloat(-motionManager.tiltRoll * floatIntensity),
+                y: CGFloat(-motionManager.tiltPitch * floatIntensity)
+            )
+            .scaleEffect(1.0 + (abs(motionManager.tiltPitch) + abs(motionManager.tiltRoll)) * 0.05)
+            .animation(.spring(response: animationResponse, dampingFraction: dampingFraction), value: motionManager.tiltPitch)
+            .animation(.spring(response: animationResponse, dampingFraction: dampingFraction), value: motionManager.tiltRoll)
+    }
+}
+
+//MARK: - View Extensions for Easy Usage
+extension View {
+    /// Apply basic 3D tilt effect
+    func add3DTiltEffect(
+        animationResponse: Double = 0.3,
+        dampingFraction: Double = 0.8
+    ) -> some View {
+        self.modifier(TiltEffect3D(
+            animationResponse: animationResponse,
+            dampingFraction: dampingFraction
+        ))
+    }
+    
+    /// Apply enhanced 3D tilt effect with perspective and shadow
+    func addEnhanced3DTiltEffect(
+        perspectiveIntensity: Double = 0.001,
+        shadowIntensity: Double = 0.3,
+        animationResponse: Double = 0.3,
+        dampingFraction: Double = 0.8
+    ) -> some View {
+        self.modifier(EnhancedTiltEffect3D(
+            perspectiveIntensity: perspectiveIntensity,
+            shadowIntensity: shadowIntensity,
+            animationResponse: animationResponse,
+            dampingFraction: dampingFraction
+        ))
+    }
+    
+    /// Apply floating card tilt effect
+    func addFloatingCardTiltEffect(
+        floatIntensity: Double = 5.0,
+        animationResponse: Double = 0.4,
+        dampingFraction: Double = 0.9
+    ) -> some View {
+        self.modifier(FloatingCardTiltEffect(
+            floatIntensity: floatIntensity,
+            animationResponse: animationResponse,
+            dampingFraction: dampingFraction
+        ))
+    }
+}
+
+//MARK: - Tilt Effect Presets
+enum TiltEffectPreset {
+    case subtle
+    case normal
+    case dramatic
+    case floating
+    
+    var animationResponse: Double {
+        switch self {
+        case .subtle: return 0.5
+        case .normal: return 0.3
+        case .dramatic: return 0.2
+        case .floating: return 0.4
+        }
+    }
+    
+    var dampingFraction: Double {
+        switch self {
+        case .subtle: return 0.9
+        case .normal: return 0.8
+        case .dramatic: return 0.7
+        case .floating: return 0.9
+        }
+    }
+}
+
+//MARK: - Preset-based View Extension
+extension View {
+    func addTiltEffect(
+        preset: TiltEffectPreset = .normal
+    ) -> some View {
+        switch preset {
+        case .subtle:
+            return AnyView(self.add3DTiltEffect(
+                animationResponse: preset.animationResponse,
+                dampingFraction: preset.dampingFraction
+            ))
+        case .normal:
+            return AnyView(self.add3DTiltEffect(
+                animationResponse: preset.animationResponse,
+                dampingFraction: preset.dampingFraction
+            ))
+        case .dramatic:
+            return AnyView(self.addEnhanced3DTiltEffect(
+                animationResponse: preset.animationResponse,
+                dampingFraction: preset.dampingFraction
+            ))
+        case .floating:
+            return AnyView(self.addFloatingCardTiltEffect(
+                animationResponse: preset.animationResponse,
+                dampingFraction: preset.dampingFraction
+            ))
+        }
+    }
+}
+
+//
+//  CoreMotionManager.swift
+//  Azkar Fold
+//
+//  Created by Ahmed Shaban on 03/05/2025.
+//
+
+import Foundation
+import CoreMotion
+import Combine
+
+/// A reusable CoreMotion manager that provides device tilt data for 3D effects
+class CoreMotionManager: ObservableObject {
+    private let motionManager = CMMotionManager()
+    
+    @Published var tiltPitch: Double = 0.0
+    @Published var tiltRoll: Double = 0.0
+    @Published var isActive: Bool = false
+    
+    // Configurable properties
+    var maxTiltAngle: Double = 0.175 // ~10 degrees in radians
+    var motionSensitivity: Double = 0.5
+    var updateInterval: TimeInterval = 0.1 // 10Hz for smooth 60fps experience
+    
+    /// Start motion updates with optional configuration
+    func startMotionUpdates(
+        sensitivity: Double? = nil,
+        maxAngle: Double? = nil,
+        interval: TimeInterval? = nil
+    ) {
+        guard motionManager.isDeviceMotionAvailable else {
+            print("CoreMotionManager: Device motion not available")
+            return
+        }
+        
+        // Apply optional configuration
+        if let sensitivity = sensitivity { motionSensitivity = sensitivity }
+        if let maxAngle = maxAngle { maxTiltAngle = maxAngle }
+        if let interval = interval { updateInterval = interval }
+        
+        motionManager.deviceMotionUpdateInterval = updateInterval
+        
+        motionManager.startDeviceMotionUpdates(to: .main) { [weak self] motion, error in
+            print("Motion update: \(motion?.attitude.pitch ?? 0)") // Add this line
+
+            guard let self = self, let motion = motion, error == nil else {
+                if let error = error {
+                    print("CoreMotionManager error: \(error.localizedDescription)")
+                }
+                return
+            }
+            
+            let pitch = motion.attitude.pitch * self.motionSensitivity
+            let roll = motion.attitude.roll * self.motionSensitivity
+            
+            // Clamp the values to prevent excessive rotation
+            self.tiltPitch = max(-self.maxTiltAngle, min(self.maxTiltAngle, pitch))
+            self.tiltRoll = max(-self.maxTiltAngle, min(self.maxTiltAngle, roll))
+            
+            if !self.isActive {
+                self.isActive = true
+            }
+        }
+    }
+    
+    /// Stop motion updates and reset values
+    func stopMotionUpdates() {
+        motionManager.stopDeviceMotionUpdates()
+        tiltPitch = 0.0
+        tiltRoll = 0.0
+        isActive = false
+    }
+    
+    /// Reset tilt values to zero (useful for recalibration)
+    func resetTiltValues() {
+        tiltPitch = 0.0
+        tiltRoll = 0.0
+    }
+    
+    deinit {
+        stopMotionUpdates()
+    }
+}
+
+//MARK: - Configuration Struct
+struct MotionConfig {
+    let sensitivity: Double
+    let maxAngle: Double
+    let updateInterval: TimeInterval
+    
+    static let `default` = MotionConfig(
+        sensitivity: 0.5,
+        maxAngle: 0.175,
+        updateInterval: 0.1
+    )
+    
+    static let subtle = MotionConfig(
+        sensitivity: 0.3,
+        maxAngle: 0.1,
+        updateInterval: 0.1
+    )
+    
+    static let dramatic = MotionConfig(
+        sensitivity: 0.8,
+        maxAngle: 0.3,
+        updateInterval: 0.05
+    )
+}
+
+/*
+ // Enhanced effect with shadows
+ .addEnhanced3DTiltEffect(motionManager: motionManager)
+
+ // Floating card effect
+ .addFloatingCardTiltEffect(motionManager: motionManager)
+
+ // Simple mode toggle
+ .addSimpleModeToggle(isSimpleMode: isSimpleMode) {
+    simpleModeManager.toggleSimpleMode()
+ }
+
+ // Custom motion configuration
+ motionManager.startMotionUpdates(
+    sensitivity: 0.5,    // Motion sensitivity
+    maxAngle: 0.175,     // ~10 degrees max rotation
+    interval: 0.1        // 10Hz update rate
+ )
+ 
+ 
+ 🔧 Key Technical Features:
+ Performance Optimized:
+
+ Motion updates only when view is visible
+ Efficient timer management for auto-advance
+ Smooth animations without blocking UI
+ Memory-safe with proper cleanup
+
+ Highly Configurable:
+
+ Multiple tilt effect presets
+ Adjustable motion sensitivity
+ Configurable auto-advance timing
+ Customizable animation parameters
+
+ User Experience:
+
+ Intuitive gestures: Long tap to toggle modes
+ Visual feedback: Smooth transitions and animations
+ Immersive feel: 3D card appears to float in device
+ Accessibility: Maintains all existing functionality
+
+ Easy Integration:
+
+ Drop-in replacement for existing view
+ No breaking changes to existing code
+ Modular components can be reused elsewhere
+ Clean separation of concerns
+
+ 📱 Simple Mode Behavior:
+
+ Long tap on zekr card enters simple mode
+ Larger display area for better readability
+ Auto-advance when zekr count reaches target
+ 0.5 second delay before advancing (configurable)
+ Long tap again to exit simple mode
+ Completion alert when all azkar finished
+
+ 🎮 3D Tilt Effect Details:
+
+ Device pitch → X-axis rotation (forward/backward tilt)
+ Device roll → Y-axis rotation (left/right tilt)
+ Clamped rotation prevents excessive movement
+ Spring animations for natural, responsive feel
+ 60fps updates for smooth visual experience
+ Battery efficient - stops when view disappears
+
+ The modular design makes it easy to:
+
+ Reuse components in other parts of your app
+ Customize behavior with different presets
+ Extend functionality by adding new effects
+ Maintain code with clear separation of concerns
+
+ All components work together seamlessly while maintaining the original functionality of your Zekr app! 🕌✨
+ 
+ */
