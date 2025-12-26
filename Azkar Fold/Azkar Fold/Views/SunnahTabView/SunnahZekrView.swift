@@ -15,6 +15,7 @@ struct SunnahZekrView: View {
     @ObservedObject var progressStore: SunnahProgressStore
     
     @Environment(\.presentationMode) var presentationMode
+    @AppStorage("enable3DEffects") private var enable3DEffects = true
     @State private var currentIndex: Int = 0
     @State private var currentRepetition: Int = 0
     @State private var showCompletionAlert: Bool = false
@@ -107,6 +108,19 @@ struct SunnahZekrView: View {
         .onChange(of: currentRepetition) { newValue in
             handleRepetitionChange(newValue)
         }
+        .onChange(of: enable3DEffects) { newValue in
+            if newValue {
+                // Start motion updates if 3D effects are enabled
+                motionManager.startMotionUpdates(
+                    sensitivity: 0.5,
+                    maxAngle: 0.175,
+                    interval: 0.1
+                )
+            } else {
+                // Stop motion updates if 3D effects are disabled
+                motionManager.stopMotionUpdates()
+            }
+        }
         .alert("Congratulations!", isPresented: $showCompletionAlert) {
             Button("OK", role: .cancel) {
                 presentationMode.wrappedValue.dismiss()
@@ -133,33 +147,33 @@ struct SunnahZekrView: View {
     
     //MARK: - Zekr Views
     private var zekrView: some View {
-        createZekrContent(height: screenHeight * 0.5)
+        let content = createZekrContent(height: screenHeight * 0.5)
             .addSimpleModeToggle(
                 isSimpleMode: simpleModeManager.isSimpleMode,
                 longPressDuration: 0.8
             ) {
                 simpleModeManager.enableSimpleMode()
             }
-        // in SunnahZekrView
-        .addTiltEffect(preset: .floating)
         
-        .addEnhanced3DTiltEffect()
-        // or .dramatic
-        
+        if enable3DEffects {
+            return AnyView(content
+                .addTiltEffect(preset: .floating)
+            )
+        } else {
+            return AnyView(content)
+        }
     }
     
     private var simpleZekrView: some View {
-        createZekrContent(height: screenHeight * 0.7)
+        let content = createZekrContent(height: screenHeight * 0.7)
             .addSimpleModeToggle(
                 isSimpleMode: simpleModeManager.isSimpleMode,
                 longPressDuration: 0.8
             ) {
                 simpleModeManager.disableSimpleMode()
             }
-        // in SunnahZekrView
-            .addTiltEffect(preset: .dramatic)
-        .addEnhanced3DTiltEffect()
-        // or .dramatic
+        
+        return content
     }
     
     private func createZekrContent(height: CGFloat) -> some View {
@@ -355,12 +369,14 @@ struct SunnahZekrView: View {
         textOnScreen = zekrItem.zekr
         resetRepetitions()
         
-        // Start motion updates with configuration
-        motionManager.startMotionUpdates(
-            sensitivity: 0.5,
-            maxAngle: 0.175,
-            interval: 0.1
-        )
+        // Start motion updates with configuration only if 3D effects are enabled
+        if enable3DEffects {
+            motionManager.startMotionUpdates(
+                sensitivity: 0.5,
+                maxAngle: 0.175,
+                interval: 0.1
+            )
+        }
     }
     
     private func cleanupView() {

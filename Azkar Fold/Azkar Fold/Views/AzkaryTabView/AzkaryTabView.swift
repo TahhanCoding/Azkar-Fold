@@ -10,7 +10,6 @@ import SwiftUI
 struct AzkaryTabView: View {
     @EnvironmentObject var coordinator: NavigationCoordinator
     @EnvironmentObject var theme: ThemeManager
-    @EnvironmentObject var purchaseManager: PurchaseManager
     @EnvironmentObject var zekrStore: ZekrStore
     @State private var showingDeleteAlert = false
     @State private var indexSetToDelete: IndexSet?
@@ -73,12 +72,7 @@ struct AzkaryTabView: View {
             .toolbar {
                 ToolbarItem(placement: .navigationBarTrailing) {
                     Button(action: {
-                        if purchaseManager.hasPremiumAccess {
-                            coordinator.navigate(to: .createZekr)
-                        } else {
-                            purchaseManager.showPayWall = true
-                        }
-                        
+                        coordinator.navigate(to: .createZekr)
                     }) {
                         Text("Create")
                             .font(.headline)
@@ -89,11 +83,6 @@ struct AzkaryTabView: View {
                             .cornerRadius(8)
                     }
                 }
-            }
-            .sheet(isPresented: $purchaseManager.showPayWall) {
-                PaywallView(onDismiss: { purchaseManager.showPayWall = false })
-                    .environmentObject(purchaseManager)
-                    .environmentObject(theme)
             }
         }
     }
