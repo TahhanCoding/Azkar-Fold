@@ -20,6 +20,7 @@ struct SunnahZekrView: View {
     @State private var currentRepetition: Int = 0
     @State private var showCompletionAlert: Bool = false
     @State private var textOnScreen: String = ""
+    @State private var reorderedAzkarList: [SunnahZekrItem]? = nil
     
     // Modular managers
     @EnvironmentObject var motionManager: CoreMotionManager
@@ -32,8 +33,28 @@ struct SunnahZekrView: View {
     @State private var showSaveAlert: Bool = false
     @State private var saveAlertMessage: String = ""
     
+    // Computed property for displayed azkar list (uses reordered if available)
+    var displayedAzkarList: [SunnahZekrItem] {
+        return reorderedAzkarList ?? azkarList
+    }
+    
     var zekrItem: SunnahZekrItem {
-        return azkarList[currentIndex]
+        return displayedAzkarList[currentIndex]
+    }
+    
+    // Total progress calculation - based on completed azkar items, not repetition counts
+    var totalCategoryProgress: (completed: Int, total: Int, percentage: Double) {
+        let total = displayedAzkarList.count
+        let completed = displayedAzkarList.filter { zekr in
+            progressStore.isCompleted(zekr: zekr, category: category)
+        }.count
+        let percentage = total > 0 ? Double(completed) / Double(total) : 0.0
+        return (completed, total, percentage)
+    }
+    
+    // Check if Move to End is available (not last item)
+    var canMoveToEnd: Bool {
+        return currentIndex < displayedAzkarList.count - 1
     }
     
     var body: some View {
@@ -63,19 +84,25 @@ struct SunnahZekrView: View {
                 
                 Spacer()
                 
-                VStack(spacing: 16) {
-                    progressBar
-                    navigationButtons
-                    contentControls
+                VStack(spacing: 1) {
+                    totalProgressBar
+                    
+                    VStack(spacing: 16) {
+                        progressBar
+                        
+                        navigationButtons
+                                    
+                        contentControls
+                    }
+                    .frame(height: screenHeight * 0.27)
+                    .frame(maxWidth: .infinity)
+                    .background(
+                        RoundedRectangle(cornerRadius: 0)
+                            .fill(theme.currentTheme.background)
+                            .shadow(color: .black.opacity(0.1), radius: 2, x: 0, y: -2)
+                            .ignoresSafeArea(.container, edges: .bottom)
+                    )
                 }
-                .frame(height: screenHeight * 0.27)
-                .frame(maxWidth: .infinity)
-                .background(
-                    RoundedRectangle(cornerRadius: 0)
-                        .fill(theme.currentTheme.background)
-                        .shadow(color: .black.opacity(0.1), radius: 2, x: 0, y: -2)
-                        .ignoresSafeArea(.container, edges: .bottom)
-                )
             }
         }
         .background(
@@ -87,10 +114,31 @@ struct SunnahZekrView: View {
         .navigationBarTitleDisplayMode(.inline)
         .toolbar {
             ToolbarItem(placement: .navigationBarTrailing) {
-                Button(action: {
-                    takeSnapshot = true
-                }) {
-                    Image(systemName: "square.and.arrow.up.on.square.fill")
+                Menu {
+                    Button(action: {
+                        takeSnapshot = true
+                    }) {
+                        Label("Share", systemImage: "square.and.arrow.up.on.square.fill")
+                    }
+                    
+                    Divider()
+                    
+                    Button(action: {
+                        moveCurrentZekrToEnd()
+                    }) {
+                        Label("Move to End", systemImage: "arrow.down.to.line")
+                    }
+                    .disabled(!canMoveToEnd)
+                    
+                    if reorderedAzkarList != nil {
+                        Button(action: {
+                            resetAzkarOrder()
+                        }) {
+                            Label("Reset Order", systemImage: "arrow.counterclockwise")
+                        }
+                    }
+                } label: {
+                    Image(systemName: "ellipsis.circle")
                         .foregroundStyle(theme.currentTheme.accent)
                         .padding(5)
                 }
@@ -281,7 +329,7 @@ struct SunnahZekrView: View {
             .disabled(currentIndex == 0)
             
             VStack {
-                Text("\(currentIndex + 1) of \(azkarList.count)")
+                Text("\(currentIndex + 1) of \(displayedAzkarList.count)")
                     .font(.caption)
                     .foregroundColor(theme.currentTheme.text)
             }
@@ -354,9 +402,31 @@ struct SunnahZekrView: View {
         }
     }
     
+    //MARK: - Total Progress Bar
+    private var totalProgressBar: some View {
+        GeometryReader { geometry in
+            ZStack(alignment: .leading) {
+                // Thin background line
+                RoundedRectangle(cornerRadius: 2)
+                    .fill(.gray.opacity(0.2))
+                    .frame(height: 3)
+                
+                // Thin progress fill line
+                RoundedRectangle(cornerRadius: 2)
+                    .fill(theme.currentTheme.accent)
+                    .frame(
+                        width: geometry.size.width * totalCategoryProgress.percentage,
+                        height: 3
+                    )
+                    .animation(.easeInOut(duration: 0.3), value: totalCategoryProgress.completed)
+            }
+        }
+        .frame(height: 3)
+    }
+    
     //MARK: - Computed Properties
     private var canNavigateToNext: Bool {
-        return currentIndex < azkarList.count - 1 && currentRepetition >= zekrItem.repeat
+        return currentIndex < displayedAzkarList.count - 1 && currentRepetition >= zekrItem.repeat
     }
     
     private var screenHeight: CGFloat {
@@ -365,6 +435,11 @@ struct SunnahZekrView: View {
     
     //MARK: - Methods
     private func setupView() {
+        // Load saved order if available
+        if let savedOrder = progressStore.loadAzkarOrder(category: category), !savedOrder.isEmpty {
+            applySavedOrder(savedOrder)
+        }
+        
         currentIndex = findFirstIncompleteIndex()
         textOnScreen = zekrItem.zekr
         resetRepetitions()
@@ -377,6 +452,83 @@ struct SunnahZekrView: View {
                 interval: 0.1
             )
         }
+    }
+    
+    private func applySavedOrder(_ savedOrder: [String]) {
+        // Create a dictionary for quick lookup
+        // Use both ID-based and text-based lookups for compatibility
+        var azkarDictById: [String: SunnahZekrItem] = [:]
+        var azkarDictByTextId: [String: SunnahZekrItem] = [:]
+        
+        for zekr in azkarList {
+            let idBasedKey = "\(category.rawValue)_\(zekr.id)"
+            let textBasedKey = "\(category.rawValue)_\(zekr.zekr)"
+            
+            azkarDictById[idBasedKey] = zekr
+            // Only add to text dict if not already present (handle duplicates)
+            if azkarDictByTextId[textBasedKey] == nil {
+                azkarDictByTextId[textBasedKey] = zekr
+            }
+        }
+        
+        // Reorder based on saved order, then append any new items
+        var reordered: [SunnahZekrItem] = []
+        var usedZekrIds = Set<Int>()
+        
+        // Add items in saved order
+        for savedId in savedOrder {
+            // Try ID-based first (new format), then text-based (old format for compatibility)
+            if let zekr = azkarDictById[savedId] ?? azkarDictByTextId[savedId] {
+                if !usedZekrIds.contains(zekr.id) {
+                    reordered.append(zekr)
+                    usedZekrIds.insert(zekr.id)
+                }
+            }
+        }
+        
+        // Add any new items that weren't in saved order
+        for zekr in azkarList {
+            if !usedZekrIds.contains(zekr.id) {
+                reordered.append(zekr)
+            }
+        }
+        
+        reorderedAzkarList = reordered
+    }
+    
+    private func moveCurrentZekrToEnd() {
+        guard canMoveToEnd else { return }
+        
+        // Save current progress
+        progressStore.savePartialProgress(zekr: zekrItem, category: category, currentRepetition: currentRepetition)
+        
+        // Get current zekr
+        let currentZekr = displayedAzkarList[currentIndex]
+        
+        // Create new list with current zekr moved to end
+        var newList = displayedAzkarList
+        newList.remove(at: currentIndex)
+        newList.append(currentZekr)
+        
+        // Update reordered list
+        reorderedAzkarList = newList
+        
+        // Save new order using zekr.id for uniqueness
+        let orderIds = newList.map { "\(category.rawValue)_\($0.id)" }
+        progressStore.saveAzkarOrder(category: category, order: orderIds)
+        
+        // Auto-advance to next zekr (which is now at currentIndex since we removed one)
+        // The index stays the same because the item at currentIndex+1 moves to currentIndex
+        withAnimation(.easeInOut(duration: 0.3)) {
+            resetRepetitions()
+        }
+    }
+    
+    private func resetAzkarOrder() {
+        reorderedAzkarList = nil
+        progressStore.resetAzkarOrder(category: category)
+        currentIndex = findFirstIncompleteIndex()
+        resetRepetitions()
     }
     
     private func cleanupView() {
@@ -411,7 +563,7 @@ struct SunnahZekrView: View {
     }
     
     private func autoAdvanceToNextZekr() {
-        if currentIndex < azkarList.count - 1 {
+        if currentIndex < displayedAzkarList.count - 1 {
             progressStore.savePartialProgress(zekr: zekrItem, category: category, currentRepetition: currentRepetition)
             
             withAnimation(.easeInOut(duration: 0.3)) {
@@ -424,9 +576,9 @@ struct SunnahZekrView: View {
     }
     
     private func checkIfAllAzkarCompleted() {
-        guard !azkarList.isEmpty else { return }
+        guard !displayedAzkarList.isEmpty else { return }
         
-        let allCompleted = azkarList.allSatisfy { zekrItemInList in
+        let allCompleted = displayedAzkarList.allSatisfy { zekrItemInList in
             progressStore.isCompleted(zekr: zekrItemInList, category: category)
         }
         
@@ -448,7 +600,7 @@ struct SunnahZekrView: View {
     }
     
     private func findFirstIncompleteIndex() -> Int {
-        for (index, zekr) in azkarList.enumerated() {
+        for (index, zekr) in displayedAzkarList.enumerated() {
             if !progressStore.isCompleted(zekr: zekr, category: category) {
                 return index
             }

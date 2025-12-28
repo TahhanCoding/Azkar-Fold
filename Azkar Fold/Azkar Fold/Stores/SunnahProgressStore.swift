@@ -5,11 +5,13 @@ import Combine
 class SunnahProgressStore: ObservableObject {
     @Published var azkarCompleted: [SunnahAzkarCategory: [String: Bool]] = [:]
     @Published var azkarProgress: [SunnahAzkarCategory: [String: Int]] = [:]
+    @Published var azkarOrder: [SunnahAzkarCategory: [String]] = [:]
     @Published var selectedSunnahCategories: Set<SunnahAzkarCategory> = Set(SunnahAzkarCategory.allCases)
     @Published var lastResetDate: Date? = nil
     
     private let azkarCompletedKeyPrefix = "azkarCompleted_"
     private let azkarProgressKeyPrefix = "azkarProgress_"
+    private let azkarOrderKeyPrefix = "azkarOrder_"
     private let lastResetDateKey = "lastResetDateKey"
     private let selectedCategoriesKey = "selectedSunnahCategories"
     
@@ -34,6 +36,9 @@ class SunnahProgressStore: ObservableObject {
             }
             if azkarProgress[category] == nil {
                 azkarProgress[category] = [:]
+            }
+            if azkarOrder[category] == nil {
+                azkarOrder[category] = []
             }
         }
     }
@@ -157,6 +162,30 @@ class SunnahProgressStore: ObservableObject {
         print("\(category.title) progress has been reset.")
     }
     
+    // MARK: - Azkar Order Management
+    func saveAzkarOrder(category: SunnahAzkarCategory, order: [String]) {
+        azkarOrder[category] = order
+        let defaults = UserDefaults.standard
+        let orderKey = azkarOrderKeyPrefix + category.rawValue
+        defaults.set(order, forKey: orderKey)
+        objectWillChange.send()
+    }
+    
+    func loadAzkarOrder(category: SunnahAzkarCategory) -> [String]? {
+        let defaults = UserDefaults.standard
+        let orderKey = azkarOrderKeyPrefix + category.rawValue
+        return defaults.array(forKey: orderKey) as? [String]
+    }
+    
+    func resetAzkarOrder(category: SunnahAzkarCategory) {
+        azkarOrder[category] = []
+        let defaults = UserDefaults.standard
+        let orderKey = azkarOrderKeyPrefix + category.rawValue
+        defaults.removeObject(forKey: orderKey)
+        objectWillChange.send()
+        print("\(category.title) order has been reset.")
+    }
+    
     // MARK: - Persistence
     private func saveProgress() {
         let defaults = UserDefaults.standard
@@ -165,9 +194,11 @@ class SunnahProgressStore: ObservableObject {
         for category in SunnahAzkarCategory.allCases {
             let completedKey = azkarCompletedKeyPrefix + category.rawValue
             let progressKey = azkarProgressKeyPrefix + category.rawValue
+            let orderKey = azkarOrderKeyPrefix + category.rawValue
             
             defaults.set(azkarCompleted[category], forKey: completedKey)
             defaults.set(azkarProgress[category], forKey: progressKey)
+            defaults.set(azkarOrder[category], forKey: orderKey)
         }
         
         defaults.set(lastResetDate, forKey: lastResetDateKey)
@@ -181,6 +212,7 @@ class SunnahProgressStore: ObservableObject {
         for category in SunnahAzkarCategory.allCases {
             let completedKey = azkarCompletedKeyPrefix + category.rawValue
             let progressKey = azkarProgressKeyPrefix + category.rawValue
+            let orderKey = azkarOrderKeyPrefix + category.rawValue
             
             if let completedSaved = defaults.dictionary(forKey: completedKey) as? [String: Bool] {
                 azkarCompleted[category] = completedSaved
@@ -188,6 +220,10 @@ class SunnahProgressStore: ObservableObject {
             
             if let progressSaved = defaults.dictionary(forKey: progressKey) as? [String: Int] {
                 azkarProgress[category] = progressSaved
+            }
+            
+            if let orderSaved = defaults.array(forKey: orderKey) as? [String] {
+                azkarOrder[category] = orderSaved
             }
         }
         
