@@ -19,19 +19,21 @@ struct SettingsTabView: View {
                 headerSection
                     .padding(.vertical, 20)
                 
-                Group {
-                    sectionHeader("Preferences")
-                    VStack(spacing: 0) {
-                        sunnahSettingsNavigationLink
-                        
-                        Divider()
-                            .background(.gray.opacity(0.3))
-                            .padding(.horizontal, 32)
+                sectionHeader("Preferences")
+                    .padding(.horizontal, 14)
 
-                        themeNavigationLink
-                    }
-                    .padding(.vertical, 12)
+                VStack(spacing: 0) {
+                    sunnahSettingsNavigationLink
+                    
+                    Divider()
+                        .background(.gray.opacity(0.3))
+                        .padding(.horizontal, 32)
+
+                    themeNavigationLink
                 }
+                .padding(.vertical, 12)
+                .background(theme.currentTheme.background)
+                .cornerRadius(12)
                 .padding(.horizontal, 14)
                 
                 sectionHeader("Actions")
@@ -165,8 +167,6 @@ struct SettingsTabView: View {
             }
             .padding(.vertical, 12)
             .padding(.horizontal, 14)
-            .background(theme.currentTheme.background)
-            .cornerRadius(12)
         }
     }
     
@@ -189,23 +189,13 @@ struct SettingsTabView: View {
                 
                 Spacer()
                 
-                themePreviewCircle
+                Image(systemName: "chevron.right")
+                    .font(.system(size: 14, weight: .semibold))
+                    .foregroundColor(theme.currentTheme.text.opacity(0.5))
             }
             .padding(.vertical, 12)
             .padding(.horizontal, 14)
-            .background(theme.currentTheme.background)
-            .cornerRadius(12)
         }
-    }
-    
-    private var themePreviewCircle: some View {
-        Circle()
-            .fill(theme.currentTheme.primary)
-            .frame(width: 20, height: 20)
-            .overlay(
-                Circle()
-                    .stroke(theme.currentTheme.secondary, lineWidth: 1)
-            )
     }
     
         
