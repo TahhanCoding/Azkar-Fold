@@ -10,7 +10,7 @@ import SwiftUI
 struct SunnahSettingsView: View {
     @EnvironmentObject var theme: ThemeManager
     @EnvironmentObject var patternManager: PatternManager
-    @StateObject private var settingsStore = SunnahSettingsStore.shared
+    @ObservedObject private var settingsStore = SunnahSettingsStore.shared
     
     var body: some View {
         ZStack {

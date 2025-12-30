@@ -13,7 +13,7 @@ struct SunnahZekrView: View {
     @State var azkarList: [SunnahZekrItem]
     let category: SunnahAzkarCategory
     @ObservedObject var progressStore: SunnahProgressStore
-    @StateObject private var settingsStore = SunnahSettingsStore.shared
+    @ObservedObject private var settingsStore = SunnahSettingsStore.shared
     
     @Environment(\.presentationMode) var presentationMode
     @State private var currentIndex: Int = 0

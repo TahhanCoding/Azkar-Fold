@@ -6,6 +6,7 @@
 //
 
 import SwiftUI
+import Combine
 
 class SunnahSettingsStore: ObservableObject {
     static let shared = SunnahSettingsStore()
@@ -41,12 +42,33 @@ class SunnahSettingsStore: ObservableObject {
     @AppStorage("sunnah_initial_view_mode") var initialViewMode: InitialViewMode = .full
     @AppStorage("sunnah_card_height_mode") var cardHeightMode: CardHeightMode = .fixed
     @AppStorage("sunnah_secondary_language") var secondaryLanguage: String = "en"
-    @AppStorage("enable3DEffects") var enable3DEffects: Bool = true
+    
+    // Published property for immediate UI updates with UserDefaults persistence
+    @Published var enable3DEffects: Bool
     
     private init() {
+        // Initialize enable3DEffects from UserDefaults before calling super
+        let savedValue = UserDefaults.standard.object(forKey: "enable3DEffects") as? Bool ?? true
+        self.enable3DEffects = savedValue
+        
         // Ensure defaults are set on first launch
         initializeDefaults()
+        
+        // Setup observer to persist changes
+        setupObservers()
     }
+    
+    private func setupObservers() {
+        // Use Combine to observe changes and persist
+        $enable3DEffects
+            .dropFirst() // Skip initial value
+            .sink { [weak self] newValue in
+                UserDefaults.standard.set(newValue, forKey: "enable3DEffects")
+            }
+            .store(in: &cancellables)
+    }
+    
+    private var cancellables = Set<AnyCancellable>()
     
     private func initializeDefaults() {
         let defaults = UserDefaults.standard
