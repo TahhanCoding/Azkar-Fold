@@ -10,7 +10,6 @@ import StoreKit
 
 struct SettingsTabView: View {
     @EnvironmentObject var theme: ThemeManager
-    @AppStorage("enable3DEffects") private var enable3DEffects = true
     @State private var showingPrivacyPolicy = false
     @State private var showingTerms = false
     
@@ -23,13 +22,13 @@ struct SettingsTabView: View {
                 Group {
                     sectionHeader("Preferences")
                     VStack(spacing: 0) {
-                        themeNavigationLink
+                        sunnahSettingsNavigationLink
                         
                         Divider()
                             .background(.gray.opacity(0.3))
                             .padding(.horizontal, 32)
-                        
-                        threeDEffectsToggle
+
+                        themeNavigationLink
                     }
                     .padding(.vertical, 12)
                 }
@@ -141,6 +140,36 @@ struct SettingsTabView: View {
     
     // MARK: - Subviews
     
+    private var sunnahSettingsNavigationLink: some View {
+        NavigationLink(destination: SunnahSettingsView()) {
+            HStack(spacing: 12) {
+                Image(systemName: "slider.horizontal.3")
+                    .foregroundColor(theme.currentTheme.primary)
+                    .frame(width: 24, height: 24)
+                
+                VStack(alignment: .leading, spacing: 2) {
+                    Text("Sunnah Zekr Manager")
+                        .font(.headline)
+                        .foregroundColor(theme.currentTheme.text)
+                    
+                    Text("Customize reading experience")
+                        .font(.caption)
+                        .foregroundColor(theme.currentTheme.text.opacity(0.7))
+                }
+                
+                Spacer()
+                
+                Image(systemName: "chevron.right")
+                    .font(.system(size: 14, weight: .semibold))
+                    .foregroundColor(theme.currentTheme.text.opacity(0.5))
+            }
+            .padding(.vertical, 12)
+            .padding(.horizontal, 14)
+            .background(theme.currentTheme.background)
+            .cornerRadius(12)
+        }
+    }
+    
     private var themeNavigationLink: some View {
         NavigationLink(destination: ThemeManagerView().environmentObject(ThemeManager.shared)) {
             HStack(spacing: 12) {
@@ -179,32 +208,6 @@ struct SettingsTabView: View {
             )
     }
     
-    private var threeDEffectsToggle: some View {
-        HStack(spacing: 12) {
-            Image(systemName: "cube.transparent")
-                .foregroundColor(theme.currentTheme.primary)
-                .frame(width: 24, height: 24)
-            
-            VStack(alignment: .leading, spacing: 2) {
-                Text("3D Effects")
-                    .font(.headline)
-                    .foregroundColor(theme.currentTheme.text)
-                
-                Text("Enable tilt-based 3D animations")
-                    .font(.caption)
-                    .foregroundColor(theme.currentTheme.text.opacity(0.7))
-            }
-            
-            Spacer()
-            
-            Toggle("", isOn: $enable3DEffects)
-                .toggleStyle(SwitchToggleStyle(tint: theme.currentTheme.primary))
-        }
-        .padding(.vertical, 12)
-        .padding(.horizontal, 14)
-        .background(theme.currentTheme.background)
-        .cornerRadius(12)
-    }
         
     private func actionButton(title: String, icon: String, action: @escaping () -> Void) -> some View {
         Button(action: action) {

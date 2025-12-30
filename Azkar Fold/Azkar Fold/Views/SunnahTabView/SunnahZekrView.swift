@@ -13,9 +13,9 @@ struct SunnahZekrView: View {
     @State var azkarList: [SunnahZekrItem]
     let category: SunnahAzkarCategory
     @ObservedObject var progressStore: SunnahProgressStore
+    @StateObject private var settingsStore = SunnahSettingsStore.shared
     
     @Environment(\.presentationMode) var presentationMode
-    @AppStorage("enable3DEffects") private var enable3DEffects = true
     @State private var currentIndex: Int = 0
     @State private var showCompletionAlert: Bool = false
     
@@ -33,7 +33,16 @@ struct SunnahZekrView: View {
     
     // Modular managers
     @EnvironmentObject var motionManager: CoreMotionManager
-    @StateObject private var simpleModeManager = SimpleModeManager()
+    @StateObject private var simpleModeManager: SimpleModeManager
+    
+    init(azkarList: [SunnahZekrItem], category: SunnahAzkarCategory, progressStore: SunnahProgressStore) {
+        self._azkarList = State(initialValue: azkarList)
+        self.category = category
+        self.progressStore = progressStore
+        
+        let initialMode = SunnahSettingsStore.shared.initialViewMode == .simple
+        self._simpleModeManager = StateObject(wrappedValue: SimpleModeManager(initialMode: initialMode))
+    }
     
     // Snapshot states
     @State private var takeSnapshot: Bool = false
@@ -80,12 +89,13 @@ struct SunnahZekrView: View {
                         index: index,
                         currentIndex: $currentIndex,
                         progressStore: progressStore,
+                        settingsStore: settingsStore,
                         displayMode: $currentDisplayMode,
                         theme: theme,
                         patternManager: patternManager,
                         motionManager: motionManager,
                         simpleModeManager: simpleModeManager,
-                        enable3DEffects: enable3DEffects,
+                        enable3DEffects: settingsStore.enable3DEffects,
                         takeSnapshot: $takeSnapshot,
                         capturedImage: $capturedImage,
                         showShareSheet: $showShareSheet,
@@ -189,7 +199,7 @@ struct SunnahZekrView: View {
             // Reset display mode to Arabic when navigating
             currentDisplayMode = .arabic
         }
-        .onChange(of: enable3DEffects) { newValue in
+        .onChange(of: settingsStore.enable3DEffects) { newValue in
             if newValue {
                 motionManager.startMotionUpdates(
                     sensitivity: 0.5,
@@ -316,7 +326,8 @@ struct SunnahZekrView: View {
             
             // Secondary buttons row
             HStack(spacing: 8) {
-                contentButton(text: "English", mode: .english)
+                let englishLabel = settingsStore.secondaryLanguage == "en" ? "English" : settingsStore.secondaryLanguage.capitalized
+                contentButton(text: englishLabel, mode: .english)
                 
                 if zekrItem.bless != nil {
                     contentButton(text: "Bless_ar", mode: .blessArabic)
@@ -388,7 +399,7 @@ struct SunnahZekrView: View {
         currentIndex = findFirstIncompleteIndex()
         currentDisplayMode = .arabic
         
-        if enable3DEffects {
+        if settingsStore.enable3DEffects {
             motionManager.startMotionUpdates(
                 sensitivity: 0.5,
                 maxAngle: 0.175,
@@ -511,6 +522,7 @@ struct SunnahZekrPage: View {
     let index: Int
     @Binding var currentIndex: Int
     @ObservedObject var progressStore: SunnahProgressStore
+    @ObservedObject var settingsStore: SunnahSettingsStore
     @Binding var displayMode: SunnahZekrView.ZekrDisplayMode
     
     var theme: ThemeManager
@@ -531,11 +543,7 @@ struct SunnahZekrPage: View {
     
     var body: some View {
         VStack {
-            createZekrContent(
-                height: simpleModeManager.isSimpleMode
-                ? UIScreen.main.bounds.height * 0.7
-                : UIScreen.main.bounds.height * 0.5
-            )
+            createZekrContent()
             .addSimpleModeToggle(
                 isSimpleMode: simpleModeManager.isSimpleMode,
                 longPressDuration: 0.8
@@ -615,47 +623,92 @@ struct SunnahZekrPage: View {
         }
     }
     
-    private func createZekrContent(height: CGFloat) -> some View {
-        VStack {
-            Text(textOnScreen)
-                .font(.title)
-                .fontWeight(.bold)
-                .foregroundColor(theme.currentTheme.text)
-                .multilineTextAlignment(.center)
-                .padding(.horizontal)
-                .font(.system(size: 80))
-                .minimumScaleFactor(0.3)
-                .lineLimit(15)
-                .padding(.vertical, 12)
-                .id(zekrItem.zekr) // Identify by text content
-            
-            if index == currentIndex && takeSnapshot {
-                Spacer()
-                Text("azkarfold.com")
-                    .font(.system(size: 16, weight: .medium))
-                    .foregroundColor(theme.currentTheme.text.opacity(0.7))
-                    .padding(.bottom, 16)
-            }
+    private func calculateCardHeight() -> CGFloat {
+        if settingsStore.cardHeightMode == .fixed {
+            return simpleModeManager.isSimpleMode
+                ? UIScreen.main.bounds.height * 0.7
+                : UIScreen.main.bounds.height * 0.5
+        } else {
+            // Adaptive mode - return a base height, content will determine actual height
+            return simpleModeManager.isSimpleMode
+                ? UIScreen.main.bounds.height * 0.5
+                : UIScreen.main.bounds.height * 0.4
         }
-        .padding(.horizontal, 18)
-        .frame(height: height)
-        .frame(maxWidth: .infinity)
-        .background(
-            RoundedRectangle(cornerRadius: 33)
-                .fill(currentRepetition >= zekrItem.repeat ? theme.currentTheme.background.opacity(0.65) : theme.currentTheme.background.opacity(0.45))
-                .overlay(
-                    Group {
-                        if patternManager.currentPattern != "none" {
-                            Image(patternManager.currentPattern)
-                                .resizable(resizingMode: .tile)
-                                .opacity(0.35)
-                        }
+    }
+    
+    private func calculateMaxHeight() -> CGFloat? {
+        if settingsStore.cardHeightMode == .adaptive {
+            return simpleModeManager.isSimpleMode
+                ? UIScreen.main.bounds.height * 0.75
+                : UIScreen.main.bounds.height * 0.65
+        }
+        return nil
+    }
+    
+    @ViewBuilder
+    private func createZekrContent() -> some View {
+        let cardHeight = calculateCardHeight()
+        let maxHeight = calculateMaxHeight()
+        
+        // Card background
+        let cardBackground = RoundedRectangle(cornerRadius: 33)
+            .fill(currentRepetition >= zekrItem.repeat ? theme.currentTheme.background.opacity(0.65) : theme.currentTheme.background.opacity(0.45))
+            .overlay(
+                Group {
+                    if patternManager.currentPattern != "none" {
+                        Image(patternManager.currentPattern)
+                            .resizable(resizingMode: .tile)
+                            .opacity(0.35)
                     }
-                )
+                }
+            )
+        
+        // Text content - always centered
+        let textView = Text(textOnScreen)
+            .font(.title)
+            .fontWeight(.bold)
+            .foregroundColor(theme.currentTheme.text)
+            .multilineTextAlignment(.center)
+            .padding(.horizontal)
+            .font(.system(size: 80))
+            .padding(.vertical, 12)
+            .id(zekrItem.zekr)
+            .frame(maxWidth: .infinity)
+        
+        Group {
+            if settingsStore.cardHeightMode == .fixed {
+                // Fixed height: Card has exact height, text centered with constraints
+                VStack {
+                    Spacer()
+                    textView
+                        .minimumScaleFactor(0.3)
+                        .lineLimit(15)
+                    Spacer()
+                }
+                .frame(height: cardHeight)
+                .padding(.horizontal, 18)
+                .frame(maxWidth: .infinity)
+                .background(cardBackground)
                 .clipShape(RoundedRectangle(cornerRadius: 33))
                 .padding(.horizontal, 21)
-        )
-        .animation(.spring(response: 0.4, dampingFraction: 0.7), value: height) // Smooth height animation
+            } else {
+                // Adaptive height: Card sizes to content with max constraint
+                VStack {
+                    Spacer()
+                    textView
+                    Spacer()
+                }
+                .frame(minHeight: cardHeight)
+                .frame(maxHeight: maxHeight)
+                .padding(.horizontal, 18)
+                .frame(maxWidth: .infinity)
+                .background(cardBackground)
+                .clipShape(RoundedRectangle(cornerRadius: 33))
+                .padding(.horizontal, 21)
+            }
+        }
+        .animation(.spring(response: 0.4, dampingFraction: 0.7), value: simpleModeManager.isSimpleMode)
+        .animation(.spring(response: 0.4, dampingFraction: 0.7), value: settingsStore.cardHeightMode)
         .onTapGesture {
             countUpZekr()
         }
@@ -704,11 +757,15 @@ import Combine
 
 /// A reusable manager for handling simple mode functionality
 class SimpleModeManager: ObservableObject {
-    @Published var isSimpleMode: Bool = false
+    @Published var isSimpleMode: Bool
     @Published var autoAdvanceEnabled: Bool = true
     @Published var autoAdvanceDelay: TimeInterval = 0.5
     
     private var autoAdvanceTimer: Timer?
+    
+    init(initialMode: Bool = false) {
+        self.isSimpleMode = initialMode
+    }
     
     /// Toggle simple mode with animation
     func toggleSimpleMode() {
@@ -730,6 +787,17 @@ class SimpleModeManager: ObservableObject {
     func disableSimpleMode() {
         withAnimation(.easeInOut(duration: 0.3)) {
             isSimpleMode = false
+        }
+    }
+    
+    /// Set simple mode directly without animation (for initialization)
+    func setSimpleMode(_ enabled: Bool, animated: Bool = false) {
+        if animated {
+            withAnimation(.easeInOut(duration: 0.3)) {
+                isSimpleMode = enabled
+            }
+        } else {
+            isSimpleMode = enabled
         }
     }
     
