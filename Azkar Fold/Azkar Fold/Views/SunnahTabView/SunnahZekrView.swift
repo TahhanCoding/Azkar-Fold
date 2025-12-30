@@ -30,6 +30,7 @@ struct SunnahZekrView: View {
     @State private var currentDisplayMode: ZekrDisplayMode = .arabic
     
     @State private var reorderedAzkarList: [SunnahZekrItem]? = nil
+    @Namespace private var progressBarNamespace
     
     // Modular managers
     @EnvironmentObject var motionManager: CoreMotionManager
@@ -269,6 +270,7 @@ struct SunnahZekrView: View {
         }
         .frame(height: 24)
         .padding(.horizontal, 16)
+        .matchedGeometryEffect(id: "progressBar", in: progressBarNamespace)
         // Note: Tap gesture on progress bar is removed or handled via store updates
     }
     
