@@ -23,12 +23,10 @@ struct SunnahSettingsView: View {
                         Text("Initial View Mode")
                             .foregroundColor(theme.currentTheme.text)
                         Spacer()
-                        Picker("", selection: $settingsStore.initialViewMode) {
-                            ForEach(SunnahSettingsStore.InitialViewMode.allCases) { mode in
-                                Text(mode.displayName).tag(mode)
-                            }
-                        }
-                        .pickerStyle(.segmented)
+                        CustomSegmentedPicker(
+                            selection: $settingsStore.initialViewMode,
+                            theme: theme
+                        )
                         .frame(width: 150)
                     }
                     .listRowBackground(theme.currentTheme.cardBackground)
@@ -38,12 +36,10 @@ struct SunnahSettingsView: View {
                         Text("Card Height")
                             .foregroundColor(theme.currentTheme.text)
                         Spacer()
-                        Picker("", selection: $settingsStore.cardHeightMode) {
-                            ForEach(SunnahSettingsStore.CardHeightMode.allCases) { mode in
-                                Text(mode.displayName).tag(mode)
-                            }
-                        }
-                        .pickerStyle(.segmented)
+                        CustomSegmentedPicker(
+                            selection: $settingsStore.cardHeightMode,
+                            theme: theme
+                        )
                         .frame(width: 150)
                     }
                     .listRowBackground(theme.currentTheme.cardBackground)
