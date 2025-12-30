@@ -71,7 +71,7 @@ struct SunnahZekrView: View {
     }
     
     var body: some View {
-        VStack {
+        VStack(spacing: 0) {
             TabView(selection: $currentIndex) {
                 ForEach(displayedAzkarList.indices, id: \.self) { index in
                     SunnahZekrPage(
@@ -102,14 +102,34 @@ struct SunnahZekrView: View {
             .tabViewStyle(.page(indexDisplayMode: .never))
             .padding(.top, 16)
             
-            Spacer()
+            Spacer(minLength: 0)
             
-            if simpleModeManager.isSimpleMode {
-                // Simple mode progress bar only
-                VStack(spacing: 16) {
-                    progressBar
+            // Shared controls section
+            VStack(spacing: 0) {
+                // Total Progress Bar (Always visible as border line)
+                totalProgressBar
+                    .zIndex(1) // Ensure it stays on top
+                
+                VStack {
+                    if simpleModeManager.isSimpleMode {
+                        // Simple mode: Minimal height, only progress bar
+                        VStack(spacing: 16) {
+                            progressBar
+                        }
+                        .padding(.top, 16)
+                    } else {
+                        // Full mode: Standard height, all controls
+                        VStack(spacing: 16) {
+                            progressBar
+                            
+                            navigationButtons
+                                        
+                            contentControls
+                        }
+                        .padding(.top, 16)
+                    }
                 }
-                .frame(height: UIScreen.main.bounds.height * 0.1)
+                .frame(height: simpleModeManager.isSimpleMode ? UIScreen.main.bounds.height * 0.1 : UIScreen.main.bounds.height * 0.27)
                 .frame(maxWidth: .infinity)
                 .background(
                     RoundedRectangle(cornerRadius: 0)
@@ -117,27 +137,7 @@ struct SunnahZekrView: View {
                         .shadow(color: .black.opacity(0.1), radius: 2, x: 0, y: -2)
                         .ignoresSafeArea(.container, edges: .bottom)
                 )
-            } else {
-                // Full mode controls
-                VStack(spacing: 1) {
-                    totalProgressBar
-                    
-                    VStack(spacing: 16) {
-                        progressBar
-                        
-                        navigationButtons
-                                    
-                        contentControls
-                    }
-                    .frame(height: UIScreen.main.bounds.height * 0.27)
-                    .frame(maxWidth: .infinity)
-                    .background(
-                        RoundedRectangle(cornerRadius: 0)
-                            .fill(theme.currentTheme.background)
-                            .shadow(color: .black.opacity(0.1), radius: 2, x: 0, y: -2)
-                            .ignoresSafeArea(.container, edges: .bottom)
-                    )
-                }
+                .animation(.easeInOut(duration: 0.3), value: simpleModeManager.isSimpleMode)
             }
         }
         .background(
@@ -531,11 +531,22 @@ struct SunnahZekrPage: View {
     
     var body: some View {
         VStack {
-            if simpleModeManager.isSimpleMode {
-                simpleZekrView
-            } else {
-                zekrView
+            createZekrContent(
+                height: simpleModeManager.isSimpleMode
+                ? UIScreen.main.bounds.height * 0.7
+                : UIScreen.main.bounds.height * 0.5
+            )
+            .addSimpleModeToggle(
+                isSimpleMode: simpleModeManager.isSimpleMode,
+                longPressDuration: 0.8
+            ) {
+                simpleModeManager.toggleSimpleMode()
             }
+            .modifier(
+                enable3DEffects
+                ? AnyViewModifier(TiltEffect3D(animationResponse: 0.4, dampingFraction: 0.9))
+                : AnyViewModifier(EmptyModifier())
+            )
         }
         .onAppear {
             loadProgress()
@@ -545,6 +556,37 @@ struct SunnahZekrPage: View {
             updateText()
         }
         // When the page appears/disappears or when we slide back to it, ensure state is correct
+    }
+    
+    // Type-erased wrapper for conditional modifier application
+    struct AnyViewModifier: ViewModifier {
+        let modifier: any ViewModifier
+        
+        init(_ modifier: any ViewModifier) {
+            self.modifier = modifier
+        }
+        
+        func body(content: Content) -> some View {
+            anyBody(content, modifier: modifier)
+        }
+        
+        private func anyBody(_ content: Content, modifier: any ViewModifier) -> some View {
+            if let m = modifier as? TiltEffect3D {
+                return AnyView(content.modifier(m))
+            } else if let m = modifier as? EnhancedTiltEffect3D {
+                return AnyView(content.modifier(m))
+            } else if let m = modifier as? FloatingCardTiltEffect {
+                return AnyView(content.modifier(m))
+            } else {
+                return AnyView(content)
+            }
+        }
+    }
+    
+    struct EmptyModifier: ViewModifier {
+        func body(content: Content) -> some View {
+            content
+        }
     }
     
     private func loadProgress() {
@@ -571,36 +613,6 @@ struct SunnahZekrPage: View {
         case .blessEnglish:
             textOnScreen = zekrItem.bless_en ?? ""
         }
-    }
-    
-    private var zekrView: some View {
-        let content = createZekrContent(height: UIScreen.main.bounds.height * 0.5)
-            .addSimpleModeToggle(
-                isSimpleMode: simpleModeManager.isSimpleMode,
-                longPressDuration: 0.8
-            ) {
-                simpleModeManager.enableSimpleMode()
-            }
-        
-        if enable3DEffects {
-            return AnyView(content
-                .addTiltEffect(preset: .floating)
-            )
-        } else {
-            return AnyView(content)
-        }
-    }
-    
-    private var simpleZekrView: some View {
-        let content = createZekrContent(height: UIScreen.main.bounds.height * 0.7)
-            .addSimpleModeToggle(
-                isSimpleMode: simpleModeManager.isSimpleMode,
-                longPressDuration: 0.8
-            ) {
-                simpleModeManager.disableSimpleMode()
-            }
-        
-        return content
     }
     
     private func createZekrContent(height: CGFloat) -> some View {
@@ -643,6 +655,7 @@ struct SunnahZekrPage: View {
                 .clipShape(RoundedRectangle(cornerRadius: 33))
                 .padding(.horizontal, 21)
         )
+        .animation(.spring(response: 0.4, dampingFraction: 0.7), value: height) // Smooth height animation
         .onTapGesture {
             countUpZekr()
         }
@@ -748,7 +761,7 @@ class SimpleModeManager: ObservableObject {
 
 //MARK: - Simple Mode Configuration
 struct SimpleModeConfig {
-    let autoAdvanceEnabled: Bool
+    
     let autoAdvanceDelay: TimeInterval
     let longPressMinimumDuration: Double
     let animationDuration: Double
@@ -780,6 +793,13 @@ struct SimpleModeConfig {
         longPressMinimumDuration: 0.8,
         animationDuration: 0.3
     )
+    
+    // Initializer matching the usage in static properties
+    init(autoAdvanceEnabled: Bool, autoAdvanceDelay: TimeInterval, longPressMinimumDuration: Double, animationDuration: Double) {
+        self.autoAdvanceDelay = autoAdvanceDelay
+        self.longPressMinimumDuration = longPressMinimumDuration
+        self.animationDuration = animationDuration
+    }
 }
 
 //MARK: - Simple Mode View Modifier
