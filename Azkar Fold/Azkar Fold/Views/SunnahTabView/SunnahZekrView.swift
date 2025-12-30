@@ -543,7 +543,21 @@ struct SunnahZekrPage: View {
     
     var body: some View {
         VStack {
-            createZekrContent()
+            SunnahZekrTextCard(
+                text: textOnScreen,
+                isCompleted: currentRepetition >= zekrItem.repeat,
+                cardHeightMode: settingsStore.cardHeightMode,
+                isSimpleMode: simpleModeManager.isSimpleMode,
+                theme: theme,
+                patternManager: patternManager,
+                onTap: {
+                    countUpZekr()
+                },
+                showWatermark: index == currentIndex && takeSnapshot,
+                index: index,
+                currentIndex: currentIndex,
+                takeSnapshot: takeSnapshot
+            )
             .addSimpleModeToggle(
                 isSimpleMode: simpleModeManager.isSimpleMode,
                 longPressDuration: 0.8
@@ -555,6 +569,17 @@ struct SunnahZekrPage: View {
                 ? AnyViewModifier(TiltEffect3D(animationResponse: 0.4, dampingFraction: 0.9))
                 : AnyViewModifier(EmptyModifier())
             )
+            .onChange(of: takeSnapshot) { newValue in
+                // Only snapshot if this is the current page
+                if newValue && index == currentIndex {
+                    // We need to wait for render? snapshot modifier works on trigger
+                }
+            }
+            .snapShot(trigger: (takeSnapshot && index == currentIndex)) { image in
+                capturedImage = image
+                takeSnapshot = false
+                showShareSheet = true
+            }
         }
         .onAppear {
             loadProgress()
@@ -563,7 +588,9 @@ struct SunnahZekrPage: View {
         .onChange(of: displayMode) { _ in
             updateText()
         }
-        // When the page appears/disappears or when we slide back to it, ensure state is correct
+        .onChange(of: settingsStore.secondaryLanguage) { _ in
+            updateText()
+        }
     }
     
     // Type-erased wrapper for conditional modifier application
@@ -620,108 +647,6 @@ struct SunnahZekrPage: View {
             textOnScreen = zekrItem.bless ?? ""
         case .blessEnglish:
             textOnScreen = zekrItem.bless_en ?? ""
-        }
-    }
-    
-    private func calculateCardHeight() -> CGFloat {
-        if settingsStore.cardHeightMode == .fixed {
-            return simpleModeManager.isSimpleMode
-                ? UIScreen.main.bounds.height * 0.7
-                : UIScreen.main.bounds.height * 0.5
-        } else {
-            // Adaptive mode - return a base height, content will determine actual height
-            return simpleModeManager.isSimpleMode
-                ? UIScreen.main.bounds.height * 0.5
-                : UIScreen.main.bounds.height * 0.4
-        }
-    }
-    
-    private func calculateMaxHeight() -> CGFloat? {
-        if settingsStore.cardHeightMode == .adaptive {
-            return simpleModeManager.isSimpleMode
-                ? UIScreen.main.bounds.height * 0.75
-                : UIScreen.main.bounds.height * 0.65
-        }
-        return nil
-    }
-    
-    @ViewBuilder
-    private func createZekrContent() -> some View {
-        let cardHeight = calculateCardHeight()
-        let maxHeight = calculateMaxHeight()
-        
-        // Card background
-        let cardBackground = RoundedRectangle(cornerRadius: 33)
-            .fill(currentRepetition >= zekrItem.repeat ? theme.currentTheme.background.opacity(0.65) : theme.currentTheme.background.opacity(0.45))
-            .overlay(
-                Group {
-                    if patternManager.currentPattern != "none" {
-                        Image(patternManager.currentPattern)
-                            .resizable(resizingMode: .tile)
-                            .opacity(0.35)
-                    }
-                }
-            )
-        
-        // Text content - always centered
-        let textView = Text(textOnScreen)
-            .font(.title)
-            .fontWeight(.bold)
-            .foregroundColor(theme.currentTheme.text)
-            .multilineTextAlignment(.center)
-            .padding(.horizontal)
-            .font(.system(size: 80))
-            .padding(.vertical, 12)
-            .id(zekrItem.zekr)
-            .frame(maxWidth: .infinity)
-        
-        Group {
-            if settingsStore.cardHeightMode == .fixed {
-                // Fixed height: Card has exact height, text centered with constraints
-                VStack {
-                    Spacer()
-                    textView
-                        .minimumScaleFactor(0.3)
-                        .lineLimit(15)
-                    Spacer()
-                }
-                .frame(height: cardHeight)
-                .padding(.horizontal, 18)
-                .frame(maxWidth: .infinity)
-                .background(cardBackground)
-                .clipShape(RoundedRectangle(cornerRadius: 33))
-                .padding(.horizontal, 21)
-            } else {
-                // Adaptive height: Card sizes to content with max constraint
-                VStack {
-                    Spacer()
-                    textView
-                    Spacer()
-                }
-                .frame(minHeight: cardHeight)
-                .frame(maxHeight: maxHeight)
-                .padding(.horizontal, 18)
-                .frame(maxWidth: .infinity)
-                .background(cardBackground)
-                .clipShape(RoundedRectangle(cornerRadius: 33))
-                .padding(.horizontal, 21)
-            }
-        }
-        .animation(.spring(response: 0.4, dampingFraction: 0.7), value: simpleModeManager.isSimpleMode)
-        .animation(.spring(response: 0.4, dampingFraction: 0.7), value: settingsStore.cardHeightMode)
-        .onTapGesture {
-            countUpZekr()
-        }
-        .onChange(of: takeSnapshot) { newValue in
-            // Only snapshot if this is the current page
-            if newValue && index == currentIndex {
-                // We need to wait for render? snapshot modifier works on trigger
-            }
-        }
-        .snapShot(trigger: (takeSnapshot && index == currentIndex)) { image in
-            capturedImage = image
-            takeSnapshot = false
-            showShareSheet = true
         }
     }
     
