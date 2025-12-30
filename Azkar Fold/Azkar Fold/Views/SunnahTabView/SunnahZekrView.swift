@@ -17,9 +17,18 @@ struct SunnahZekrView: View {
     @Environment(\.presentationMode) var presentationMode
     @AppStorage("enable3DEffects") private var enable3DEffects = true
     @State private var currentIndex: Int = 0
-    @State private var currentRepetition: Int = 0
     @State private var showCompletionAlert: Bool = false
-    @State private var textOnScreen: String = ""
+    
+    enum ZekrDisplayMode {
+        case arabic
+        case english
+        case transliteration
+        case source
+        case blessArabic
+        case blessEnglish
+    }
+    @State private var currentDisplayMode: ZekrDisplayMode = .arabic
+    
     @State private var reorderedAzkarList: [SunnahZekrItem]? = nil
     
     // Modular managers
@@ -39,10 +48,14 @@ struct SunnahZekrView: View {
     }
     
     var zekrItem: SunnahZekrItem {
-        return displayedAzkarList[currentIndex]
+        if displayedAzkarList.isEmpty {
+            // Fallback to avoid crash, though should not happen given logic
+             return azkarList.first! 
+        }
+        return displayedAzkarList[min(currentIndex, displayedAzkarList.count - 1)]
     }
     
-    // Total progress calculation - based on completed azkar items, not repetition counts
+    // Total progress calculation - based on completed azkar items
     var totalCategoryProgress: (completed: Int, total: Int, percentage: Double) {
         let total = displayedAzkarList.count
         let completed = displayedAzkarList.filter { zekr in
@@ -59,17 +72,44 @@ struct SunnahZekrView: View {
     
     var body: some View {
         VStack {
+            TabView(selection: $currentIndex) {
+                ForEach(displayedAzkarList.indices, id: \.self) { index in
+                    SunnahZekrPage(
+                        zekrItem: displayedAzkarList[index],
+                        category: category,
+                        index: index,
+                        currentIndex: $currentIndex,
+                        progressStore: progressStore,
+                        displayMode: $currentDisplayMode,
+                        theme: theme,
+                        patternManager: patternManager,
+                        motionManager: motionManager,
+                        simpleModeManager: simpleModeManager,
+                        enable3DEffects: enable3DEffects,
+                        takeSnapshot: $takeSnapshot,
+                        capturedImage: $capturedImage,
+                        showShareSheet: $showShareSheet,
+                        onRequestNext: {
+                            autoAdvanceToNextZekr()
+                        },
+                        onCheckCompletion: {
+                            checkIfAllAzkarCompleted()
+                        }
+                    )
+                    .tag(index)
+                }
+            }
+            .tabViewStyle(.page(indexDisplayMode: .never))
+            .padding(.top, 16)
+            
+            Spacer()
+            
             if simpleModeManager.isSimpleMode {
-                simpleZekrView
-                    .padding(.top, 16)
-                
-                Spacer()
-                
                 // Simple mode progress bar only
                 VStack(spacing: 16) {
                     progressBar
                 }
-                .frame(height: screenHeight * 0.1)
+                .frame(height: UIScreen.main.bounds.height * 0.1)
                 .frame(maxWidth: .infinity)
                 .background(
                     RoundedRectangle(cornerRadius: 0)
@@ -78,12 +118,7 @@ struct SunnahZekrView: View {
                         .ignoresSafeArea(.container, edges: .bottom)
                 )
             } else {
-                // Full mode
-                zekrView
-                    .padding(.top, 16)
-                
-                Spacer()
-                
+                // Full mode controls
                 VStack(spacing: 1) {
                     totalProgressBar
                     
@@ -94,7 +129,7 @@ struct SunnahZekrView: View {
                                     
                         contentControls
                     }
-                    .frame(height: screenHeight * 0.27)
+                    .frame(height: UIScreen.main.bounds.height * 0.27)
                     .frame(maxWidth: .infinity)
                     .background(
                         RoundedRectangle(cornerRadius: 0)
@@ -139,8 +174,8 @@ struct SunnahZekrView: View {
                     }
                 } label: {
                     Image(systemName: "ellipsis.circle")
-                        .foregroundStyle(theme.currentTheme.accent)
-                        .padding(5)
+                    .foregroundStyle(theme.currentTheme.accent)
+                    .padding(5)
                 }
             }
         }
@@ -151,21 +186,17 @@ struct SunnahZekrView: View {
             cleanupView()
         }
         .onChange(of: currentIndex) { _ in
-            resetRepetitions()
-        }
-        .onChange(of: currentRepetition) { newValue in
-            handleRepetitionChange(newValue)
+            // Reset display mode to Arabic when navigating
+            currentDisplayMode = .arabic
         }
         .onChange(of: enable3DEffects) { newValue in
             if newValue {
-                // Start motion updates if 3D effects are enabled
                 motionManager.startMotionUpdates(
                     sensitivity: 0.5,
                     maxAngle: 0.175,
                     interval: 0.1
                 )
             } else {
-                // Stop motion updates if 3D effects are disabled
                 motionManager.stopMotionUpdates()
             }
         }
@@ -193,91 +224,14 @@ struct SunnahZekrView: View {
         }
     }
     
-    //MARK: - Zekr Views
-    private var zekrView: some View {
-        let content = createZekrContent(height: screenHeight * 0.5)
-            .addSimpleModeToggle(
-                isSimpleMode: simpleModeManager.isSimpleMode,
-                longPressDuration: 0.8
-            ) {
-                simpleModeManager.enableSimpleMode()
-            }
-        
-        if enable3DEffects {
-            return AnyView(content
-                .addTiltEffect(preset: .floating)
-            )
-        } else {
-            return AnyView(content)
-        }
-    }
-    
-    private var simpleZekrView: some View {
-        let content = createZekrContent(height: screenHeight * 0.7)
-            .addSimpleModeToggle(
-                isSimpleMode: simpleModeManager.isSimpleMode,
-                longPressDuration: 0.8
-            ) {
-                simpleModeManager.disableSimpleMode()
-            }
-        
-        return content
-    }
-    
-    private func createZekrContent(height: CGFloat) -> some View {
-        VStack {
-            Text(textOnScreen)
-                .font(.title)
-                .fontWeight(.bold)
-                .foregroundColor(theme.currentTheme.text)
-                .multilineTextAlignment(.center)
-                .padding(.horizontal)
-                .font(.system(size: 80))
-                .minimumScaleFactor(0.3)
-                .lineLimit(15)
-                .padding(.vertical, 12)
-                .id(zekrItem.zekr)
-            
-            // Footer text for sharing
-            if takeSnapshot {
-                Spacer()
-                Text("azkarfold.com")
-                    .font(.system(size: 16, weight: .medium))
-                    .foregroundColor(theme.currentTheme.text.opacity(0.7))
-                    .padding(.bottom, 16)
-            }
-        }
-        .padding(.horizontal, 18)
-        .frame(height: height)
-        .frame(maxWidth: .infinity)
-        .background(
-            RoundedRectangle(cornerRadius: 33)
-                .fill(currentRepetition >= zekrItem.repeat ? theme.currentTheme.background.opacity(0.65) : theme.currentTheme.background.opacity(0.45))
-                .overlay(
-                    Group {
-                        if patternManager.currentPattern != "none" {
-                            Image(patternManager.currentPattern)
-                                .resizable(resizingMode: .tile)
-                                .opacity(0.35)
-                        }
-                    }
-                )
-                .clipShape(RoundedRectangle(cornerRadius: 33))
-                .padding(.horizontal, 21)
-        )
-        .onTapGesture {
-            countUpZekr()
-        }
-        .snapShot(trigger: takeSnapshot) { image in
-            capturedImage = image
-            takeSnapshot = false
-            showShareSheet = true
-        }
-    }
-    
     //MARK: - Progress Bar
     private var progressBar: some View {
-        GeometryReader { geometry in
+        // We fetch current repetition from store for the progress bar
+        let progress = progressStore.getPartialProgress(zekr: zekrItem, category: category)
+        let isCompleted = progressStore.isCompleted(zekr: zekrItem, category: category)
+        let currentCount = isCompleted ? zekrItem.repeat : progress
+        
+        return GeometryReader { geometry in
             ZStack(alignment: .leading) {
                 // Background
                 RoundedRectangle(cornerRadius: 12)
@@ -288,15 +242,15 @@ struct SunnahZekrView: View {
                 RoundedRectangle(cornerRadius: 12)
                     .fill(theme.currentTheme.accent)
                     .frame(
-                        width: geometry.size.width * (Double(currentRepetition) / Double(zekrItem.repeat)),
+                        width: geometry.size.width * (Double(currentCount) / Double(zekrItem.repeat)),
                         height: 24
                     )
-                    .animation(.easeInOut(duration: 0.3), value: currentRepetition)
+                    .animation(.easeInOut(duration: 0.3), value: currentCount)
                 
                 // Progress text overlay
                 HStack {
                     Spacer()
-                    Text("\(currentRepetition)/\(zekrItem.repeat)")
+                    Text("\(currentCount)/\(zekrItem.repeat)")
                         .font(.system(size: 14, weight: .semibold))
                         .foregroundColor(theme.currentTheme.buttonText)
                     Spacer()
@@ -305,9 +259,7 @@ struct SunnahZekrView: View {
         }
         .frame(height: 24)
         .padding(.horizontal, 16)
-        .onTapGesture {
-            countUpZekr()
-        }
+        // Note: Tap gesture on progress bar is removed or handled via store updates
     }
     
     //MARK: - Navigation Buttons
@@ -357,38 +309,30 @@ struct SunnahZekrView: View {
         VStack(spacing: 12) {
             // Primary buttons row
             HStack(spacing: 12) {
-                contentButton(text: "Arabic", content: zekrItem.zekr)
-                contentButton(text: "Spelling", content: zekrItem.transliteration)
-                contentButton(text: "Source", content: zekrItem.source)
+                contentButton(text: "Arabic", mode: .arabic)
+                contentButton(text: "Spelling", mode: .transliteration)
+                contentButton(text: "Source", mode: .source)
             }
             
             // Secondary buttons row
             HStack(spacing: 8) {
-                contentButton(text: "English", content: zekrItem.en_tr)
+                contentButton(text: "English", mode: .english)
                 
-                if let bless = zekrItem.bless {
-                    contentButton(text: "Bless_ar", content: bless)
+                if zekrItem.bless != nil {
+                    contentButton(text: "Bless_ar", mode: .blessArabic)
                 }
                 
-                if let bless_en = zekrItem.bless_en {
-                    contentButton(text: "Bless_en", content: bless_en)
+                if zekrItem.bless_en != nil {
+                    contentButton(text: "Bless_en", mode: .blessEnglish)
                 }
             }
         }
         .padding(.horizontal)
-        .onChange(of: currentIndex) { _ in
-            DispatchQueue.main.async {
-                textOnScreen = zekrItem.zekr
-            }
-        }
-        .onDisappear {
-            progressStore.savePartialProgress(zekr: zekrItem, category: category, currentRepetition: currentRepetition)
-        }
     }
     
-    private func contentButton(text: String, content: String) -> some View {
+    private func contentButton(text: String, mode: ZekrDisplayMode) -> some View {
         Button(action: {
-            textOnScreen = content
+            currentDisplayMode = mode
         }) {
             Text(text)
                 .font(.system(size: 12, weight: .medium))
@@ -396,9 +340,9 @@ struct SunnahZekrView: View {
                 .padding(.vertical, 10)
                 .background(
                     RoundedRectangle(cornerRadius: 20)
-                        .fill(textOnScreen == content ? theme.currentTheme.primary : theme.currentTheme.cardBackground)
+                        .fill(currentDisplayMode == mode ? theme.currentTheme.primary : theme.currentTheme.cardBackground)
                 )
-                .foregroundColor(textOnScreen == content ? theme.currentTheme.buttonText : theme.currentTheme.text)
+                .foregroundColor(currentDisplayMode == mode ? theme.currentTheme.buttonText : theme.currentTheme.text)
         }
     }
     
@@ -426,7 +370,9 @@ struct SunnahZekrView: View {
     
     //MARK: - Computed Properties
     private var canNavigateToNext: Bool {
-        return currentIndex < displayedAzkarList.count - 1 && currentRepetition >= zekrItem.repeat
+        // Logic: can go next if not at end AND current zekr is completed
+        let isCompleted = progressStore.isCompleted(zekr: zekrItem, category: category)
+        return currentIndex < displayedAzkarList.count - 1 && isCompleted
     }
     
     private var screenHeight: CGFloat {
@@ -435,16 +381,13 @@ struct SunnahZekrView: View {
     
     //MARK: - Methods
     private func setupView() {
-        // Load saved order if available
         if let savedOrder = progressStore.loadAzkarOrder(category: category), !savedOrder.isEmpty {
             applySavedOrder(savedOrder)
         }
         
         currentIndex = findFirstIncompleteIndex()
-        textOnScreen = zekrItem.zekr
-        resetRepetitions()
+        currentDisplayMode = .arabic
         
-        // Start motion updates with configuration only if 3D effects are enabled
         if enable3DEffects {
             motionManager.startMotionUpdates(
                 sensitivity: 0.5,
@@ -455,8 +398,6 @@ struct SunnahZekrView: View {
     }
     
     private func applySavedOrder(_ savedOrder: [String]) {
-        // Create a dictionary for quick lookup
-        // Use both ID-based and text-based lookups for compatibility
         var azkarDictById: [String: SunnahZekrItem] = [:]
         var azkarDictByTextId: [String: SunnahZekrItem] = [:]
         
@@ -465,19 +406,15 @@ struct SunnahZekrView: View {
             let textBasedKey = "\(category.rawValue)_\(zekr.zekr)"
             
             azkarDictById[idBasedKey] = zekr
-            // Only add to text dict if not already present (handle duplicates)
             if azkarDictByTextId[textBasedKey] == nil {
                 azkarDictByTextId[textBasedKey] = zekr
             }
         }
         
-        // Reorder based on saved order, then append any new items
         var reordered: [SunnahZekrItem] = []
         var usedZekrIds = Set<Int>()
         
-        // Add items in saved order
         for savedId in savedOrder {
-            // Try ID-based first (new format), then text-based (old format for compatibility)
             if let zekr = azkarDictById[savedId] ?? azkarDictByTextId[savedId] {
                 if !usedZekrIds.contains(zekr.id) {
                     reordered.append(zekr)
@@ -486,7 +423,6 @@ struct SunnahZekrView: View {
             }
         }
         
-        // Add any new items that weren't in saved order
         for zekr in azkarList {
             if !usedZekrIds.contains(zekr.id) {
                 reordered.append(zekr)
@@ -499,76 +435,48 @@ struct SunnahZekrView: View {
     private func moveCurrentZekrToEnd() {
         guard canMoveToEnd else { return }
         
-        // Save current progress
-        progressStore.savePartialProgress(zekr: zekrItem, category: category, currentRepetition: currentRepetition)
+        // Progress is already saved by Page view when it updates
         
-        // Get current zekr
         let currentZekr = displayedAzkarList[currentIndex]
         
-        // Create new list with current zekr moved to end
         var newList = displayedAzkarList
         newList.remove(at: currentIndex)
         newList.append(currentZekr)
         
-        // Update reordered list
         reorderedAzkarList = newList
         
-        // Save new order using zekr.id for uniqueness
         let orderIds = newList.map { "\(category.rawValue)_\($0.id)" }
         progressStore.saveAzkarOrder(category: category, order: orderIds)
         
-        // Auto-advance to next zekr (which is now at currentIndex since we removed one)
-        // The index stays the same because the item at currentIndex+1 moves to currentIndex
-        withAnimation(.easeInOut(duration: 0.3)) {
-            resetRepetitions()
-        }
+        // No need to reset Repetitions here manually as the view for the new zekr at currentIndex will load its own
     }
     
     private func resetAzkarOrder() {
         reorderedAzkarList = nil
         progressStore.resetAzkarOrder(category: category)
         currentIndex = findFirstIncompleteIndex()
-        resetRepetitions()
     }
     
     private func cleanupView() {
         motionManager.stopMotionUpdates()
         simpleModeManager.cancelAutoAdvance()
-        progressStore.savePartialProgress(zekr: zekrItem, category: category, currentRepetition: currentRepetition)
-    }
-    
-    private func handleRepetitionChange(_ newValue: Int) {
-        // Auto advance to next zekr when completed in simple mode
-        if simpleModeManager.isSimpleMode && newValue >= zekrItem.repeat {
-            simpleModeManager.scheduleAutoAdvance {
-                autoAdvanceToNextZekr()
-            }
-        }
+        // Last progress save happens in Page view
     }
     
     private func navigateToPrevious() {
         guard currentIndex > 0 else { return }
-        
-        progressStore.savePartialProgress(zekr: zekrItem, category: category, currentRepetition: currentRepetition)
         currentIndex -= 1
-        resetRepetitions()
     }
     
     private func navigateToNext() {
         guard canNavigateToNext else { return }
-        
-        progressStore.savePartialProgress(zekr: zekrItem, category: category, currentRepetition: currentRepetition)
         currentIndex += 1
-        resetRepetitions()
     }
     
     private func autoAdvanceToNextZekr() {
         if currentIndex < displayedAzkarList.count - 1 {
-            progressStore.savePartialProgress(zekr: zekrItem, category: category, currentRepetition: currentRepetition)
-            
             withAnimation(.easeInOut(duration: 0.3)) {
                 currentIndex += 1
-                resetRepetitions()
             }
         } else {
             checkIfAllAzkarCompleted()
@@ -587,18 +495,6 @@ struct SunnahZekrView: View {
         }
     }
     
-    private func resetRepetitions() {
-        let savedProgress = progressStore.getPartialProgress(zekr: zekrItem, category: category)
-        
-        if progressStore.isCompleted(zekr: zekrItem, category: category) {
-            currentRepetition = zekrItem.repeat
-        } else {
-            currentRepetition = savedProgress
-        }
-        
-        textOnScreen = zekrItem.zekr
-    }
-    
     private func findFirstIncompleteIndex() -> Int {
         for (index, zekr) in displayedAzkarList.enumerated() {
             if !progressStore.isCompleted(zekr: zekr, category: category) {
@@ -606,6 +502,161 @@ struct SunnahZekrView: View {
             }
         }
         return 0
+    }
+}
+
+struct SunnahZekrPage: View {
+    let zekrItem: SunnahZekrItem
+    let category: SunnahAzkarCategory
+    let index: Int
+    @Binding var currentIndex: Int
+    @ObservedObject var progressStore: SunnahProgressStore
+    @Binding var displayMode: SunnahZekrView.ZekrDisplayMode
+    
+    var theme: ThemeManager
+    var patternManager: PatternManager
+    @ObservedObject var motionManager: CoreMotionManager
+    @ObservedObject var simpleModeManager: SimpleModeManager
+    var enable3DEffects: Bool
+    
+    @Binding var takeSnapshot: Bool
+    @Binding var capturedImage: UIImage?
+    @Binding var showShareSheet: Bool
+    
+    var onRequestNext: () -> Void
+    var onCheckCompletion: () -> Void
+    
+    @State private var currentRepetition: Int = 0
+    @State private var textOnScreen: String = ""
+    
+    var body: some View {
+        VStack {
+            if simpleModeManager.isSimpleMode {
+                simpleZekrView
+            } else {
+                zekrView
+            }
+        }
+        .onAppear {
+            loadProgress()
+            updateText()
+        }
+        .onChange(of: displayMode) { _ in
+            updateText()
+        }
+        // When the page appears/disappears or when we slide back to it, ensure state is correct
+    }
+    
+    private func loadProgress() {
+        let savedProgress = progressStore.getPartialProgress(zekr: zekrItem, category: category)
+        if progressStore.isCompleted(zekr: zekrItem, category: category) {
+            currentRepetition = zekrItem.repeat
+        } else {
+            currentRepetition = savedProgress
+        }
+    }
+    
+    private func updateText() {
+        switch displayMode {
+        case .arabic:
+            textOnScreen = zekrItem.zekr
+        case .english:
+            textOnScreen = zekrItem.en_tr
+        case .transliteration:
+            textOnScreen = zekrItem.transliteration
+        case .source:
+            textOnScreen = zekrItem.source
+        case .blessArabic:
+            textOnScreen = zekrItem.bless ?? ""
+        case .blessEnglish:
+            textOnScreen = zekrItem.bless_en ?? ""
+        }
+    }
+    
+    private var zekrView: some View {
+        let content = createZekrContent(height: UIScreen.main.bounds.height * 0.5)
+            .addSimpleModeToggle(
+                isSimpleMode: simpleModeManager.isSimpleMode,
+                longPressDuration: 0.8
+            ) {
+                simpleModeManager.enableSimpleMode()
+            }
+        
+        if enable3DEffects {
+            return AnyView(content
+                .addTiltEffect(preset: .floating)
+            )
+        } else {
+            return AnyView(content)
+        }
+    }
+    
+    private var simpleZekrView: some View {
+        let content = createZekrContent(height: UIScreen.main.bounds.height * 0.7)
+            .addSimpleModeToggle(
+                isSimpleMode: simpleModeManager.isSimpleMode,
+                longPressDuration: 0.8
+            ) {
+                simpleModeManager.disableSimpleMode()
+            }
+        
+        return content
+    }
+    
+    private func createZekrContent(height: CGFloat) -> some View {
+        VStack {
+            Text(textOnScreen)
+                .font(.title)
+                .fontWeight(.bold)
+                .foregroundColor(theme.currentTheme.text)
+                .multilineTextAlignment(.center)
+                .padding(.horizontal)
+                .font(.system(size: 80))
+                .minimumScaleFactor(0.3)
+                .lineLimit(15)
+                .padding(.vertical, 12)
+                .id(zekrItem.zekr) // Identify by text content
+            
+            if index == currentIndex && takeSnapshot {
+                Spacer()
+                Text("azkarfold.com")
+                    .font(.system(size: 16, weight: .medium))
+                    .foregroundColor(theme.currentTheme.text.opacity(0.7))
+                    .padding(.bottom, 16)
+            }
+        }
+        .padding(.horizontal, 18)
+        .frame(height: height)
+        .frame(maxWidth: .infinity)
+        .background(
+            RoundedRectangle(cornerRadius: 33)
+                .fill(currentRepetition >= zekrItem.repeat ? theme.currentTheme.background.opacity(0.65) : theme.currentTheme.background.opacity(0.45))
+                .overlay(
+                    Group {
+                        if patternManager.currentPattern != "none" {
+                            Image(patternManager.currentPattern)
+                                .resizable(resizingMode: .tile)
+                                .opacity(0.35)
+                        }
+                    }
+                )
+                .clipShape(RoundedRectangle(cornerRadius: 33))
+                .padding(.horizontal, 21)
+        )
+        .onTapGesture {
+            countUpZekr()
+        }
+        .onChange(of: takeSnapshot) { newValue in
+            // Only snapshot if this is the current page
+            if newValue && index == currentIndex {
+                // We need to wait for render? snapshot modifier works on trigger
+            }
+        }
+        .snapShot(trigger: (takeSnapshot && index == currentIndex)) { image in
+            capturedImage = image
+            takeSnapshot = false
+            showShareSheet = true
+        }
     }
     
     private func countUpZekr() {
@@ -616,7 +667,14 @@ struct SunnahZekrView: View {
         
         if currentRepetition == zekrItem.repeat {
             progressStore.markAsCompleted(zekr: zekrItem, category: category)
-            checkIfAllAzkarCompleted()
+            onCheckCompletion()
+            
+            // Auto advance logic
+            if simpleModeManager.isSimpleMode {
+                 simpleModeManager.scheduleAutoAdvance {
+                     onRequestNext()
+                 }
+            }
         }
     }
 }
@@ -1077,81 +1135,3 @@ struct MotionConfig {
         updateInterval: 0.05
     )
 }
-
-/*
- // Enhanced effect with shadows
- .addEnhanced3DTiltEffect(motionManager: motionManager)
-
- // Floating card effect
- .addFloatingCardTiltEffect(motionManager: motionManager)
-
- // Simple mode toggle
- .addSimpleModeToggle(isSimpleMode: isSimpleMode) {
-    simpleModeManager.toggleSimpleMode()
- }
-
- // Custom motion configuration
- motionManager.startMotionUpdates(
-    sensitivity: 0.5,    // Motion sensitivity
-    maxAngle: 0.175,     // ~10 degrees max rotation
-    interval: 0.1        // 10Hz update rate
- )
- 
- 
- 🔧 Key Technical Features:
- Performance Optimized:
-
- Motion updates only when view is visible
- Efficient timer management for auto-advance
- Smooth animations without blocking UI
- Memory-safe with proper cleanup
-
- Highly Configurable:
-
- Multiple tilt effect presets
- Adjustable motion sensitivity
- Configurable auto-advance timing
- Customizable animation parameters
-
- User Experience:
-
- Intuitive gestures: Long tap to toggle modes
- Visual feedback: Smooth transitions and animations
- Immersive feel: 3D card appears to float in device
- Accessibility: Maintains all existing functionality
-
- Easy Integration:
-
- Drop-in replacement for existing view
- No breaking changes to existing code
- Modular components can be reused elsewhere
- Clean separation of concerns
-
- 📱 Simple Mode Behavior:
-
- Long tap on zekr card enters simple mode
- Larger display area for better readability
- Auto-advance when zekr count reaches target
- 0.5 second delay before advancing (configurable)
- Long tap again to exit simple mode
- Completion alert when all azkar finished
-
- 🎮 3D Tilt Effect Details:
-
- Device pitch → X-axis rotation (forward/backward tilt)
- Device roll → Y-axis rotation (left/right tilt)
- Clamped rotation prevents excessive movement
- Spring animations for natural, responsive feel
- 60fps updates for smooth visual experience
- Battery efficient - stops when view disappears
-
- The modular design makes it easy to:
-
- Reuse components in other parts of your app
- Customize behavior with different presets
- Extend functionality by adding new effects
- Maintain code with clear separation of concerns
-
- All components work together seamlessly while maintaining the original functionality of your Zekr app! 🕌✨
- 
- */
