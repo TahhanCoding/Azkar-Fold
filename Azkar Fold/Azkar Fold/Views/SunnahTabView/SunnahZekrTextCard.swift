@@ -16,12 +16,6 @@ struct SunnahZekrTextCard: View {
     let patternManager: PatternManager
     let onTap: () -> Void
     
-    // Optional snapshot functionality
-    let showWatermark: Bool
-    let index: Int
-    let currentIndex: Int
-    let takeSnapshot: Bool
-    
     init(
         text: String,
         isCompleted: Bool,
@@ -29,11 +23,7 @@ struct SunnahZekrTextCard: View {
         isSimpleMode: Bool,
         theme: ThemeManager,
         patternManager: PatternManager,
-        onTap: @escaping () -> Void,
-        showWatermark: Bool = false,
-        index: Int = 0,
-        currentIndex: Int = 0,
-        takeSnapshot: Bool = false
+        onTap: @escaping () -> Void
     ) {
         self.text = text
         self.isCompleted = isCompleted
@@ -42,10 +32,6 @@ struct SunnahZekrTextCard: View {
         self.theme = theme
         self.patternManager = patternManager
         self.onTap = onTap
-        self.showWatermark = showWatermark
-        self.index = index
-        self.currentIndex = currentIndex
-        self.takeSnapshot = takeSnapshot
     }
     
     private func calculateCardHeight() -> CGFloat {
@@ -133,19 +119,6 @@ struct SunnahZekrTextCard: View {
         .onTapGesture {
             onTap()
         }
-        .overlay(
-            Group {
-                if showWatermark && index == currentIndex && takeSnapshot {
-                    VStack {
-                        Spacer()
-                        Text("azkarfold.com")
-                            .font(.system(size: 16, weight: .medium))
-                            .foregroundColor(theme.currentTheme.text.opacity(0.7))
-                            .padding(.bottom, 16)
-                    }
-                }
-            }
-        )
     }
 }
 

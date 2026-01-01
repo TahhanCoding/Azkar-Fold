@@ -45,12 +45,12 @@ struct SunnahZekrView: View {
         self._simpleModeManager = StateObject(wrappedValue: SimpleModeManager(initialMode: initialMode))
     }
     
-    // Snapshot states
-    @State private var takeSnapshot: Bool = false
+    // Export states
     @State private var capturedImage: UIImage? = nil
     @State private var showShareSheet: Bool = false
     @State private var showSaveAlert: Bool = false
     @State private var saveAlertMessage: String = ""
+    @State private var isExporting: Bool = false
     
     // Computed property for displayed azkar list (uses reordered if available)
     var displayedAzkarList: [SunnahZekrItem] {
@@ -97,9 +97,6 @@ struct SunnahZekrView: View {
                         motionManager: motionManager,
                         simpleModeManager: simpleModeManager,
                         enable3DEffects: settingsStore.enable3DEffects,
-                        takeSnapshot: $takeSnapshot,
-                        capturedImage: $capturedImage,
-                        showShareSheet: $showShareSheet,
                         onRequestNext: {
                             autoAdvanceToNextZekr()
                         },
@@ -162,7 +159,8 @@ struct SunnahZekrView: View {
             ToolbarItem(placement: .navigationBarTrailing) {
                 Menu {
                     Button(action: {
-                        takeSnapshot = true
+                        // Just set the flag - menu will dismiss automatically
+                        isExporting = true
                     }) {
                         Label("Share", systemImage: "square.and.arrow.up.on.square.fill")
                     }
@@ -200,6 +198,14 @@ struct SunnahZekrView: View {
             // Reset display mode to Arabic when navigating
             currentDisplayMode = .arabic
         }
+        .onChange(of: isExporting) { newValue in
+            if newValue {
+                // Delay to allow menu to dismiss first
+                DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
+                    exportCurrentZekr()
+                }
+            }
+        }
         .onChange(of: settingsStore.enable3DEffects) { newValue in
             if newValue {
                 motionManager.startMotionUpdates(
@@ -233,6 +239,32 @@ struct SunnahZekrView: View {
                 }
             }
         }
+        .overlay {
+            if isExporting {
+                ZStack {
+                    Color.black.opacity(0.3)
+                        .ignoresSafeArea()
+                    
+                    VStack(spacing: 12) {
+                        ProgressView()
+                            .scaleEffect(1.2)
+                            .tint(theme.currentTheme.accent)
+                        
+                        Text("Preparing...")
+                            .font(.subheadline)
+                            .foregroundColor(theme.currentTheme.text)
+                    }
+                    .padding(24)
+                    .background(
+                        RoundedRectangle(cornerRadius: 16)
+                            .fill(theme.currentTheme.cardBackground)
+                            .shadow(color: .black.opacity(0.2), radius: 10)
+                    )
+                }
+                .transition(.opacity)
+            }
+        }
+        .animation(.easeInOut(duration: 0.2), value: isExporting)
     }
     
     //MARK: - Progress Bar
@@ -516,6 +548,28 @@ struct SunnahZekrView: View {
         }
         return 0
     }
+    
+    private func exportCurrentZekr() {
+        guard currentIndex < displayedAzkarList.count else {
+            isExporting = false
+            return
+        }
+        
+        let currentZekr = displayedAzkarList[currentIndex]
+        
+        // Render the image using ImageRenderer (fast and efficient)
+        if let image = renderZekrImage(
+            text: currentZekr.zekr,
+            theme: theme,
+            patternManager: patternManager
+        ) {
+            capturedImage = image
+            isExporting = false
+            showShareSheet = true
+        } else {
+            isExporting = false
+        }
+    }
 }
 
 struct SunnahZekrPage: View {
@@ -532,10 +586,6 @@ struct SunnahZekrPage: View {
     @ObservedObject var motionManager: CoreMotionManager
     @ObservedObject var simpleModeManager: SimpleModeManager
     var enable3DEffects: Bool
-    
-    @Binding var takeSnapshot: Bool
-    @Binding var capturedImage: UIImage?
-    @Binding var showShareSheet: Bool
     
     var onRequestNext: () -> Void
     var onCheckCompletion: () -> Void
@@ -554,11 +604,7 @@ struct SunnahZekrPage: View {
                 patternManager: patternManager,
                 onTap: {
                     countUpZekr()
-                },
-                showWatermark: index == currentIndex && takeSnapshot,
-                index: index,
-                currentIndex: currentIndex,
-                takeSnapshot: takeSnapshot
+                }
             )
             .addSimpleModeToggle(
                 isSimpleMode: simpleModeManager.isSimpleMode,
@@ -571,17 +617,6 @@ struct SunnahZekrPage: View {
                 ? AnyViewModifier(TiltEffect3D(animationResponse: 0.4, dampingFraction: 0.9))
                 : AnyViewModifier(EmptyModifier())
             )
-            .onChange(of: takeSnapshot) { newValue in
-                // Only snapshot if this is the current page
-                if newValue && index == currentIndex {
-                    // We need to wait for render? snapshot modifier works on trigger
-                }
-            }
-            .snapShot(trigger: (takeSnapshot && index == currentIndex)) { image in
-                capturedImage = image
-                takeSnapshot = false
-                showShareSheet = true
-            }
         }
         .onAppear {
             loadProgress()
@@ -1084,11 +1119,18 @@ class CoreMotionManager: ObservableObject {
         
         motionManager.deviceMotionUpdateInterval = updateInterval
         
+        // Stop any existing updates before starting new ones to avoid conflicts
+        if motionManager.isDeviceMotionActive {
+            motionManager.stopDeviceMotionUpdates()
+        }
+        
         motionManager.startDeviceMotionUpdates(to: .main) { [weak self] motion, error in
-            print("Motion update: \(motion?.attitude.pitch ?? 0)") // Add this line
-
             guard let self = self, let motion = motion, error == nil else {
-                if let error = error {
+                // Silently handle errors - CoreMotion may log system warnings that are harmless
+                // Only log actual errors that prevent functionality
+                if let error = error as NSError?,
+                   error.domain != "NSCocoaErrorDomain" || error.code != 257 {
+                    // Only log non-permission errors (257 is the permission error code)
                     print("CoreMotionManager error: \(error.localizedDescription)")
                 }
                 return

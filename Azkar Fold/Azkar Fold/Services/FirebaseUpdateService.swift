@@ -34,9 +34,14 @@ class FirebaseUpdateService {
     
     func checkForUpdates() async throws -> UpdateStatus {
         do {
-            // Fetch and activate
-            let status = try await remoteConfig.fetchAndActivate()
-            print("Remote Config fetched: \(status)")
+            // Force fetch fresh values (bypass cache for debugging/testing)
+            // In production, consider a reasonable interval like 3600 (1 hour) or 43200 (12 hours)
+            let fetchStatus = try await remoteConfig.fetch(withExpirationDuration: 0)
+            print("Remote Config fetch status: \(fetchStatus)")
+            
+            // Activate the fetched values
+            let activationChanged = try await remoteConfig.activate()
+            print("Remote Config activation changed: \(activationChanged)")
             
             return evaluateUpdateStatus()
         } catch {
@@ -54,18 +59,23 @@ class FirebaseUpdateService {
             return .upToDate
         }
         
+        print("Version Check: Current: \(currentVersion), Min: \(minVersion), Latest: \(latestVersion)")
+        
         // Force Update Logic:
         // If current version is less than minimum required version, force update.
         if isVersion(currentVersion, lessThan: minVersion) {
+            print("Result: Force Update Required")
             return .forceUpdate(requiredVersion: minVersion, currentVersion: currentVersion)
         }
         
         // Optional Update Logic:
         // If current version is less than latest version (but >= min version), optional update.
         if isVersion(currentVersion, lessThan: latestVersion) {
+            print("Result: Optional Update Available")
             return .optionalUpdate(availableVersion: latestVersion, currentVersion: currentVersion)
         }
         
+        print("Result: App is Up to Date")
         return .upToDate
     }
     
@@ -82,7 +92,24 @@ class FirebaseUpdateService {
     // MARK: - Version Comparison Helper
     
     private func isVersion(_ version1: String, lessThan version2: String) -> Bool {
-        return version1.compare(version2, options: .numeric) == .orderedAscending
+        let v1Components = version1.split(separator: ".").compactMap { Int($0) }
+        let v2Components = version2.split(separator: ".").compactMap { Int($0) }
+        
+        let maxLength = max(v1Components.count, v2Components.count)
+        
+        for i in 0..<maxLength {
+            let v1Value = i < v1Components.count ? v1Components[i] : 0
+            let v2Value = i < v2Components.count ? v2Components[i] : 0
+            
+            if v1Value < v2Value {
+                return true
+            } else if v1Value > v2Value {
+                return false
+            }
+        }
+        
+        // If we reach here, versions are equal
+        return false
     }
 }
 

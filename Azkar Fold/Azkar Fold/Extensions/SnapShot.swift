@@ -7,56 +7,7 @@
 
 import SwiftUI
 
-extension View {
-    @ViewBuilder
-    func snapShot(trigger: Bool, onCompletion: @escaping (UIImage) -> ()) -> some View {
-        self
-            .modifier(SnapShotModifier(trigger: trigger, onCompletion: onCompletion))
-    }
-}
-
-
-fileprivate struct SnapShotModifier: ViewModifier {
-    var trigger: Bool
-    var onCompletion: (UIImage) -> ()
-    
-    @State private var view: UIView = .init(frame: .zero)
-    
-    func body(content: Content) -> some View {
-        content
-            .background(ViewExtractor(view: view))
-            .compositingGroup()
-            .onChange(of: trigger) { newValue in
-                generateSnapShot()
-            }
-    }
-    
-    private func generateSnapShot() {
-        if let superView = view.superview?.superview {
-            print(superView)
-            let renderer = UIGraphicsImageRenderer(size: superView.bounds.size)
-            let image = renderer.image { _ in
-                superView.drawHierarchy(in: superView.bounds, afterScreenUpdates: true)
-            }
-            
-            onCompletion(image)
-        }
-    }
-}
-
-fileprivate struct ViewExtractor: UIViewRepresentable {
-    var view: UIView
-    
-    func makeUIView(context: Context) -> UIView {
-        view.backgroundColor = .clear
-        return view
-    }
-    
-    func updateUIView(_ uiView: UIView, context: Context) {
-        
-    }
-}
-
+// MARK: - Share Sheet
 struct ShareSheet: UIViewControllerRepresentable {
     var activityItems: [Any]
     var completion: UIActivityViewController.CompletionWithItemsHandler?
@@ -68,4 +19,64 @@ struct ShareSheet: UIViewControllerRepresentable {
     }
     
     func updateUIViewController(_ uiViewController: UIActivityViewController, context: Context) {}
+}
+
+// MARK: - Exportable Zekr Card (Optimized for rendering)
+struct ExportableZekrCard: View {
+    let text: String
+    let theme: ThemeManager
+    let patternManager: PatternManager
+    
+    var body: some View {
+        VStack {
+            Spacer()
+            
+            Text(text)
+                .font(.title)
+                .fontWeight(.bold)
+                .foregroundColor(theme.currentTheme.text)
+                .multilineTextAlignment(.center)
+                .padding(.horizontal, 24)
+                .minimumScaleFactor(0.4)
+                .lineLimit(20)
+            
+            Spacer()
+            
+            // Watermark
+            Text("azkarfold.com")
+                .font(.system(size: 14, weight: .medium))
+                .foregroundColor(theme.currentTheme.text.opacity(0.6))
+                .padding(.bottom, 20)
+        }
+        .frame(width: 350, height: 500)
+        .background(
+            ZStack {
+                // Solid background
+                theme.currentTheme.background
+                
+                // Pattern overlay
+                if patternManager.currentPattern != "none" {
+                    Image(patternManager.currentPattern)
+                        .resizable(resizingMode: .tile)
+                        .opacity(0.35)
+                }
+            }
+        )
+        .clipShape(RoundedRectangle(cornerRadius: 24))
+    }
+}
+
+// MARK: - Image Renderer Helper
+@MainActor
+func renderZekrImage(text: String, theme: ThemeManager, patternManager: PatternManager) -> UIImage? {
+    let exportView = ExportableZekrCard(
+        text: text,
+        theme: theme,
+        patternManager: patternManager
+    )
+    
+    let renderer = ImageRenderer(content: exportView)
+    renderer.scale = UIScreen.main.scale
+    
+    return renderer.uiImage
 }
