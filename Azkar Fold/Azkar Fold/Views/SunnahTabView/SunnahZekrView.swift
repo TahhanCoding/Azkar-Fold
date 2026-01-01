@@ -30,6 +30,7 @@ struct SunnahZekrView: View {
     @State private var currentDisplayMode: ZekrDisplayMode = .arabic
     
     @State private var reorderedAzkarList: [SunnahZekrItem]? = nil
+    @State private var listVersion: UUID = UUID()
     @Namespace private var progressBarNamespace
     
     // Modular managers
@@ -107,6 +108,7 @@ struct SunnahZekrView: View {
                     .tag(index)
                 }
             }
+            .id("\(listVersion.uuidString)_\(displayedAzkarList.count)")
             .tabViewStyle(.page(indexDisplayMode: .never))
             .padding(.top, 16)
             
@@ -488,10 +490,17 @@ struct SunnahZekrView: View {
         newList.remove(at: currentIndex)
         newList.append(currentZekr)
         
-        reorderedAzkarList = newList
-        
         let orderIds = newList.map { "\(category.rawValue)_\($0.id)" }
         progressStore.saveAzkarOrder(category: category, order: orderIds)
+        
+        // Slide to next zekr with animation
+        // Since we removed the item at currentIndex, the next item is now at currentIndex
+        // We update listVersion to force TabView to recreate, which will show the next item
+        // Using a spring animation for a smooth slide effect
+        withAnimation(.spring(response: 0.4, dampingFraction: 0.8)) {
+            reorderedAzkarList = newList
+            listVersion = UUID() // Force TabView to recreate and animate
+        }
         
         // No need to reset Repetitions here manually as the view for the new zekr at currentIndex will load its own
     }
