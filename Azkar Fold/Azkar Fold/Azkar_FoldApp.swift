@@ -7,10 +7,15 @@
 
 import SwiftUI
 import Combine
+import FirebaseCore
 
 @main
 struct Azkar_FoldApp: App {
     @State private var showLaunchScreen = true
+    
+    init() {
+        FirebaseApp.configure()
+    }
     
     var body: some Scene {
         WindowGroup {
@@ -31,6 +36,14 @@ struct Azkar_FoldApp: App {
                                 }
                             }
                         }
+                }
+            }
+            .onChange(of: showLaunchScreen) { newValue in
+                if !newValue {
+                    // Trigger update check when launch screen dismisses
+                    Task {
+                        await UpdateManager.shared.checkForUpdates()
+                    }
                 }
             }
         }

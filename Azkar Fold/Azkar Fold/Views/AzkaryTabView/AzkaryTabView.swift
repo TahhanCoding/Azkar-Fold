@@ -75,12 +75,6 @@ struct AzkaryTabView: View {
                         coordinator.navigate(to: .createZekr)
                     }) {
                         Text("Create")
-                            .font(.headline)
-                            .foregroundColor(theme.currentTheme.buttonText)
-                            .padding(.horizontal, 20)
-                            .padding(.vertical, 10)
-                            .background(theme.currentTheme.primary)
-                            .cornerRadius(8)
                     }
                 }
             }

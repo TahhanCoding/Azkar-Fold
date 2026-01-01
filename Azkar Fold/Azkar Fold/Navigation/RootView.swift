@@ -14,13 +14,27 @@ struct RootView: View {
     @StateObject private var patternManager = PatternManager.shared
     @StateObject private var progressStore = SunnahProgressStore()
     @StateObject private var coreMotionManager = CoreMotionManager()
+    @StateObject private var updateManager = UpdateManager.shared
 
     var body: some View {
-        NavigationStack(path: $coordinator.path) {
-            HomeView()
-                .navigationDestination(for: Route.self) { route in
-                    ViewFactory.viewFor(route: route)
-                }
+        ZStack {
+            NavigationStack(path: $coordinator.path) {
+                HomeView()
+                    .navigationDestination(for: Route.self) { route in
+                        ViewFactory.viewFor(route: route)
+                    }
+            }
+            
+            // Overlays
+            if updateManager.showOptionalUpdate {
+                OptionalUpdateAlertView(updateManager: updateManager)
+                    .zIndex(100)
+            }
+            
+            if updateManager.showForceUpdate {
+                ForceUpdateModalView(updateManager: updateManager)
+                    .zIndex(200) // Higher zIndex to ensure it's on top
+            }
         }
         .environmentObject(coordinator)
         .environmentObject(zekrStore)
@@ -28,6 +42,7 @@ struct RootView: View {
         .environmentObject(patternManager)
         .environmentObject(progressStore)
         .environmentObject(coreMotionManager)
+        .environmentObject(updateManager)
     }
 }
 

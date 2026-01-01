@@ -7,6 +7,8 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		326D1EC12F06487B00CCF7A5 /* FirebaseCore in Frameworks */ = {isa = PBXBuildFile; productRef = 326D1EC02F06487B00CCF7A5 /* FirebaseCore */; };
+		326D1EC32F06487B00CCF7A5 /* FirebaseRemoteConfig in Frameworks */ = {isa = PBXBuildFile; productRef = 326D1EC22F06487B00CCF7A5 /* FirebaseRemoteConfig */; };
 		32F902CD2E2BA986005BEE00 /* StoreKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 32F902CC2E2BA986005BEE00 /* StoreKit.framework */; };
 /* End PBXBuildFile section */
 
@@ -28,6 +30,8 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				326D1EC32F06487B00CCF7A5 /* FirebaseRemoteConfig in Frameworks */,
+				326D1EC12F06487B00CCF7A5 /* FirebaseCore in Frameworks */,
 				32F902CD2E2BA986005BEE00 /* StoreKit.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -80,6 +84,8 @@
 			);
 			name = "Azkar Fold";
 			packageProductDependencies = (
+				326D1EC02F06487B00CCF7A5 /* FirebaseCore */,
+				326D1EC22F06487B00CCF7A5 /* FirebaseRemoteConfig */,
 			);
 			productName = "Azkar Fold";
 			productReference = 329D042C2DC5653500ED5D7E /* Azkar Fold.app */;
@@ -109,6 +115,9 @@
 			);
 			mainGroup = 329D04232DC5653500ED5D7E;
 			minimizedProjectReferenceProxies = 1;
+			packageReferences = (
+				326D1EBF2F06487B00CCF7A5 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */,
+			);
 			preferredProjectObjectVersion = 77;
 			productRefGroup = 329D042D2DC5653500ED5D7E /* Products */;
 			projectDirPath = "";
@@ -357,6 +366,30 @@
 			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
+
+/* Begin XCRemoteSwiftPackageReference section */
+		326D1EBF2F06487B00CCF7A5 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/firebase/firebase-ios-sdk";
+			requirement = {
+				kind = upToNextMinorVersion;
+				minimumVersion = 12.7.0;
+			};
+		};
+/* End XCRemoteSwiftPackageReference section */
+
+/* Begin XCSwiftPackageProductDependency section */
+		326D1EC02F06487B00CCF7A5 /* FirebaseCore */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 326D1EBF2F06487B00CCF7A5 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
+			productName = FirebaseCore;
+		};
+		326D1EC22F06487B00CCF7A5 /* FirebaseRemoteConfig */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 326D1EBF2F06487B00CCF7A5 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
+			productName = FirebaseRemoteConfig;
+		};
+/* End XCSwiftPackageProductDependency section */
 	};
 	rootObject = 329D04242DC5653500ED5D7E /* Project object */;
 }
