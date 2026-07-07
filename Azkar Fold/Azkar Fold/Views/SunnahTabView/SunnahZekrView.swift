@@ -556,7 +556,11 @@ struct SunnahZekrView: View {
                 return
             }
 
-            let text = shareText(for: displayedAzkarList[currentIndex])
+            let currentZekr = displayedAzkarList[currentIndex]
+            let isCompleted = progressStore.isCompleted(zekr: currentZekr, category: category)
+                || progressStore.getPartialProgress(zekr: currentZekr, category: category) >= currentZekr.repeat
+
+            let text = shareText(for: currentZekr)
             guard !text.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty else {
                 isExporting = false
                 saveAlertMessage = "Nothing to share for the current view."
@@ -564,7 +568,13 @@ struct SunnahZekrView: View {
                 return
             }
 
-            guard let image = renderZekrImage(text: text, theme: theme, patternManager: patternManager) else {
+            guard let shareURL = renderZekrShareURL(
+                text: text,
+                isCompleted: isCompleted,
+                isSimpleMode: simpleModeManager.isSimpleMode,
+                theme: theme,
+                patternManager: patternManager
+            ) else {
                 isExporting = false
                 saveAlertMessage = "Couldn't prepare the image. Please try again."
                 showSaveAlert = true
@@ -572,7 +582,7 @@ struct SunnahZekrView: View {
             }
 
             isExporting = false
-            presentShareSheet(activityItems: [image]) { activity, success, _, _ in
+            presentShareSheet(activityItems: [shareURL]) { activity, success, _, _ in
                 Task { @MainActor in
                     guard activity == .saveToCameraRoll else { return }
                     saveAlertMessage = success
