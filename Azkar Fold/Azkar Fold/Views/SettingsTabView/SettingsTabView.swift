@@ -12,6 +12,7 @@ struct SettingsTabView: View {
     @EnvironmentObject var theme: ThemeManager
     @State private var showingPrivacyPolicy = false
     @State private var showingTerms = false
+    @State private var showingSupportSheet = false
     
     var body: some View {
         ScrollView {
@@ -63,7 +64,7 @@ struct SettingsTabView: View {
                     actionButton(
                         title: "Contact Support",
                         icon: "envelope.fill",
-                        action: sendEmail
+                        action: { showingSupportSheet = true }
                     )
                 }
                 .padding(.vertical, 12)
@@ -106,12 +107,24 @@ struct SettingsTabView: View {
         .scrollContentBackground(.hidden)
         .background(BackgroundView())
         .sheet(isPresented: $showingPrivacyPolicy) {
-            WebView(url: "https://www.azkarfold.com/privacy")
-                .background(theme.currentTheme.background.ignoresSafeArea())
+            LegalDocumentSheet(
+                title: "Privacy Policy",
+                lastUpdated: LegalDocuments.lastUpdated,
+                sections: LegalDocuments.privacyPolicySections
+            )
+            .environmentObject(theme)
         }
         .sheet(isPresented: $showingTerms) {
-            WebView(url: "https://yourapp.com/terms")
-                .background(theme.currentTheme.background.ignoresSafeArea())
+            LegalDocumentSheet(
+                title: "Terms of Service",
+                lastUpdated: LegalDocuments.lastUpdated,
+                sections: LegalDocuments.termsOfServiceSections
+            )
+            .environmentObject(theme)
+        }
+        .sheet(isPresented: $showingSupportSheet) {
+            SupportContactSheet()
+                .environmentObject(theme)
         }
     }
     
@@ -253,19 +266,6 @@ struct SettingsTabView: View {
             }
             
             window.rootViewController?.present(activityVC, animated: true)
-        }
-    }
-    
-    private func sendEmail() {
-        let email = "support@yourapp.com"
-        let subject = "Azkar Fold Support Request"
-        let body = "Hi there,\n\nI need help with Azkar Fold.\n\nApp Version: \(appVersion)\n\nIssue Description:\n"
-        
-        let encodedSubject = subject.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed) ?? ""
-        let encodedBody = body.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed) ?? ""
-        
-        if let url = URL(string: "mailto:\(email)?subject=\(encodedSubject)&body=\(encodedBody)") {
-            UIApplication.shared.open(url)
         }
     }
 }
