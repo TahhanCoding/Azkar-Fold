@@ -27,9 +27,11 @@ struct SunnahTabView: View {
         .frame(maxWidth: .infinity, maxHeight: .infinity)
         .background(BackgroundView())
         .onAppear {
+            AzkarDebugLog.log("SunnahTabView onAppear")
             progressStore.resetDailyProgressIfNeeded()
             progressStore.loadSelectedCategories()
             temporarySelectedCategories = progressStore.selectedSunnahCategories
+            AzkarDebugLog.log("SunnahTabView selectedCategories=\(progressStore.selectedSunnahCategories.map(\.rawValue))")
 
             Task {
                 await loadAzkarCounts()
@@ -115,18 +117,20 @@ struct SunnahTabView: View {
     }
     
 
-    @ViewBuilder
     private func loadSunnahZekrView(for category: SunnahAzkarCategory) -> some View {
+        AzkarDebugLog.log("loadSunnahZekrView navigating category=\(category.rawValue)")
         let result = azkarService.loadAzkar(for: category)
         switch result {
         case .success(let azkarList):
-            SunnahZekrView(
+            AzkarDebugLog.log("loadSunnahZekrView success category=\(category.rawValue) azkarList.count=\(azkarList.count)")
+            return AnyView(SunnahZekrView(
                 azkarList: azkarList,
                 category: category,
                 progressStore: progressStore
-            )
+            ))
         case .failure(let error):
-            ErrorView(error: "Failed to load \(category.rawValue): \(error.localizedDescription)")
+            AzkarDebugLog.log("loadSunnahZekrView failure category=\(category.rawValue) error=\(error.localizedDescription)")
+            return AnyView(ErrorView(error: "Failed to load \(category.rawValue): \(error.localizedDescription)"))
         }
     }
 
@@ -147,18 +151,24 @@ struct SunnahTabView: View {
         }
     }
     private func loadAzkarCounts() async {
+        AzkarDebugLog.log("loadAzkarCounts start")
         await withTaskGroup(of: Void.self) { group in
             for category in SunnahAzkarCategory.allCases {
                 group.addTask {
-                    let result = await self.azkarService.loadAzkar(for: category)
-                    if case .success(let azkarList) = result {
+                    let result = self.azkarService.loadAzkar(for: category)
+                    switch result {
+                    case .success(let azkarList):
+                        AzkarDebugLog.log("loadAzkarCounts success category=\(category.rawValue) count=\(azkarList.count)")
                         await MainActor.run {
                             self.azkarCounts[category] = azkarList.count
                         }
+                    case .failure(let error):
+                        AzkarDebugLog.log("loadAzkarCounts failure category=\(category.rawValue) error=\(error.localizedDescription)")
                     }
                 }
             }
         }
+        AzkarDebugLog.log("loadAzkarCounts done azkarCounts=\(self.azkarCounts.map { "\($0.key.rawValue)=\($0.value)" }.joined(separator: ", "))")
     }
     private func isCategoryCompleted(for category: SunnahAzkarCategory) -> Bool {
         let totalCount = azkarCounts[category] ?? 0

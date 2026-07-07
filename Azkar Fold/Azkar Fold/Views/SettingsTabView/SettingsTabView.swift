@@ -19,16 +19,16 @@ struct SettingsTabView: View {
                 headerSection
                     .padding(.vertical, 20)
                 
-                sectionHeader("Preferences")
+                    sectionHeader("Preferences")
                     .padding(.horizontal, 14)
 
-                VStack(spacing: 0) {
+                    VStack(spacing: 0) {
                     sunnahSettingsNavigationLink
-                    
-                    Divider()
-                        .background(.gray.opacity(0.3))
-                        .padding(.horizontal, 32)
-
+                        
+                        Divider()
+                            .background(.gray.opacity(0.3))
+                            .padding(.horizontal, 32)
+                        
                     themeNavigationLink
                 }
                 .padding(.vertical, 12)
@@ -144,59 +144,59 @@ struct SettingsTabView: View {
     
     private var sunnahSettingsNavigationLink: some View {
         NavigationLink(destination: SunnahSettingsView()) {
-            HStack(spacing: 12) {
-                Image(systemName: "slider.horizontal.3")
-                    .foregroundColor(theme.currentTheme.primary)
-                    .frame(width: 24, height: 24)
-                
-                VStack(alignment: .leading, spacing: 2) {
-                    Text("Sunnah Zekr Manager")
-                        .font(.headline)
-                        .foregroundColor(theme.currentTheme.text)
+                HStack(spacing: 12) {
+                    Image(systemName: "slider.horizontal.3")
+                        .foregroundColor(theme.currentTheme.primary)
+                        .frame(width: 24, height: 24)
                     
+                    VStack(alignment: .leading, spacing: 2) {
+                        Text("Sunnah Zekr Manager")
+                            .font(.headline)
+                            .foregroundColor(theme.currentTheme.text)
+                        
                     Text("Customize reading experience")
-                        .font(.caption)
-                        .foregroundColor(theme.currentTheme.text.opacity(0.7))
-                }
-                
-                Spacer()
-                
-                Image(systemName: "chevron.right")
-                    .font(.system(size: 14, weight: .semibold))
-                    .foregroundColor(theme.currentTheme.text.opacity(0.5))
-            }
-            .padding(.vertical, 12)
-            .padding(.horizontal, 14)
-        }
-    }
-    
-    private var themeNavigationLink: some View {
-        NavigationLink(destination: ThemeManagerView().environmentObject(ThemeManager.shared)) {
-            HStack(spacing: 12) {
-                Image(systemName: "paintbrush.fill")
-                    .foregroundColor(theme.currentTheme.primary)
-                    .frame(width: 24, height: 24)
-                
-                VStack(alignment: .leading, spacing: 2) {
-                    Text("Theme Manager")
-                        .font(.headline)
-                        .foregroundColor(theme.currentTheme.text)
+                            .font(.caption)
+                            .foregroundColor(theme.currentTheme.text.opacity(0.7))
+                    }
                     
-                    Text("Customize app colors and themes")
-                        .font(.caption)
-                        .foregroundColor(theme.currentTheme.text.opacity(0.7))
+                    Spacer()
+                    
+                    Image(systemName: "chevron.right")
+                        .font(.system(size: 14, weight: .semibold))
+                    .foregroundColor(theme.currentTheme.text.opacity(0.5))
                 }
-                
-                Spacer()
-                
+                .padding(.vertical, 12)
+                .padding(.horizontal, 14)
+        }
+            }
+            
+    private var themeNavigationLink: some View {
+            NavigationLink(destination: ThemeManagerView().environmentObject(ThemeManager.shared)) {
+                HStack(spacing: 12) {
+                    Image(systemName: "paintbrush.fill")
+                        .foregroundColor(theme.currentTheme.primary)
+                        .frame(width: 24, height: 24)
+                    
+                    VStack(alignment: .leading, spacing: 2) {
+                        Text("Theme Manager")
+                            .font(.headline)
+                            .foregroundColor(theme.currentTheme.text)
+                        
+                        Text("Customize app colors and themes")
+                            .font(.caption)
+                            .foregroundColor(theme.currentTheme.text.opacity(0.7))
+                    }
+                    
+                    Spacer()
+                    
                 Image(systemName: "chevron.right")
                     .font(.system(size: 14, weight: .semibold))
                     .foregroundColor(theme.currentTheme.text.opacity(0.5))
-            }
-            .padding(.vertical, 12)
-            .padding(.horizontal, 14)
+                }
+                .padding(.vertical, 12)
+                .padding(.horizontal, 14)
         }
-    }
+            }
     
         
     private func actionButton(title: String, icon: String, action: @escaping () -> Void) -> some View {

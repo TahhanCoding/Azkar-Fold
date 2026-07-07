@@ -10,29 +10,29 @@ import Combine
 
 class SunnahSettingsStore: ObservableObject {
     static let shared = SunnahSettingsStore()
-    
+
     enum InitialViewMode: String, CaseIterable, Identifiable {
         case simple
-        case full
-        
-        var id: String { rawValue }
-        
+    case full
+    
+    var id: String { rawValue }
+    
         var displayName: String {
-            switch self {
+        switch self {
             case .simple: return "Simple"
             case .full: return "Full"
-            }
         }
     }
+}
+
+enum CardHeightMode: String, CaseIterable, Identifiable {
+    case fixed
+    case adaptive
     
-    enum CardHeightMode: String, CaseIterable, Identifiable {
-        case fixed
-        case adaptive
-        
-        var id: String { rawValue }
-        
+    var id: String { rawValue }
+    
         var displayName: String {
-            switch self {
+        switch self {
             case .fixed: return "Fixed"
             case .adaptive: return "Adaptive"
             }
@@ -41,23 +41,27 @@ class SunnahSettingsStore: ObservableObject {
     
     @AppStorage("sunnah_initial_view_mode") var initialViewMode: InitialViewMode = .full
     @AppStorage("sunnah_card_height_mode") var cardHeightMode: CardHeightMode = .fixed
-    @AppStorage("sunnah_secondary_language") var secondaryLanguage: String = "en"
-    
-    // Published property for immediate UI updates with UserDefaults persistence
+    @AppStorage("sunnah_secondary_language") var secondaryLanguage: String = "ar_only"
+
     @Published var enable3DEffects: Bool
+
+    @Published var availableLanguages: [String] = []
     
     private init() {
-        // Initialize enable3DEffects from UserDefaults before calling super
         let savedValue = UserDefaults.standard.object(forKey: "enable3DEffects") as? Bool ?? true
         self.enable3DEffects = savedValue
-        
-        // Ensure defaults are set on first launch
+
         initializeDefaults()
-        
-        // Setup observer to persist changes
+        migrateSecondaryLanguageIfNeeded()
         setupObservers()
     }
-    
+
+    private func migrateSecondaryLanguageIfNeeded() {
+        if secondaryLanguage != "ar_only" && !availableLanguages.contains(secondaryLanguage) {
+            secondaryLanguage = "ar_only"
+        }
+    }
+
     private func setupObservers() {
         // Use Combine to observe changes and persist
         $enable3DEffects
@@ -83,7 +87,7 @@ class SunnahSettingsStore: ObservableObject {
         }
         
         if defaults.string(forKey: "sunnah_secondary_language") == nil {
-            defaults.set("en", forKey: "sunnah_secondary_language")
+            defaults.set("ar_only", forKey: "sunnah_secondary_language")
         }
         
         // enable3DEffects already has a default via @AppStorage, but ensure it exists

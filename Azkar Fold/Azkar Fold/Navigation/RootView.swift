@@ -18,10 +18,10 @@ struct RootView: View {
 
     var body: some View {
         ZStack {
-            NavigationStack(path: $coordinator.path) {
-                HomeView()
-                    .navigationDestination(for: Route.self) { route in
-                        ViewFactory.viewFor(route: route)
+        NavigationStack(path: $coordinator.path) {
+            HomeView()
+                .navigationDestination(for: Route.self) { route in
+                    ViewFactory.viewFor(route: route)
                     }
             }
             
@@ -34,7 +34,7 @@ struct RootView: View {
             if updateManager.showForceUpdate {
                 ForceUpdateModalView(updateManager: updateManager)
                     .zIndex(200) // Higher zIndex to ensure it's on top
-            }
+                }
         }
         .environmentObject(coordinator)
         .environmentObject(zekrStore)

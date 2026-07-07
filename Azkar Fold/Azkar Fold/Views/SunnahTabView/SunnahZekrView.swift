@@ -6,6 +6,8 @@
 //
 
 import SwiftUI
+import UIKit
+import Combine
 
 struct SunnahZekrView: View {
     @EnvironmentObject var theme: ThemeManager
@@ -21,11 +23,11 @@ struct SunnahZekrView: View {
     
     enum ZekrDisplayMode {
         case arabic
-        case english
-        case transliteration
-        case source
+        case translation // previously english, now general translation
+        case sourceArabic
+        case sourceTranslated
         case blessArabic
-        case blessEnglish
+        case blessTranslated
     }
     @State private var currentDisplayMode: ZekrDisplayMode = .arabic
     
@@ -41,7 +43,9 @@ struct SunnahZekrView: View {
         self._azkarList = State(initialValue: azkarList)
         self.category = category
         self.progressStore = progressStore
-        
+
+        AzkarDebugLog.log("SunnahZekrView init category=\(category.rawValue) azkarList.count=\(azkarList.count)")
+
         let initialMode = SunnahSettingsStore.shared.initialViewMode == .simple
         self._simpleModeManager = StateObject(wrappedValue: SimpleModeManager(initialMode: initialMode))
     }
@@ -328,8 +332,8 @@ struct SunnahZekrView: View {
             
             VStack {
                 Text("\(currentIndex + 1) of \(displayedAzkarList.count)")
-                    .font(.caption)
-                    .foregroundColor(theme.currentTheme.text)
+                .font(.caption)
+                .foregroundColor(theme.currentTheme.text)
             }
             
             Button(action: {
@@ -352,25 +356,49 @@ struct SunnahZekrView: View {
     
     //MARK: - Content Controls
     private var contentControls: some View {
-        VStack(spacing: 12) {
-            // Primary buttons row
-            HStack(spacing: 12) {
-                contentButton(text: "Arabic", mode: .arabic)
-                contentButton(text: "Spelling", mode: .transliteration)
-                contentButton(text: "Source", mode: .source)
-            }
-            
-            // Secondary buttons row
-            HStack(spacing: 8) {
-                let englishLabel = settingsStore.secondaryLanguage == "en" ? "English" : settingsStore.secondaryLanguage.capitalized
-                contentButton(text: englishLabel, mode: .english)
-                
-                if zekrItem.bless != nil {
-                    contentButton(text: "Bless_ar", mode: .blessArabic)
+        let isArabicOnly = settingsStore.secondaryLanguage == "ar_only" || settingsStore.secondaryLanguage == "ar"
+        
+        return Group {
+            if isArabicOnly {
+                // Arabic Only Layout: 3 Buttons
+                HStack(spacing: 12) {
+                    contentButton(text: "Arabic", mode: .arabic)
+                    contentButton(text: "Source", mode: .sourceArabic)
+                    if zekrItem.bless != nil {
+                        contentButton(text: "Bless", mode: .blessArabic)
+                    }
                 }
+            } else {
+                // Multi-Language Layout: Flexible Wrapping
+                // Expected: Arabic, [Language], Source, Source_[Lang], Bless, Bless_[Lang]
+                // Using LazyVGrid for flexible layout
+                let columns = [GridItem(.adaptive(minimum: 80, maximum: 120), spacing: 8)]
                 
-                if zekrItem.bless_en != nil {
-                    contentButton(text: "Bless_en", mode: .blessEnglish)
+                LazyVGrid(columns: columns, spacing: 8) {
+                    // 1. Arabic (Always present)
+                    contentButton(text: "Arabic", mode: .arabic)
+                    
+                    // 2. Selected Language
+                    let langCode = settingsStore.secondaryLanguage
+                    let langName = Locale.current.localizedString(forLanguageCode: langCode)?.capitalized ?? langCode.uppercased()
+                    contentButton(text: langName, mode: .translation)
+                    
+                    // 3. Source (Arabic)
+                    contentButton(text: "Source", mode: .sourceArabic)
+                    
+                    // 4. Source (Translated) - Source_[Lang]
+                    // e.g. "Source_En"
+                    contentButton(text: "Source \(langCode.uppercased())", mode: .sourceTranslated)
+                    
+                    // 5. Bless (Arabic)
+                    if zekrItem.bless != nil {
+                        contentButton(text: "Bless", mode: .blessArabic)
+                    }
+                    
+                    // 6. Bless (Translated) - Bless_[Lang]
+                    if zekrItem.translatedBless != nil {
+                        contentButton(text: "Bless \(langCode.uppercased())", mode: .blessTranslated)
+                    }
                 }
             }
         }
@@ -428,13 +456,16 @@ struct SunnahZekrView: View {
     
     //MARK: - Methods
     private func setupView() {
+        AzkarDebugLog.log("SunnahZekrView setupView category=\(category.rawValue) azkarList=\(azkarList.count) displayed=\(displayedAzkarList.count) currentIndex will resolve after order")
         if let savedOrder = progressStore.loadAzkarOrder(category: category), !savedOrder.isEmpty {
+            AzkarDebugLog.log("SunnahZekrView setupView applying savedOrder count=\(savedOrder.count)")
             applySavedOrder(savedOrder)
         }
-        
+
         currentIndex = findFirstIncompleteIndex()
         currentDisplayMode = .arabic
-        
+        AzkarDebugLog.log("SunnahZekrView setupView currentIndex=\(currentIndex) firstZekrPreview=\(displayedAzkarList.prefix(1).first?.zekr.prefix(40) ?? "empty")")
+
         if settingsStore.enable3DEffects {
             motionManager.startMotionUpdates(
                 sensitivity: 0.5,
@@ -683,16 +714,16 @@ struct SunnahZekrPage: View {
         switch displayMode {
         case .arabic:
             textOnScreen = zekrItem.zekr
-        case .english:
-            textOnScreen = zekrItem.en_tr
-        case .transliteration:
-            textOnScreen = zekrItem.transliteration
-        case .source:
+        case .translation:
+            textOnScreen = zekrItem.translatedZekr ?? zekrItem.zekr // Fallback to Arabic if translation missing
+        case .sourceArabic:
             textOnScreen = zekrItem.source
+        case .sourceTranslated:
+            textOnScreen = zekrItem.translatedSource ?? zekrItem.source // Fallback to Arabic Source
         case .blessArabic:
             textOnScreen = zekrItem.bless ?? ""
-        case .blessEnglish:
-            textOnScreen = zekrItem.bless_en ?? ""
+        case .blessTranslated:
+            textOnScreen = zekrItem.translatedBless ?? zekrItem.bless ?? ""
         }
     }
     
@@ -714,490 +745,4 @@ struct SunnahZekrPage: View {
             }
         }
     }
-}
-
-//
-//  SimpleModeManager.swift
-//  Azkar Fold
-//
-//  Created by Ahmed Shaban on 03/05/2025.
-//
-
-import SwiftUI
-import Combine
-
-/// A reusable manager for handling simple mode functionality
-class SimpleModeManager: ObservableObject {
-    @Published var isSimpleMode: Bool
-    @Published var autoAdvanceEnabled: Bool = true
-    @Published var autoAdvanceDelay: TimeInterval = 0.5
-    
-    private var autoAdvanceTimer: Timer?
-    
-    init(initialMode: Bool = false) {
-        self.isSimpleMode = initialMode
-    }
-    
-    /// Toggle simple mode with animation
-    func toggleSimpleMode() {
-        //motionManager.resetTiltValues() // Add this
-
-        withAnimation(.easeInOut(duration: 0.3)) {
-            isSimpleMode.toggle()
-        }
-    }
-    
-    /// Enable simple mode with animation
-    func enableSimpleMode() {
-        withAnimation(.easeInOut(duration: 0.3)) {
-            isSimpleMode = true
-        }
-    }
-    
-    /// Disable simple mode with animation
-    func disableSimpleMode() {
-        withAnimation(.easeInOut(duration: 0.3)) {
-            isSimpleMode = false
-        }
-    }
-    
-    /// Set simple mode directly without animation (for initialization)
-    func setSimpleMode(_ enabled: Bool, animated: Bool = false) {
-        if animated {
-            withAnimation(.easeInOut(duration: 0.3)) {
-                isSimpleMode = enabled
-            }
-        } else {
-            isSimpleMode = enabled
-        }
-    }
-    
-    /// Schedule auto advance action
-    func scheduleAutoAdvance(action: @escaping () -> Void) {
-        guard autoAdvanceEnabled else { return }
-        
-        // Cancel any existing timer
-        autoAdvanceTimer?.invalidate()
-        
-        // Schedule new timer
-        autoAdvanceTimer = Timer.scheduledTimer(withTimeInterval: autoAdvanceDelay, repeats: false) { _ in
-            DispatchQueue.main.async {
-                action()
-            }
-        }
-    }
-    
-    /// Cancel scheduled auto advance
-    func cancelAutoAdvance() {
-        autoAdvanceTimer?.invalidate()
-        autoAdvanceTimer = nil
-    }
-    
-    deinit {
-        cancelAutoAdvance()
-    }
-}
-
-//MARK: - Simple Mode Configuration
-struct SimpleModeConfig {
-    
-    let autoAdvanceDelay: TimeInterval
-    let longPressMinimumDuration: Double
-    let animationDuration: Double
-    
-    static let `default` = SimpleModeConfig(
-        autoAdvanceEnabled: true,
-        autoAdvanceDelay: 0.5,
-        longPressMinimumDuration: 0.8,
-        animationDuration: 0.3
-    )
-    
-    static let quick = SimpleModeConfig(
-        autoAdvanceEnabled: true,
-        autoAdvanceDelay: 0.2,
-        longPressMinimumDuration: 0.5,
-        animationDuration: 0.2
-    )
-    
-    static let slow = SimpleModeConfig(
-        autoAdvanceEnabled: true,
-        autoAdvanceDelay: 1.0,
-        longPressMinimumDuration: 1.2,
-        animationDuration: 0.5
-    )
-    
-    static let manual = SimpleModeConfig(
-        autoAdvanceEnabled: false,
-        autoAdvanceDelay: 0.0,
-        longPressMinimumDuration: 0.8,
-        animationDuration: 0.3
-    )
-    
-    // Initializer matching the usage in static properties
-    init(autoAdvanceEnabled: Bool, autoAdvanceDelay: TimeInterval, longPressMinimumDuration: Double, animationDuration: Double) {
-        self.autoAdvanceDelay = autoAdvanceDelay
-        self.longPressMinimumDuration = longPressMinimumDuration
-        self.animationDuration = animationDuration
-    }
-}
-
-//MARK: - Simple Mode View Modifier
-struct SimpleModeModifier: ViewModifier {
-    let isSimpleMode: Bool
-    let onToggle: () -> Void
-    let longPressDuration: Double
-    
-    func body(content: Content) -> some View {
-        content
-            .onLongPressGesture(minimumDuration: longPressDuration) {
-                onToggle()
-            }
-    }
-}
-
-//MARK: - View Extension for Simple Mode
-extension View {
-    func addSimpleModeToggle(
-        isSimpleMode: Bool,
-        longPressDuration: Double = 0.8,
-        onToggle: @escaping () -> Void
-    ) -> some View {
-        self.modifier(SimpleModeModifier(
-            isSimpleMode: isSimpleMode,
-            onToggle: onToggle,
-            longPressDuration: longPressDuration
-        ))
-    }
-}
-
-//
-//  TiltEffectModifiers.swift
-//  Azkar Fold
-//
-//  Created by Ahmed Shaban on 03/05/2025.
-//
-
-import SwiftUI
-
-//MARK: - Basic 3D Tilt Effect Modifier
-struct TiltEffect3D: ViewModifier {
-    @EnvironmentObject var motionManager: CoreMotionManager
-    let animationResponse: Double
-    let dampingFraction: Double
-    
-    init(
-        animationResponse: Double = 0.3,
-        dampingFraction: Double = 0.8
-    ) {
-        self.animationResponse = animationResponse
-        self.dampingFraction = dampingFraction
-    }
-    
-    func body(content: Content) -> some View {
-        content
-            .rotation3DEffect(
-                Angle(radians: motionManager.tiltPitch),
-                axis: (x: 1.0, y: 0.0, z: 0.0)
-            )
-            .rotation3DEffect(
-                Angle(radians: -motionManager.tiltRoll),
-                axis: (x: 0.0, y: 1.0, z: 0.0)
-            )
-            .animation(.spring(response: animationResponse, dampingFraction: dampingFraction), value: motionManager.tiltPitch)
-            .animation(.spring(response: animationResponse, dampingFraction: dampingFraction), value: motionManager.tiltRoll)
-    }
-}
-
-//MARK: - Enhanced 3D Tilt Effect with Perspective
-struct EnhancedTiltEffect3D: ViewModifier {
-    @EnvironmentObject var motionManager: CoreMotionManager
-    let perspectiveIntensity: Double
-    let shadowIntensity: Double
-    let animationResponse: Double
-    let dampingFraction: Double
-    
-    init(
-        perspectiveIntensity: Double = 0.001,
-        shadowIntensity: Double = 0.3,
-        animationResponse: Double = 0.3,
-        dampingFraction: Double = 0.8
-    ) {
-        self.perspectiveIntensity = perspectiveIntensity
-        self.shadowIntensity = shadowIntensity
-        self.animationResponse = animationResponse
-        self.dampingFraction = dampingFraction
-    }
-    
-    func body(content: Content) -> some View {
-        content
-            .rotation3DEffect(
-                Angle(radians: motionManager.tiltPitch),
-                axis: (x: 1.0, y: 0.0, z: 0.0),
-                perspective: perspectiveIntensity
-            )
-            .rotation3DEffect(
-                Angle(radians: -motionManager.tiltRoll),
-                axis: (x: 0.0, y: 1.0, z: 0.0),
-                perspective: perspectiveIntensity
-            )
-            .shadow(
-                color: .black.opacity(shadowIntensity * abs(motionManager.tiltRoll + motionManager.tiltPitch)),
-                radius: 8,
-                x: CGFloat(motionManager.tiltRoll * 10),
-                y: CGFloat(motionManager.tiltPitch * 10)
-            )
-            .animation(.spring(response: animationResponse, dampingFraction: dampingFraction), value: motionManager.tiltPitch)
-            .animation(.spring(response: animationResponse, dampingFraction: dampingFraction), value: motionManager.tiltRoll)
-    }
-}
-
-//MARK: - Floating Card Tilt Effect
-struct FloatingCardTiltEffect: ViewModifier {
-    @EnvironmentObject var motionManager: CoreMotionManager
-    let floatIntensity: Double
-    let animationResponse: Double
-    let dampingFraction: Double
-    
-    init(
-        floatIntensity: Double = 5.0,
-        animationResponse: Double = 0.4,
-        dampingFraction: Double = 0.9
-    ) {
-        self.floatIntensity = floatIntensity
-        self.animationResponse = animationResponse
-        self.dampingFraction = dampingFraction
-    }
-    
-    func body(content: Content) -> some View {
-        content
-            .rotation3DEffect(
-                Angle(radians: motionManager.tiltPitch),
-                axis: (x: 1.0, y: 0.0, z: 0.0)
-            )
-            .rotation3DEffect(
-                Angle(radians: -motionManager.tiltRoll),
-                axis: (x: 0.0, y: 1.0, z: 0.0)
-            )
-            .offset(
-                x: CGFloat(-motionManager.tiltRoll * floatIntensity),
-                y: CGFloat(-motionManager.tiltPitch * floatIntensity)
-            )
-            .scaleEffect(1.0 + (abs(motionManager.tiltPitch) + abs(motionManager.tiltRoll)) * 0.05)
-            .animation(.spring(response: animationResponse, dampingFraction: dampingFraction), value: motionManager.tiltPitch)
-            .animation(.spring(response: animationResponse, dampingFraction: dampingFraction), value: motionManager.tiltRoll)
-    }
-}
-
-//MARK: - View Extensions for Easy Usage
-extension View {
-    /// Apply basic 3D tilt effect
-    func add3DTiltEffect(
-        animationResponse: Double = 0.3,
-        dampingFraction: Double = 0.8
-    ) -> some View {
-        self.modifier(TiltEffect3D(
-            animationResponse: animationResponse,
-            dampingFraction: dampingFraction
-        ))
-    }
-    
-    /// Apply enhanced 3D tilt effect with perspective and shadow
-    func addEnhanced3DTiltEffect(
-        perspectiveIntensity: Double = 0.001,
-        shadowIntensity: Double = 0.3,
-        animationResponse: Double = 0.3,
-        dampingFraction: Double = 0.8
-    ) -> some View {
-        self.modifier(EnhancedTiltEffect3D(
-            perspectiveIntensity: perspectiveIntensity,
-            shadowIntensity: shadowIntensity,
-            animationResponse: animationResponse,
-            dampingFraction: dampingFraction
-        ))
-    }
-    
-    /// Apply floating card tilt effect
-    func addFloatingCardTiltEffect(
-        floatIntensity: Double = 5.0,
-        animationResponse: Double = 0.4,
-        dampingFraction: Double = 0.9
-    ) -> some View {
-        self.modifier(FloatingCardTiltEffect(
-            floatIntensity: floatIntensity,
-            animationResponse: animationResponse,
-            dampingFraction: dampingFraction
-        ))
-    }
-}
-
-//MARK: - Tilt Effect Presets
-enum TiltEffectPreset {
-    case subtle
-    case normal
-    case dramatic
-    case floating
-    
-    var animationResponse: Double {
-        switch self {
-        case .subtle: return 0.5
-        case .normal: return 0.3
-        case .dramatic: return 0.2
-        case .floating: return 0.4
-        }
-    }
-    
-    var dampingFraction: Double {
-        switch self {
-        case .subtle: return 0.9
-        case .normal: return 0.8
-        case .dramatic: return 0.7
-        case .floating: return 0.9
-        }
-    }
-}
-
-//MARK: - Preset-based View Extension
-extension View {
-    func addTiltEffect(
-        preset: TiltEffectPreset = .normal
-    ) -> some View {
-        switch preset {
-        case .subtle:
-            return AnyView(self.add3DTiltEffect(
-                animationResponse: preset.animationResponse,
-                dampingFraction: preset.dampingFraction
-            ))
-        case .normal:
-            return AnyView(self.add3DTiltEffect(
-                animationResponse: preset.animationResponse,
-                dampingFraction: preset.dampingFraction
-            ))
-        case .dramatic:
-            return AnyView(self.addEnhanced3DTiltEffect(
-                animationResponse: preset.animationResponse,
-                dampingFraction: preset.dampingFraction
-            ))
-        case .floating:
-            return AnyView(self.addFloatingCardTiltEffect(
-                animationResponse: preset.animationResponse,
-                dampingFraction: preset.dampingFraction
-            ))
-        }
-    }
-}
-
-//
-//  CoreMotionManager.swift
-//  Azkar Fold
-//
-//  Created by Ahmed Shaban on 03/05/2025.
-//
-
-import Foundation
-import CoreMotion
-import Combine
-
-/// A reusable CoreMotion manager that provides device tilt data for 3D effects
-class CoreMotionManager: ObservableObject {
-    private let motionManager = CMMotionManager()
-    
-    @Published var tiltPitch: Double = 0.0
-    @Published var tiltRoll: Double = 0.0
-    @Published var isActive: Bool = false
-    
-    // Configurable properties
-    var maxTiltAngle: Double = 0.175 // ~10 degrees in radians
-    var motionSensitivity: Double = 0.5
-    var updateInterval: TimeInterval = 0.1 // 10Hz for smooth 60fps experience
-    
-    /// Start motion updates with optional configuration
-    func startMotionUpdates(
-        sensitivity: Double? = nil,
-        maxAngle: Double? = nil,
-        interval: TimeInterval? = nil
-    ) {
-        guard motionManager.isDeviceMotionAvailable else {
-            print("CoreMotionManager: Device motion not available")
-            return
-        }
-        
-        // Apply optional configuration
-        if let sensitivity = sensitivity { motionSensitivity = sensitivity }
-        if let maxAngle = maxAngle { maxTiltAngle = maxAngle }
-        if let interval = interval { updateInterval = interval }
-        
-        motionManager.deviceMotionUpdateInterval = updateInterval
-        
-        // Stop any existing updates before starting new ones to avoid conflicts
-        if motionManager.isDeviceMotionActive {
-            motionManager.stopDeviceMotionUpdates()
-        }
-        
-        motionManager.startDeviceMotionUpdates(to: .main) { [weak self] motion, error in
-            guard let self = self, let motion = motion, error == nil else {
-                // Silently handle errors - CoreMotion may log system warnings that are harmless
-                // Only log actual errors that prevent functionality
-                if let error = error as NSError?,
-                   error.domain != "NSCocoaErrorDomain" || error.code != 257 {
-                    // Only log non-permission errors (257 is the permission error code)
-                    print("CoreMotionManager error: \(error.localizedDescription)")
-                }
-                return
-            }
-            
-            let pitch = motion.attitude.pitch * self.motionSensitivity
-            let roll = motion.attitude.roll * self.motionSensitivity
-            
-            // Clamp the values to prevent excessive rotation
-            self.tiltPitch = max(-self.maxTiltAngle, min(self.maxTiltAngle, pitch))
-            self.tiltRoll = max(-self.maxTiltAngle, min(self.maxTiltAngle, roll))
-            
-            if !self.isActive {
-                self.isActive = true
-            }
-        }
-    }
-    
-    /// Stop motion updates and reset values
-    func stopMotionUpdates() {
-        motionManager.stopDeviceMotionUpdates()
-        tiltPitch = 0.0
-        tiltRoll = 0.0
-        isActive = false
-    }
-    
-    /// Reset tilt values to zero (useful for recalibration)
-    func resetTiltValues() {
-        tiltPitch = 0.0
-        tiltRoll = 0.0
-    }
-    
-    deinit {
-        stopMotionUpdates()
-    }
-}
-
-//MARK: - Configuration Struct
-struct MotionConfig {
-    let sensitivity: Double
-    let maxAngle: Double
-    let updateInterval: TimeInterval
-    
-    static let `default` = MotionConfig(
-        sensitivity: 0.5,
-        maxAngle: 0.175,
-        updateInterval: 0.1
-    )
-    
-    static let subtle = MotionConfig(
-        sensitivity: 0.3,
-        maxAngle: 0.1,
-        updateInterval: 0.1
-    )
-    
-    static let dramatic = MotionConfig(
-        sensitivity: 0.8,
-        maxAngle: 0.3,
-        updateInterval: 0.05
-    )
 }

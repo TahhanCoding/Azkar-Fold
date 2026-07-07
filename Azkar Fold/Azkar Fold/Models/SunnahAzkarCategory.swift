@@ -10,21 +10,21 @@ enum SunnahAzkarCategory: String, CaseIterable, Identifiable {
 
     var id: String { self.rawValue }
 
-    var fileName: String {
+    var dbCategoryName: String {
         switch self {
         case .morning:
-            return "MorningAzkar.json"
+            return "أذكار الصباح"
         case .evening:
-            return "EveningAzkar.json"
+            return "أذكار المساء"
         case .prayer:
-            return "PrayerAzkar.json"
+            return "الأذكار بعد السلام من الصلاة"
         case .sleeping:
-            return "SleepAzkar.json"
+            return "أذكار النوم"
         case .wakeup:
-            return "WakeUpAzkar.json"
+            return "أذكار الاستيقاظ من النوم"
         }
     }
-    
+
     var title: String {
         switch self {
         case .morning:

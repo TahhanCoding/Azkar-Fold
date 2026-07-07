@@ -43,25 +43,61 @@ struct SunnahSettingsView: View {
                         .frame(width: 150)
                     }
                     .listRowBackground(theme.currentTheme.cardBackground)
-                    
-                    // Secondary Language (Disabled for now)
-                    HStack {
-                        Text("Secondary Language")
-                            .foregroundColor(theme.currentTheme.text)
-                        Spacer()
-                        Text("English")
-                            .foregroundColor(theme.currentTheme.text.opacity(0.5))
+
+                    if !settingsStore.availableLanguages.isEmpty {
+                        HStack {
+                            Text("Secondary Language")
+                                .foregroundColor(theme.currentTheme.text)
+                            Spacer()
+
+                            Menu {
+                                Button(action: {
+                                    settingsStore.secondaryLanguage = "ar_only"
+                                }) {
+                                    HStack {
+                                        Text("Arabic Only")
+                                        if settingsStore.secondaryLanguage == "ar_only" {
+                                            Image(systemName: "checkmark")
+                                        }
+                                    }
+                                }
+
+                                ForEach(settingsStore.availableLanguages, id: \.self) { lang in
+                                    Button(action: {
+                                        settingsStore.secondaryLanguage = lang
+                                    }) {
+                                        HStack {
+                                            Text(Locale.current.localizedString(forLanguageCode: lang)?.capitalized ?? lang.uppercased())
+                                            if settingsStore.secondaryLanguage == lang {
+                                                Image(systemName: "checkmark")
+                                            }
+                                        }
+                                    }
+                                }
+                            } label: {
+                                HStack {
+                                    Text(languageDisplayName(for: settingsStore.secondaryLanguage))
+                                        .foregroundColor(theme.currentTheme.text)
+                                    Image(systemName: "chevron.up.chevron.down")
+                                        .font(.caption)
+                                        .foregroundColor(theme.currentTheme.text.opacity(0.5))
+                                }
+                                .padding(.vertical, 8)
+                                .padding(.horizontal, 12)
+                                .background(theme.currentTheme.cardBackground.opacity(0.5))
+                                .cornerRadius(8)
+                            }
+                        }
+                        .listRowBackground(theme.currentTheme.cardBackground)
                     }
-                    .listRowBackground(theme.currentTheme.cardBackground)
-                    
-                    // 3D Effects Toggle
+
                     HStack {
                         Text("3D Effects")
-                            .foregroundColor(theme.currentTheme.text)
-                        Spacer()
+                                .foregroundColor(theme.currentTheme.text)
+                            Spacer()
                         Toggle("", isOn: $settingsStore.enable3DEffects)
                             .toggleStyle(SwitchToggleStyle(tint: theme.currentTheme.primary))
-                    }
+                        }
                     .listRowBackground(theme.currentTheme.cardBackground)
                 } header: {
                     Text("Display Settings")
@@ -72,6 +108,13 @@ struct SunnahSettingsView: View {
         }
         .navigationTitle("Sunnah Zekr Manager")
         .navigationBarTitleDisplayMode(.inline)
+    }
+    
+    private func languageDisplayName(for code: String) -> String {
+        if code == "ar_only" {
+            return "Arabic Only"
+        }
+        return Locale.current.localizedString(forLanguageCode: code)?.capitalized ?? code.uppercased()
     }
     
     @ViewBuilder
