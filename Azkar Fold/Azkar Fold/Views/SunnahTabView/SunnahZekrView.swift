@@ -50,9 +50,6 @@ struct SunnahZekrView: View {
         self._simpleModeManager = StateObject(wrappedValue: SimpleModeManager(initialMode: initialMode))
     }
     
-    // Export states
-    @State private var capturedImage: UIImage? = nil
-    @State private var showShareSheet: Bool = false
     @State private var showSaveAlert: Bool = false
     @State private var saveAlertMessage: String = ""
     @State private var isExporting: Bool = false
@@ -163,35 +160,11 @@ struct SunnahZekrView: View {
         .navigationBarTitleDisplayMode(.inline)
         .toolbar {
             ToolbarItem(placement: .navigationBarTrailing) {
-                Menu {
-                    Button(action: {
-                        // Just set the flag - menu will dismiss automatically
-                        isExporting = true
-                    }) {
-                        Label("Share", systemImage: "square.and.arrow.up.on.square.fill")
-                    }
-                    
-                    Divider()
-                    
-                    Button(action: {
-                        moveCurrentZekrToEnd()
-                    }) {
-                        Label("Move to End", systemImage: "arrow.down.to.line")
-                    }
-                    .disabled(!canMoveToEnd)
-                    
-                    if reorderedAzkarList != nil {
-                        Button(action: {
-                            resetAzkarOrder()
-                        }) {
-                            Label("Reset Order", systemImage: "arrow.counterclockwise")
-                        }
-                    }
-                } label: {
-                    Image(systemName: "ellipsis.circle")
-                    .foregroundStyle(theme.currentTheme.accent)
-                    .padding(5)
+                Button(action: requestShareCurrentZekr) {
+                    Image(systemName: "square.and.arrow.up")
+                        .foregroundStyle(theme.currentTheme.accent)
                 }
+                .disabled(isExporting)
             }
         }
         .onAppear {
@@ -203,14 +176,6 @@ struct SunnahZekrView: View {
         .onChange(of: currentIndex) { _ in
             // Reset display mode to Arabic when navigating
             currentDisplayMode = .arabic
-        }
-        .onChange(of: isExporting) { newValue in
-            if newValue {
-                // Delay to allow menu to dismiss first
-                DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
-                    exportCurrentZekr()
-                }
-            }
         }
         .onChange(of: settingsStore.enable3DEffects) { newValue in
             if newValue {
@@ -230,20 +195,10 @@ struct SunnahZekrView: View {
         } message: {
             Text("You have completed all Azkar for the \(category.rawValue) category.")
         }
-        .alert("Save Status", isPresented: $showSaveAlert) {
+        .alert("Share", isPresented: $showSaveAlert) {
             Button("OK", role: .cancel) { }
         } message: {
             Text(saveAlertMessage)
-        }
-        .sheet(isPresented: $showShareSheet) {
-            if let image = capturedImage {
-                ShareSheet(activityItems: [image]) { activity, success, items, error in
-                    if let activity = activity, activity.rawValue.contains("SaveToCameraRoll") {
-                        saveAlertMessage = success ? "Image saved to Photos successfully!" : "Failed to save image to Photos"
-                        showSaveAlert = true
-                    }
-                }
-            }
         }
         .overlay {
             if isExporting {
@@ -589,25 +544,60 @@ struct SunnahZekrView: View {
         return 0
     }
     
-    private func exportCurrentZekr() {
-        guard currentIndex < displayedAzkarList.count else {
+    private func requestShareCurrentZekr() {
+        guard !isExporting else { return }
+        isExporting = true
+
+        Task { @MainActor in
+            try? await Task.sleep(nanoseconds: 350_000_000)
+
+            guard currentIndex < displayedAzkarList.count else {
+                isExporting = false
+                return
+            }
+
+            let text = shareText(for: displayedAzkarList[currentIndex])
+            guard !text.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty else {
+                isExporting = false
+                saveAlertMessage = "Nothing to share for the current view."
+                showSaveAlert = true
+                return
+            }
+
+            guard let image = renderZekrImage(text: text, theme: theme, patternManager: patternManager) else {
+                isExporting = false
+                saveAlertMessage = "Couldn't prepare the image. Please try again."
+                showSaveAlert = true
+                return
+            }
+
             isExporting = false
-            return
+            presentShareSheet(activityItems: [image]) { activity, success, _, _ in
+                Task { @MainActor in
+                    guard activity == .saveToCameraRoll else { return }
+                    saveAlertMessage = success
+                        ? "Image saved to Photos successfully!"
+                        : "Failed to save image to Photos."
+                    showSaveAlert = true
+                }
+            }
         }
-        
-        let currentZekr = displayedAzkarList[currentIndex]
-        
-        // Render the image using ImageRenderer (fast and efficient)
-        if let image = renderZekrImage(
-            text: currentZekr.zekr,
-            theme: theme,
-            patternManager: patternManager
-        ) {
-            capturedImage = image
-            isExporting = false
-            showShareSheet = true
-        } else {
-            isExporting = false
+    }
+
+    private func shareText(for zekr: SunnahZekrItem) -> String {
+        switch currentDisplayMode {
+        case .arabic:
+            return zekr.zekr
+        case .translation:
+            return zekr.translatedZekr ?? zekr.zekr
+        case .sourceArabic:
+            return zekr.source
+        case .sourceTranslated:
+            return zekr.translatedSource ?? zekr.source
+        case .blessArabic:
+            return zekr.bless ?? ""
+        case .blessTranslated:
+            return zekr.translatedBless ?? zekr.bless ?? ""
         }
     }
 }
