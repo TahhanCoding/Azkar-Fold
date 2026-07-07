@@ -30,6 +30,73 @@ struct ShareSheet: UIViewControllerRepresentable {
     }
 }
 
+private enum ZekrExportFontCalculator {
+    static let appFontSize: CGFloat = 28
+    static let minimumFontSize: CGFloat = 12
+
+    static let outerHorizontalPadding: CGFloat = 21
+    static let textHorizontalPadding: CGFloat = 16
+    static let textVerticalPadding: CGFloat = 12
+    static let cardHorizontalPadding: CGFloat = 18
+    static let cardVerticalPadding: CGFloat = 12
+
+    static func exportFontSize(for text: String, isSimpleMode: Bool) -> CGFloat {
+        let width = textWidth(for: UIScreen.main.bounds.width)
+        let maxHeight = maxTextHeight(isSimpleMode: isSimpleMode)
+
+        guard !text.isEmpty, width > 0, maxHeight > 0 else { return appFontSize }
+
+        if measuredTextHeight(text, fontSize: appFontSize, width: width) <= maxHeight {
+            return appFontSize
+        }
+
+        var low = minimumFontSize
+        var high = appFontSize
+        var bestFit = minimumFontSize
+
+        while high - low > 0.25 {
+            let mid = (low + high) / 2
+            if measuredTextHeight(text, fontSize: mid, width: width) <= maxHeight {
+                bestFit = mid
+                low = mid
+            } else {
+                high = mid
+            }
+        }
+
+        return floor(bestFit * 2) / 2
+    }
+
+    static func maxCardHeight(isSimpleMode: Bool) -> CGFloat {
+        let screenHeight = UIScreen.main.bounds.height
+        return isSimpleMode ? screenHeight * 0.75 : screenHeight * 0.65
+    }
+
+    private static func textWidth(for screenWidth: CGFloat) -> CGFloat {
+        screenWidth
+            - (outerHorizontalPadding * 2)
+            - (cardHorizontalPadding * 2)
+            - (textHorizontalPadding * 2)
+    }
+
+    private static func maxTextHeight(isSimpleMode: Bool) -> CGFloat {
+        maxCardHeight(isSimpleMode: isSimpleMode)
+            - (cardVerticalPadding * 2)
+            - (textVerticalPadding * 2)
+    }
+
+    private static func measuredTextHeight(_ text: String, fontSize: CGFloat, width: CGFloat) -> CGFloat {
+        let font = UIFont.systemFont(ofSize: fontSize, weight: .bold)
+        let bounds = (text as NSString).boundingRect(
+            with: CGSize(width: width, height: .greatestFiniteMagnitude),
+            options: [.usesLineFragmentOrigin, .usesFontLeading],
+            attributes: [.font: font],
+            context: nil
+        )
+        return ceil(bounds.height)
+    }
+}
+
 struct ExportableZekrCard: View {
     let text: String
     let isCompleted: Bool
@@ -47,12 +114,11 @@ struct ExportableZekrCard: View {
     private let pageBackgroundOpacity: Double = 0.35
 
     private var maxCardHeight: CGFloat {
-        let screenHeight = UIScreen.main.bounds.height
-        return isSimpleMode ? screenHeight * 0.75 : screenHeight * 0.65
+        ZekrExportFontCalculator.maxCardHeight(isSimpleMode: isSimpleMode)
     }
 
-    private var scrollAreaHeight: CGFloat {
-        max(maxCardHeight - cardVerticalPadding * 2, 1)
+    private var exportFontSize: CGFloat {
+        ZekrExportFontCalculator.exportFontSize(for: text, isSimpleMode: isSimpleMode)
     }
 
     private var cardBackgroundOpacity: Double {
@@ -61,21 +127,12 @@ struct ExportableZekrCard: View {
 
     var body: some View {
         VStack(spacing: 12) {
-            ViewThatFits(in: .vertical) {
-                cardShell {
-                    zekrLabel
-                        .fixedSize(horizontal: false, vertical: true)
-                }
-
-                cardShell {
-                    ScrollView(.vertical, showsIndicators: false) {
-                        zekrLabel
-                    }
-                    .frame(height: scrollAreaHeight)
-                }
+            cardShell {
+                zekrLabel
+                    .fixedSize(horizontal: false, vertical: true)
             }
             .frame(maxWidth: .infinity)
-            .frame(maxHeight: maxCardHeight)
+            .frame(maxHeight: maxCardHeight, alignment: .top)
             .fixedSize(horizontal: false, vertical: true)
 
             Text("azkarfold.com")
@@ -88,7 +145,7 @@ struct ExportableZekrCard: View {
 
     private var zekrLabel: some View {
         Text(text)
-            .font(.system(size: 28, weight: .bold))
+            .font(.system(size: exportFontSize, weight: .bold))
             .foregroundColor(theme.currentTheme.text)
             .multilineTextAlignment(.center)
             .frame(maxWidth: .infinity, alignment: .center)
