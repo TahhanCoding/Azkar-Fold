@@ -634,29 +634,34 @@ struct SunnahZekrPage: View {
     @State private var textOnScreen: String = ""
     
     var body: some View {
-        VStack {
-            SunnahZekrTextCard(
-                text: textOnScreen,
-                isCompleted: currentRepetition >= zekrItem.repeat,
-                cardHeightMode: settingsStore.cardHeightMode,
-                isSimpleMode: simpleModeManager.isSimpleMode,
-                theme: theme,
-                patternManager: patternManager,
-                onTap: {
-                    countUpZekr()
+        GeometryReader { geometry in
+            VStack(spacing: 0) {
+                SunnahZekrTextCard(
+                    text: textOnScreen,
+                    isCompleted: currentRepetition >= zekrItem.repeat,
+                    isSimpleMode: simpleModeManager.isSimpleMode,
+                    availableHeight: geometry.size.height,
+                    theme: theme,
+                    patternManager: patternManager,
+                    onTap: {
+                        countUpZekr()
+                    }
+                )
+                .addSimpleModeToggle(
+                    isSimpleMode: simpleModeManager.isSimpleMode,
+                    longPressDuration: 0.8
+                ) {
+                    simpleModeManager.toggleSimpleMode()
                 }
-            )
-            .addSimpleModeToggle(
-                isSimpleMode: simpleModeManager.isSimpleMode,
-                longPressDuration: 0.8
-            ) {
-                simpleModeManager.toggleSimpleMode()
+                .modifier(
+                    enable3DEffects
+                    ? AnyViewModifier(TiltEffect3D(animationResponse: 0.4, dampingFraction: 0.9))
+                    : AnyViewModifier(EmptyModifier())
+                )
+
+                Spacer(minLength: 0)
             }
-            .modifier(
-                enable3DEffects
-                ? AnyViewModifier(TiltEffect3D(animationResponse: 0.4, dampingFraction: 0.9))
-                : AnyViewModifier(EmptyModifier())
-            )
+            .frame(width: geometry.size.width, height: geometry.size.height, alignment: .top)
         }
         .onAppear {
             loadProgress()

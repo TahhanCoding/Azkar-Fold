@@ -12,7 +12,6 @@ protocol DisplayNameProviding {
 }
 
 extension SunnahSettingsStore.InitialViewMode: DisplayNameProviding {}
-extension SunnahSettingsStore.CardHeightMode: DisplayNameProviding {}
 
 struct CustomSegmentedPicker<SelectionValue: Hashable & CaseIterable & Identifiable & DisplayNameProviding>: View where SelectionValue.AllCases: RandomAccessCollection {
     @Binding var selection: SelectionValue
@@ -68,27 +67,18 @@ struct CustomSegmentedPicker<SelectionValue: Hashable & CaseIterable & Identifia
 #Preview {
     struct PreviewWrapper: View {
         @State private var selectedMode: SunnahSettingsStore.InitialViewMode = .full
-        @State private var selectedHeight: SunnahSettingsStore.CardHeightMode = .fixed
-        
+
         var body: some View {
-            VStack(spacing: 30) {
-                CustomSegmentedPicker(
-                    selection: $selectedMode,
-                    theme: ThemeManager.shared
-                )
-                .frame(width: 200)
-                
-                CustomSegmentedPicker(
-                    selection: $selectedHeight,
-                    theme: ThemeManager.shared
-                )
-                .frame(width: 200)
-            }
+            CustomSegmentedPicker(
+                selection: $selectedMode,
+                theme: ThemeManager.shared
+            )
+            .frame(width: 200)
             .padding()
             .background(Color.gray.opacity(0.1))
         }
     }
-    
+
     return PreviewWrapper()
 }
 

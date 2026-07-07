@@ -25,22 +25,7 @@ class SunnahSettingsStore: ObservableObject {
     }
 }
 
-enum CardHeightMode: String, CaseIterable, Identifiable {
-    case fixed
-    case adaptive
-    
-    var id: String { rawValue }
-    
-        var displayName: String {
-        switch self {
-            case .fixed: return "Fixed"
-            case .adaptive: return "Adaptive"
-            }
-        }
-    }
-    
     @AppStorage("sunnah_initial_view_mode") var initialViewMode: InitialViewMode = .full
-    @AppStorage("sunnah_card_height_mode") var cardHeightMode: CardHeightMode = .fixed
     @AppStorage("sunnah_secondary_language") var secondaryLanguage: String = "ar_only"
 
     @Published var enable3DEffects: Bool
@@ -81,11 +66,7 @@ enum CardHeightMode: String, CaseIterable, Identifiable {
         if defaults.string(forKey: "sunnah_initial_view_mode") == nil {
             defaults.set(InitialViewMode.full.rawValue, forKey: "sunnah_initial_view_mode")
         }
-        
-        if defaults.string(forKey: "sunnah_card_height_mode") == nil {
-            defaults.set(CardHeightMode.fixed.rawValue, forKey: "sunnah_card_height_mode")
-        }
-        
+
         if defaults.string(forKey: "sunnah_secondary_language") == nil {
             defaults.set("ar_only", forKey: "sunnah_secondary_language")
         }

@@ -30,19 +30,6 @@ struct SunnahSettingsView: View {
                         .frame(width: 150)
                     }
                     .listRowBackground(theme.currentTheme.cardBackground)
-                    
-                    // Card Height Mode
-                    HStack {
-                        Text("Card Height")
-                            .foregroundColor(theme.currentTheme.text)
-                        Spacer()
-                        CustomSegmentedPicker(
-                            selection: $settingsStore.cardHeightMode,
-                            theme: theme
-                        )
-                        .frame(width: 150)
-                    }
-                    .listRowBackground(theme.currentTheme.cardBackground)
 
                     if !settingsStore.availableLanguages.isEmpty {
                         HStack {
