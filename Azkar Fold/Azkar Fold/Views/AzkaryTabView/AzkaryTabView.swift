@@ -21,34 +21,34 @@ struct AzkaryTabView: View {
                 if zekrStore.zekrs.isEmpty {
                     EmptyZekrView()
                 } else {
-                    VStack {
+                    VStack(spacing: 0) {
                         Text("Azkary")
                             .font(.title2)
                             .fontWeight(.bold)
                             .foregroundColor(theme.currentTheme.text)
                             .frame(maxWidth: .infinity, alignment: .leading)
                             .padding(.horizontal)
-                        
-                        List {
-                            ForEach(zekrStore.zekrs) { zekr in
-                                ZekrRowView(zekr: zekr,
-                                            onDelete: {
-                                                indexSetToDelete = IndexSet([zekrStore.zekrs.firstIndex(of: zekr)!])
-                                                showingDeleteAlert = true
-                                            },
-                                            onTap: {
-                                                coordinator.navigate(to: .azkarDetail(id: zekr.id))
-                                            },
-                                            isAlertPresented: $showingDeleteAlert)
-                                    .listRowBackground(Color.clear)
-                                    .listRowInsets(EdgeInsets())
-                                    .padding(.horizontal, 16)
-                                    .padding(.vertical, 8)
-                            }
-                        }
-                        .listStyle(PlainListStyle())
+                            .padding(.bottom, 8)
 
-                        Spacer()
+                        ScrollView {
+                            LazyVStack(spacing: 8) {
+                                ForEach(zekrStore.zekrs) { zekr in
+                                    ZekrRowView(
+                                        zekr: zekr,
+                                        onDelete: {
+                                            indexSetToDelete = IndexSet([zekrStore.zekrs.firstIndex(of: zekr)!])
+                                            showingDeleteAlert = true
+                                        },
+                                        onTap: {
+                                            coordinator.navigate(to: .azkarDetail(id: zekr.id))
+                                        },
+                                        isAlertPresented: $showingDeleteAlert
+                                    )
+                                    .padding(.horizontal, 16)
+                                }
+                            }
+                            .padding(.bottom, 16)
+                        }
                     }
                     .alert(isPresented: $showingDeleteAlert) {
                         Alert(

@@ -15,7 +15,16 @@ struct ZekrRowView: View {
     
     @State private var offset: CGFloat = 0
     @State private var deleteButtonWidth: CGFloat = 75
+    @State private var lockedDragAxis: DragAxis?
+    @State private var dragStartOffset: CGFloat = 0
     @Binding var isAlertPresented: Bool
+
+    private enum DragAxis {
+        case horizontal
+        case vertical
+    }
+
+    private let axisLockThreshold: CGFloat = 10
     
     private var formattedDate: String {
         let formatter = DateFormatter()
@@ -89,26 +98,8 @@ struct ZekrRowView: View {
                     .shadow(color: theme.currentTheme.text.opacity(0.25), radius: 3, x: 3, y: 3)
             )
             .offset(x: offset)
-            .gesture(
-                DragGesture()
-                    .onChanged { value in
-                        let translation = value.translation.width
-                        if translation < 0 {
-                            withAnimation {
-                                offset = max(-deleteButtonWidth, translation)
-                            }
-                        }
-                    }
-                    .onEnded { value in
-                        withAnimation {
-                            if value.translation.width < -deleteButtonWidth/2 {
-                                offset = -deleteButtonWidth
-                            } else {
-                                offset = 0
-                            }
-                        }
-                    }
-            )
+            .contentShape(Rectangle())
+            .simultaneousGesture(horizontalSwipeGesture)
             .onTapGesture(perform: onTap)
         }
         .onChange(of: isAlertPresented) { newValue in
@@ -118,5 +109,48 @@ struct ZekrRowView: View {
                 }
             }
         }
+    }
+
+    private var horizontalSwipeGesture: some Gesture {
+        DragGesture(minimumDistance: 12, coordinateSpace: .local)
+            .onChanged { value in
+                let absDx = abs(value.translation.width)
+                let absDy = abs(value.translation.height)
+
+                if lockedDragAxis == nil {
+                    guard absDx > axisLockThreshold || absDy > axisLockThreshold else { return }
+
+                    if absDx > absDy {
+                        lockedDragAxis = .horizontal
+                        dragStartOffset = offset
+                    } else {
+                        lockedDragAxis = .vertical
+                        return
+                    }
+                }
+
+                guard lockedDragAxis == .horizontal else { return }
+
+                offset = min(
+                    0,
+                    max(-deleteButtonWidth, dragStartOffset + value.translation.width)
+                )
+            }
+            .onEnded { _ in
+                defer {
+                    lockedDragAxis = nil
+                    dragStartOffset = 0
+                }
+
+                guard lockedDragAxis == .horizontal else { return }
+
+                withAnimation {
+                    if offset < -deleteButtonWidth / 2 {
+                        offset = -deleteButtonWidth
+                    } else {
+                        offset = 0
+                    }
+                }
+            }
     }
 }
