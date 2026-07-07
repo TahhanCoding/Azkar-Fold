@@ -18,13 +18,14 @@ PreferenceKey height hacks often report `0` on first layout → false non-scroll
 Pick **plain content** when it fits; fall back to **ScrollView** only when it overflows.
 
 ```swift
-// Parent (e.g. TabView page) MUST supply finite heightBudget
+// Parent — center with spacers, not frame alignment on maxHeight child
 GeometryReader { geometry in
     VStack(spacing: 0) {
+        Spacer(minLength: 0)
         AdaptiveCard(text: text, availableHeight: geometry.size.height)
         Spacer(minLength: 0)
     }
-    .frame(width: geometry.size.width, height: geometry.size.height, alignment: .top)
+    .frame(width: geometry.size.width, height: geometry.size.height)
 }
 
 // Card
@@ -37,7 +38,9 @@ ViewThatFits(in: .vertical) {
     }
     .frame(height: heightBudget - verticalInsets)
 }
-.frame(maxWidth: .infinity, maxHeight: heightBudget, alignment: .top)
+.frame(maxWidth: .infinity)
+.frame(maxHeight: heightBudget)
+.fixedSize(horizontal: false, vertical: true)
 ```
 
 ### Rules
@@ -48,8 +51,8 @@ ViewThatFits(in: .vertical) {
 4. **Do not** wrap everything in `ScrollView` for adaptive height.
 5. **Do not** set `.frame(height:)` on the outer card from measured PreferenceKey state.
 6. First child must use `.fixedSize(horizontal: false, vertical: true)` so text reports true height.
-7. Parent page: top-align card + `Spacer(minLength: 0)` — prevents stretching.
-8. **ScrollView in ViewThatFits**: second child needs explicit `.frame(height:)` for scroll viewport; ScrollView ideal size ignores parent cap on scroll axis ([Fat Bobman](https://fatbobman.com/en/posts/mastering-viewthatfits/)).
+7. Parent page: `VStack { Spacer; card; Spacer }` — reliable vertical centering. Do **not** use `.frame(width:height:alignment: .center)` on a child that also has `.frame(maxHeight:)` — Apple expands the child to the proposed height when max ≥ proposal.
+8. After bounding `ViewThatFits` with `.frame(maxHeight:)`, add `.fixedSize(horizontal: false, vertical: true)` so the card reports intrinsic height to the parent (short = shrink, long = scroll height).
 
 ## TabView-specific
 
@@ -58,10 +61,11 @@ TabView(selection: $index) {
     ForEach(items.indices, id: \.self) { i in
         GeometryReader { geo in
             VStack(spacing: 0) {
+                Spacer(minLength: 0)
                 card(availableHeight: geo.size.height)
                 Spacer(minLength: 0)
             }
-            .frame(width: geo.size.width, height: geo.size.height, alignment: .top)
+            .frame(width: geo.size.width, height: geo.size.height)
         }
         .tag(i)
     }
@@ -93,7 +97,7 @@ iOS 16.4+. Shrinks bounce, **not** container height. Use `ViewThatFits` when the
 | `lineLimit` / `minimumScaleFactor` with scroll | Fights adaptive layout |
 | Parent `VStack` without `Spacer` in flexible height | Stretches child |
 | Missing finite `maxHeight` on `ViewThatFits` | Infinite TabView proposal → wrong branch |
-| `minHeight` on adaptive container | Forces empty space; use only if design requires |
+| `.frame(maxHeight:)` + parent `.frame(height:, alignment: .center)` | Child expands to full proposed height; centering fails |
 
 ## References
 

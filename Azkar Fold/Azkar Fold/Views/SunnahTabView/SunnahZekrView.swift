@@ -636,6 +636,8 @@ struct SunnahZekrPage: View {
     var body: some View {
         GeometryReader { geometry in
             VStack(spacing: 0) {
+                Spacer(minLength: 0)
+
                 SunnahZekrTextCard(
                     text: textOnScreen,
                     isCompleted: currentRepetition >= zekrItem.repeat,
@@ -661,7 +663,7 @@ struct SunnahZekrPage: View {
 
                 Spacer(minLength: 0)
             }
-            .frame(width: geometry.size.width, height: geometry.size.height, alignment: .top)
+            .frame(width: geometry.size.width, height: geometry.size.height)
         }
         .onAppear {
             loadProgress()

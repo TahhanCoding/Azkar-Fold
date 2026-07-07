@@ -49,7 +49,9 @@ struct SunnahZekrTextCard: View {
                 .frame(height: scrollAreaHeight)
             }
         }
-        .frame(maxWidth: .infinity, maxHeight: heightBudget, alignment: .top)
+        .frame(maxWidth: .infinity)
+        .frame(maxHeight: heightBudget)
+        .fixedSize(horizontal: false, vertical: true)
         .animation(.spring(response: 0.4, dampingFraction: 0.7), value: isSimpleMode)
         .onTapGesture {
             onTap()
