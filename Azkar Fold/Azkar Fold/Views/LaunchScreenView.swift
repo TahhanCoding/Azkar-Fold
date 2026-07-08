@@ -129,22 +129,22 @@ struct LaunchScreenView: View {
             VStack(spacing: 12) {
                 // App title with refined animation
                 Text("app.name")
-                    .font(.system(size: 42, weight: .black))
+                    .azkarLaunchFont(size: AzkarFont.launchTitleSize, isArabic: appLanguage.current == .arabic)
                     .foregroundColor(theme.currentTheme.primary)
                     .opacity(animationState.titleOpacity)
                     .offset(y: animationState.titleOffset)
                     .shadow(color: theme.currentTheme.text.opacity(0.2), radius: 0, x: 2, y: 2)
                     .overlay(
-                        shimmerOverlay(textKey: "app.name", fontSize: 42)
+                        shimmerOverlay(textKey: "app.name", fontSize: AzkarFont.launchTitleSize, isTagline: false)
                     )
                 
                 Text("app.tagline")
-                    .font(.headline)
+                    .font(AzkarFont.launchTaglineFont(isArabic: appLanguage.current == .arabic))
                     .foregroundColor(theme.currentTheme.primary.opacity(0.8))
                     .opacity(animationState.subtitleOpacity)
                     .offset(y: animationState.subtitleOffset)
                     .overlay(
-                        shimmerOverlay(textKey: "app.tagline", fontSize: 17)
+                        shimmerOverlay(textKey: "app.tagline", fontSize: AzkarFont.launchTaglineSize, isTagline: true)
                             .opacity(0.7)
                     )
                 
@@ -158,9 +158,14 @@ struct LaunchScreenView: View {
         .padding()
     }
     
-    private func shimmerOverlay(textKey: String.LocalizationValue, fontSize: CGFloat) -> some View {
-        Text(appLanguage.text(textKey))
-            .font(.system(size: fontSize, weight: .black))
+    private func shimmerOverlay(textKey: String.LocalizationValue, fontSize: CGFloat, isTagline: Bool) -> some View {
+        let isArabic = appLanguage.current == .arabic
+        let font: Font = isTagline
+            ? AzkarFont.launchTaglineFont(isArabic: isArabic)
+            : AzkarFont.launchFont(size: fontSize, isArabic: isArabic)
+
+        return Text(appLanguage.text(textKey))
+            .font(font)
             .foregroundColor(theme.currentTheme.buttonText.opacity(0.7))
             .mask(
                 LinearGradient(

@@ -16,6 +16,7 @@ struct Azkar_FoldApp: App {
     
     init() {
         FirebaseApp.configure()
+        AzkarFont.registerIfNeeded()
     }
     
     var body: some Scene {

@@ -60,9 +60,10 @@ struct SunnahZekrTextCard: View {
 
     private var zekrLabel: some View {
         Text(text)
-            .font(.system(size: 28, weight: .bold))
+            .azkarContentFont(size: AzkarFont.detailSize)
             .foregroundColor(theme.currentTheme.text)
             .multilineTextAlignment(.center)
+            .environment(\.layoutDirection, .rightToLeft)
             .frame(maxWidth: .infinity, alignment: .center)
             .padding(.horizontal, textHorizontalPadding)
             .padding(.vertical, textVerticalPadding)

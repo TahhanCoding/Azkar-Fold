@@ -12,5 +12,9 @@
 		</dict>
 		<dict/>
 	</array>
+	<key>UIAppFonts</key>
+	<array>
+		<string>Fonts/AmiriQuran-Regular.ttf</string>
+	</array>
 </dict>
 </plist>

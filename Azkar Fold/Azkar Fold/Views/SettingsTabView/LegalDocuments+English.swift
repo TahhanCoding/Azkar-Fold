@@ -104,6 +104,8 @@ extension LegalDocuments {
                 title: "Intellectual Property",
                 body: """
                 The app, its design, branding, and original materials are owned by Azkar Fold and its licensors. You may not copy, modify, distribute, or reverse engineer the app except as permitted by law.
+
+                The app embeds the Amiri Quran font (Copyright 2010-2022 The Amiri Quran Project Authors), licensed under the SIL Open Font License 1.1. A copy of that license is included in the app bundle.
                 """
             ),
             LegalDocumentSection(

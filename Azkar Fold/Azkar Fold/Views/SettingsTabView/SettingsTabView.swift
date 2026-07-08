@@ -147,9 +147,17 @@ struct SettingsTabView: View {
     private var headerSection: some View {
         VStack(alignment: .center, spacing: 8) {
             Text(appLanguage.text("app.name"))
-                .font(.system(size: 28, weight: .black))
+                .azkarContentFont(size: AzkarFont.settingsHeaderSize)
                 .foregroundColor(theme.currentTheme.primary)
-                        
+                .multilineTextAlignment(.center)
+                .environment(\.layoutDirection, appLanguage.layoutDirection)
+
+            Text(appLanguage.text("settings.developer_dua"))
+                .azkarContentFont(size: AzkarFont.settingsDuaSize)
+                .foregroundColor(theme.currentTheme.primary.opacity(0.85))
+                .multilineTextAlignment(.center)
+                .environment(\.layoutDirection, appLanguage.layoutDirection)
+
             Text(appLanguage.text("app.version", appVersion))
                 .font(.caption)
                 .foregroundColor(theme.currentTheme.text.opacity(0.6))
@@ -210,10 +218,6 @@ struct SettingsTabView: View {
                 }
                     
                 Spacer()
-                    
-                Image(systemName: "chevron.forward")
-                    .font(.system(size: 14, weight: .semibold))
-                    .foregroundColor(theme.currentTheme.text.opacity(0.5))
             }
             .padding(.vertical, 12)
             .padding(.horizontal, 14)
@@ -238,10 +242,6 @@ struct SettingsTabView: View {
                 }
                     
                 Spacer()
-                    
-                Image(systemName: "chevron.forward")
-                    .font(.system(size: 14, weight: .semibold))
-                    .foregroundColor(theme.currentTheme.text.opacity(0.5))
             }
             .padding(.vertical, 12)
             .padding(.horizontal, 14)
@@ -262,7 +262,7 @@ struct SettingsTabView: View {
                 
                 Spacer()
                 
-                Image(systemName: "chevron.forward")
+                Image(systemName: NavigationSymbol.forwardChevron)
                     .font(.caption)
                     .foregroundColor(theme.currentTheme.text.opacity(0.5))
             }

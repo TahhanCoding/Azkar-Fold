@@ -71,7 +71,7 @@ struct ColorPickerSheet: View {
     @State private var hexInput: String = ""
     
     var body: some View {
-        NavigationView {
+        NavigationStack {
             VStack(spacing: 20) {
                 // Color preview
                 VStack(spacing: 12) {
@@ -166,14 +166,14 @@ struct ColorPickerSheet: View {
             .navigationTitle(appLanguage.text(titleKey))
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
-                ToolbarItem(placement: .navigationBarLeading) {
+                ToolbarItem(placement: .cancellationAction) {
                     Button(appLanguage.text("common.cancel")) {
                         dismiss()
                     }
                     .foregroundColor(theme.currentTheme.text)
                 }
                 
-                ToolbarItem(placement: .navigationBarTrailing) {
+                ToolbarItem(placement: .confirmationAction) {
                     Button(appLanguage.text("common.done")) {
                         selectedColor = tempColor.toHex()
                         dismiss()
@@ -183,6 +183,7 @@ struct ColorPickerSheet: View {
                 }
             }
         }
+        .appNavigationChrome(using: appLanguage)
         .onAppear {
             hexInput = selectedColor
         }

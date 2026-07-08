@@ -8,6 +8,7 @@
 
 import SwiftUI
 import Combine
+import UIKit
 
 enum AppLanguage: String, CaseIterable, Identifiable {
     case english = "en"
@@ -62,6 +63,7 @@ final class AppLanguageManager: ObservableObject {
             current = .english
         }
         syncAppleLanguagesPreference()
+        applyUIKitLayoutDirection()
     }
 
     func setLanguage(_ language: AppLanguage) {
@@ -70,6 +72,7 @@ final class AppLanguageManager: ObservableObject {
         UserDefaults.standard.set(language.rawValue, forKey: storageKey)
         UserDefaults.standard.set(true, forKey: hasChosenLanguageKey)
         syncAppleLanguagesPreference()
+        applyUIKitLayoutDirection()
         refreshID = UUID()
     }
 
@@ -83,5 +86,24 @@ final class AppLanguageManager: ObservableObject {
 
     private func syncAppleLanguagesPreference() {
         UserDefaults.standard.set([current.rawValue], forKey: "AppleLanguages")
+    }
+
+    private func applyUIKitLayoutDirection() {
+        let attribute: UISemanticContentAttribute = current == .arabic ? .forceRightToLeft : .forceLeftToRight
+        UIView.appearance().semanticContentAttribute = attribute
+        UINavigationBar.appearance().semanticContentAttribute = attribute
+        UIToolbar.appearance().semanticContentAttribute = attribute
+    }
+}
+
+enum NavigationSymbol {
+    static let forwardChevron = "chevron.forward"
+    static let backwardChevron = "chevron.backward"
+}
+
+extension View {
+    func appNavigationChrome(using languageManager: AppLanguageManager) -> some View {
+        environment(\.locale, languageManager.locale)
+            .environment(\.layoutDirection, languageManager.layoutDirection)
     }
 }

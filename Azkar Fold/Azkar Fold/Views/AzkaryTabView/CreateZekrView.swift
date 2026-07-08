@@ -25,7 +25,7 @@ struct CreateZekrView: View {
                 .padding(.top)
             
             TextField(appLanguage.text("azkary.placeholder"), text: $zekrText)
-                .font(.headline)
+                .azkarContentFont(size: AzkarFont.inputSize)
                 .foregroundColor(theme.currentTheme.text)
                 .padding()
                 .environment(\.layoutDirection, .rightToLeft)

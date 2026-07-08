@@ -43,7 +43,7 @@ struct LegalDocumentSheet: View {
     }
 
     var body: some View {
-        NavigationView {
+        NavigationStack {
             ScrollView {
                 VStack(alignment: .leading, spacing: 20) {
                     Text(appLanguage.text("legal.last_updated", lastUpdated))
@@ -75,7 +75,7 @@ struct LegalDocumentSheet: View {
             .navigationTitle(title)
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
-                ToolbarItem(placement: .navigationBarTrailing) {
+                ToolbarItem(placement: .confirmationAction) {
                     Button(appLanguage.text("common.done")) {
                         dismiss()
                     }
@@ -83,8 +83,7 @@ struct LegalDocumentSheet: View {
                 }
             }
         }
-        .environment(\.locale, appLanguage.locale)
-        .environment(\.layoutDirection, appLanguage.layoutDirection)
+        .appNavigationChrome(using: appLanguage)
         .id(appLanguage.current)
     }
 }

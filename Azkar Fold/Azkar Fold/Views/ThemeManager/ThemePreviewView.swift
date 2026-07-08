@@ -174,7 +174,7 @@ struct ThemePreviewView: View {
                             
                             Spacer()
                             
-                            Image(systemName: "chevron.forward")
+                            Image(systemName: NavigationSymbol.forwardChevron)
                                 .foregroundColor(theme.text.opacity(0.4))
                                 .font(.system(size: 12))
                         }

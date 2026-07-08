@@ -292,7 +292,7 @@ struct SunnahZekrView: View {
                 navigateToPrevious()
             }) {
                 HStack {
-                    Image(systemName: "chevron.backward")
+                    Image(systemName: NavigationSymbol.backwardChevron)
                     Text(appLanguage.text("sunnah.previous"))
                 }
                 .padding(.horizontal, 20)
@@ -314,7 +314,7 @@ struct SunnahZekrView: View {
             }) {
                 HStack {
                     Text(appLanguage.text("sunnah.next"))
-                    Image(systemName: "chevron.forward")
+                    Image(systemName: NavigationSymbol.forwardChevron)
                 }
                 .padding(.horizontal, 20)
                 .padding(.vertical, 12)
@@ -324,6 +324,7 @@ struct SunnahZekrView: View {
             }
             .disabled(!canNavigateToNext)
         }
+        .environment(\.layoutDirection, .leftToRight)
         .padding(.horizontal)
     }
     

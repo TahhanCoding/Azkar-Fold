@@ -27,6 +27,7 @@ struct ThemeManagerView: View {
             ThemeEditorView(theme: editingTheme)
                 .environmentObject(themeManager)
                 .environmentObject(appLanguage)
+                .appNavigationChrome(using: appLanguage)
         }
         .alert(appLanguage.text("theme.delete_title"), isPresented: $showingDeleteAlert) {
             DeleteThemeAlert()

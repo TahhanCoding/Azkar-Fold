@@ -39,8 +39,7 @@ struct ZekrView: View {
                             if let zekr = zekr {
                                 if isEditMode {
                                     TextEditor(text: $editedText)
-                                        .font(.title)
-                                        .fontWeight(.bold)
+                                        .azkarContentFont(size: AzkarFont.detailSize)
                                         .multilineTextAlignment(.center)
                                         .padding()
                                         .environment(\.layoutDirection, .rightToLeft)
@@ -49,8 +48,7 @@ struct ZekrView: View {
                                         .padding()
                                 } else {
                                     Text(zekr.text)
-                                        .font(.title)
-                                        .fontWeight(.bold)
+                                        .azkarContentFont(size: AzkarFont.detailSize)
                                         .foregroundColor(theme.currentTheme.text)
                                         .multilineTextAlignment(.center)
                                         .environment(\.layoutDirection, .rightToLeft)

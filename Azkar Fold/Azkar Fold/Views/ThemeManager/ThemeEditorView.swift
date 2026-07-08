@@ -33,7 +33,7 @@ struct ThemeEditorView: View {
     }
     
     var body: some View {
-        NavigationView {
+        NavigationStack {
             Form {
                 Section(header: Text("theme.name_section").foregroundColor(themeManager.currentTheme.text)) {
                     TextField("theme.enter_name", text: $editingTheme.name)
@@ -61,7 +61,7 @@ struct ThemeEditorView: View {
                             Text("theme.view_full_preview")
                                 .foregroundColor(themeManager.currentTheme.text)
                             Spacer()
-                            Image(systemName: "chevron.forward")
+                            Image(systemName: NavigationSymbol.forwardChevron)
                                 .font(.caption)
                                 .foregroundColor(themeManager.currentTheme.text)
                         }
@@ -100,14 +100,14 @@ struct ThemeEditorView: View {
             .navigationTitle(isEditing ? "theme.edit_title" : "theme.create_title")
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
-                ToolbarItem(placement: .navigationBarLeading) {
+                ToolbarItem(placement: .cancellationAction) {
                     Button(appLanguage.text("common.cancel")) {
                         dismiss()
                     }
                     .foregroundColor(themeManager.currentTheme.text)
                 }
                 
-                ToolbarItem(placement: .navigationBarTrailing) {
+                ToolbarItem(placement: .confirmationAction) {
                     Button(isEditing ? appLanguage.text("common.save") : appLanguage.text("common.create")) {
                         saveTheme()
                     }
@@ -117,8 +117,9 @@ struct ThemeEditorView: View {
                 }
             }
         }
+        .appNavigationChrome(using: appLanguage)
         .sheet(isPresented: $showingPreview) {
-            NavigationView {
+            NavigationStack {
                 ScrollView {
                     ThemePreviewView(theme: editingTheme)
                         .padding()
@@ -126,13 +127,14 @@ struct ThemeEditorView: View {
                 .navigationTitle("theme.preview_title")
                 .navigationBarTitleDisplayMode(.inline)
                 .toolbar {
-                    ToolbarItem(placement: .navigationBarTrailing) {
+                    ToolbarItem(placement: .confirmationAction) {
                         Button(appLanguage.text("common.done")) {
                             showingPreview = false
                         }
                     }
                 }
             }
+            .appNavigationChrome(using: appLanguage)
             .environmentObject(appLanguage)
         }
         .alert(appLanguage.text("theme.delete_title"), isPresented: $showingDeleteAlert) {

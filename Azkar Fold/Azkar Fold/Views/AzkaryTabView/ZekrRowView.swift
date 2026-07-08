@@ -44,14 +44,12 @@ struct ZekrRowView: View {
 
                 VStack(alignment: .center, spacing: 4) {
                     Text(zekr.text)
-                        .font(.headline)
-                        .fontWeight(.bold)
+                        .azkarContentFont(size: AzkarFont.listSize)
                         .foregroundColor(theme.currentTheme.buttonText)
                         .multilineTextAlignment(.center)
                         .padding(.horizontal)
-                        .font(.system(size: 80))
-                        .minimumScaleFactor(0.3)
-                        .lineLimit(15)
+                        .minimumScaleFactor(0.7)
+                        .lineLimit(6)
                         .environment(\.layoutDirection, .rightToLeft)
 
                     Text(appLanguage.text("azkary.last_updated", formattedDate))

@@ -31,7 +31,7 @@ struct ShareSheet: UIViewControllerRepresentable {
 }
 
 private enum ZekrExportFontCalculator {
-    static let appFontSize: CGFloat = 28
+    static let appFontSize: CGFloat = AzkarFont.shareBaseSize
     static let minimumFontSize: CGFloat = 12
 
     static let outerHorizontalPadding: CGFloat = 21
@@ -86,11 +86,14 @@ private enum ZekrExportFontCalculator {
     }
 
     private static func measuredTextHeight(_ text: String, fontSize: CGFloat, width: CGFloat) -> CGFloat {
-        let font = UIFont.systemFont(ofSize: fontSize, weight: .bold)
+        let font = AzkarFont.uiFont(size: fontSize)
+        let paragraph = NSMutableParagraphStyle()
+        paragraph.alignment = .center
+        paragraph.baseWritingDirection = .rightToLeft
         let bounds = (text as NSString).boundingRect(
             with: CGSize(width: width, height: .greatestFiniteMagnitude),
             options: [.usesLineFragmentOrigin, .usesFontLeading],
-            attributes: [.font: font],
+            attributes: [.font: font, .paragraphStyle: paragraph],
             context: nil
         )
         return ceil(bounds.height)
@@ -140,9 +143,10 @@ struct ExportableZekrCard: View {
 
     private var zekrLabel: some View {
         Text(text)
-            .font(.system(size: exportFontSize, weight: .bold))
+            .azkarContentFont(size: exportFontSize)
             .foregroundColor(appearance.text)
             .multilineTextAlignment(.center)
+            .environment(\.layoutDirection, .rightToLeft)
             .frame(maxWidth: .infinity, alignment: .center)
             .padding(.horizontal, textHorizontalPadding)
             .padding(.vertical, textVerticalPadding)
@@ -223,6 +227,7 @@ func renderZekrImage(
     theme: ThemeManager,
     patternManager: PatternManager
 ) -> UIImage? {
+    AzkarFont.registerIfNeeded()
     let appearance = ZekrShareAppearance(theme: theme, patternManager: patternManager)
 
     let exportView = ExportableZekrShareCanvas(

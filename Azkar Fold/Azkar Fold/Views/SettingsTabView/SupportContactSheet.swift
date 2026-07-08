@@ -59,7 +59,7 @@ struct SupportContactSheet: View {
     }
 
     var body: some View {
-        NavigationView {
+        NavigationStack {
             ScrollView {
                 VStack(alignment: .leading, spacing: 20) {
                     Text("support.intro")
@@ -131,14 +131,14 @@ struct SupportContactSheet: View {
             .navigationTitle("support.title")
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
-                ToolbarItem(placement: .navigationBarLeading) {
+                ToolbarItem(placement: .cancellationAction) {
                     Button(appLanguage.text("common.cancel")) {
                         dismiss()
                     }
                     .foregroundStyle(theme.currentTheme.accent)
                 }
 
-                ToolbarItem(placement: .navigationBarTrailing) {
+                ToolbarItem(placement: .confirmationAction) {
                     Button(appLanguage.text("common.send")) {
                         submitSupportRequest()
                     }
@@ -182,6 +182,7 @@ struct SupportContactSheet: View {
                 Text(resultAlertMessage)
             }
         }
+        .appNavigationChrome(using: appLanguage)
     }
 
     private func attachmentPickerButton(titleKey: String.LocalizationValue, icon: String) -> some View {
