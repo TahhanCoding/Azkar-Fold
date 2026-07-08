@@ -111,6 +111,28 @@ li + li {
     margin-top: 8px;
 }
 
+.contact-list {
+    list-style: none;
+    padding: 0;
+}
+
+.contact-list li {
+    margin-top: 16px;
+    padding: 14px 16px;
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    background: var(--bg);
+}
+
+.contact-list li:first-child {
+    margin-top: 0;
+}
+
+.contact-list a {
+    color: var(--accent);
+    word-break: break-word;
+}
+
 footer {
     margin-top: 32px;
     padding-top: 20px;

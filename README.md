@@ -107,7 +107,8 @@ To update Sunnah content, follow [content_setUp_Guide.md](Azkar%20Fold/content_s
 
 Privacy policy for App Store Connect:
 
-**https://tahhancoding.github.io/Azkar-Fold/privacy-policy.html**
+**Privacy:** https://tahhancoding.github.io/Azkar-Fold/privacy-policy.html  
+**Support:** https://tahhancoding.github.io/Azkar-Fold/support.html
 
 Enable in repo **Settings → Pages → Deploy from branch `main` → `/docs`**.
 
