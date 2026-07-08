@@ -34,72 +34,24 @@ struct ZekrRowView: View {
             HStack {
                 Spacer()
                 deleteButton
-                    .offset(x: offset > -deleteButtonWidth ? offset + deleteButtonWidth : 0)
                     .offset(x: -10)
             }
-            .environment(\.layoutDirection, .leftToRight)
+            .zIndex(offset != 0 ? 2 : 0)
+            .allowsHitTesting(offset != 0)
+            .opacity(offset != 0 ? 1 : 0)
 
-            HStack(spacing: 15) {
-                Spacer()
-
-                VStack(alignment: .center, spacing: 4) {
-                    Text(zekr.text)
-                        .azkarContentFont(size: AzkarFont.listSize)
-                        .foregroundColor(theme.currentTheme.buttonText)
-                        .multilineTextAlignment(.center)
-                        .padding(.horizontal)
-                        .minimumScaleFactor(0.7)
-                        .lineLimit(6)
-                        .environment(\.layoutDirection, .rightToLeft)
-
-                    Text(appLanguage.text("azkary.last_updated", formattedDate))
-                        .font(.caption)
-                        .foregroundColor(theme.currentTheme.buttonText.opacity(0.35))
-                        .environment(\.layoutDirection, appLanguage.layoutDirection)
+            cardContent
+                .offset(x: offset)
+                .zIndex(1)
+                .contentShape(Rectangle())
+                .onTapGesture {
+                    handleCardTap()
                 }
-
-                Text("\(zekr.counter)")
-                    .font(.title2)
-                    .fontWeight(.bold)
-                    .foregroundColor(theme.currentTheme.primary)
-                    .frame(minWidth: 44, minHeight: 44)
-                    .padding(5)
-                    .background(
-                        RoundedRectangle(cornerRadius: 16)
-                            .fill(theme.currentTheme.cardBackground)
-                    )
-                    .padding(.trailing, 5)
-            }
-            .padding(15)
-            .background(
-                RoundedRectangle(cornerRadius: 12)
-                    .fill(theme.currentTheme.primary.opacity(0.9))
-                    .shadow(color: theme.currentTheme.text.opacity(0.25), radius: 3, x: 3, y: 3)
-            )
-            .offset(x: offset)
-            .contentShape(Rectangle())
-            .environment(\.layoutDirection, .leftToRight)
-            .onTapGesture {
-                if ignoreNextTap { return }
-
-                if offset != 0 {
-                    withAnimation {
-                        offset = 0
-                    }
-                } else {
-                    onTap()
+                .onLongPressGesture(minimumDuration: 0.5) {
+                    revealDeleteButton()
                 }
-            }
-            .onLongPressGesture(minimumDuration: 0.5) {
-                withAnimation {
-                    offset = revealOffset
-                }
-                ignoreNextTap = true
-                DispatchQueue.main.asyncAfter(deadline: .now() + 0.15) {
-                    ignoreNextTap = false
-                }
-            }
         }
+        .environment(\.layoutDirection, .leftToRight)
         .onChange(of: isAlertPresented) { newValue in
             if !newValue {
                 withAnimation {
@@ -107,6 +59,67 @@ struct ZekrRowView: View {
                 }
             }
         }
+    }
+
+    private func handleCardTap() {
+        guard !ignoreNextTap else { return }
+
+        if offset != 0 {
+            withAnimation {
+                offset = 0
+            }
+        } else {
+            onTap()
+        }
+    }
+
+    private func revealDeleteButton() {
+        withAnimation {
+            offset = revealOffset
+        }
+        ignoreNextTap = true
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.15) {
+            ignoreNextTap = false
+        }
+    }
+
+    private var cardContent: some View {
+        HStack(spacing: 15) {
+            Spacer()
+
+            VStack(alignment: .center, spacing: 4) {
+                Text(zekr.text)
+                    .azkarContentFont(size: AzkarFont.listSize)
+                    .foregroundColor(theme.currentTheme.buttonText)
+                    .multilineTextAlignment(.center)
+                    .padding(.horizontal)
+                    .minimumScaleFactor(0.7)
+                    .lineLimit(6)
+                    .environment(\.layoutDirection, .rightToLeft)
+
+                Text(appLanguage.text("azkary.last_updated", formattedDate))
+                    .font(.caption)
+                    .foregroundColor(theme.currentTheme.buttonText.opacity(0.35))
+            }
+
+            Text("\(zekr.counter)")
+                .font(.title2)
+                .fontWeight(.bold)
+                .foregroundColor(theme.currentTheme.primary)
+                .frame(minWidth: 44, minHeight: 44)
+                .padding(5)
+                .background(
+                    RoundedRectangle(cornerRadius: 16)
+                        .fill(theme.currentTheme.cardBackground)
+                )
+                .padding(.trailing, 5)
+        }
+        .padding(15)
+        .background(
+            RoundedRectangle(cornerRadius: 12)
+                .fill(theme.currentTheme.primary.opacity(0.9))
+                .shadow(color: theme.currentTheme.text.opacity(0.25), radius: 3, x: 3, y: 3)
+        )
     }
 
     private var deleteButton: some View {
@@ -119,8 +132,8 @@ struct ZekrRowView: View {
                         .foregroundColor(theme.currentTheme.buttonText)
                 )
                 .shadow(color: theme.currentTheme.text.opacity(0.25), radius: 3, x: 3, y: 3)
-                .opacity(abs(offset) / deleteButtonWidth)
         }
+        .buttonStyle(.plain)
         .accessibilityLabel(appLanguage.text("common.delete"))
     }
 }
