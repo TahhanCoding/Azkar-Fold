@@ -117,11 +117,15 @@ struct SettingsTabView: View {
             LegalDocumentSheet(documentKind: .privacy)
                 .environmentObject(theme)
                 .environmentObject(appLanguage)
+                .environment(\.locale, appLanguage.locale)
+                .environment(\.layoutDirection, appLanguage.layoutDirection)
         }
         .sheet(isPresented: $showingTerms) {
             LegalDocumentSheet(documentKind: .terms)
                 .environmentObject(theme)
                 .environmentObject(appLanguage)
+                .environment(\.locale, appLanguage.locale)
+                .environment(\.layoutDirection, appLanguage.layoutDirection)
         }
         .sheet(isPresented: $showingSupportSheet) {
             SupportContactSheet()

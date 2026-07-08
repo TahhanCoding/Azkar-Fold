@@ -49,21 +49,27 @@ struct LegalDocumentSheet: View {
                     Text(appLanguage.text("legal.last_updated", lastUpdated))
                         .font(.caption)
                         .foregroundColor(theme.currentTheme.text.opacity(0.6))
+                        .frame(maxWidth: .infinity, alignment: .leading)
 
                     ForEach(sections) { section in
                         VStack(alignment: .leading, spacing: 8) {
                             Text(section.title)
                                 .font(.headline)
                                 .foregroundColor(theme.currentTheme.text)
+                                .frame(maxWidth: .infinity, alignment: .leading)
+                                .multilineTextAlignment(.leading)
 
                             Text(section.body)
                                 .font(.body)
                                 .foregroundColor(theme.currentTheme.text.opacity(0.85))
+                                .frame(maxWidth: .infinity, alignment: .leading)
+                                .multilineTextAlignment(.leading)
                                 .fixedSize(horizontal: false, vertical: true)
                         }
                     }
                 }
                 .padding(20)
+                .frame(maxWidth: .infinity, alignment: .leading)
             }
             .background(theme.currentTheme.background.ignoresSafeArea())
             .navigationTitle(title)
@@ -77,6 +83,9 @@ struct LegalDocumentSheet: View {
                 }
             }
         }
+        .environment(\.locale, appLanguage.locale)
+        .environment(\.layoutDirection, appLanguage.layoutDirection)
+        .id(appLanguage.current)
     }
 }
 
