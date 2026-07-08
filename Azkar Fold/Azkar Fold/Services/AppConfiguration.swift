@@ -13,6 +13,8 @@ enum AppConfiguration {
 
     static let supportEmail = "tahhancoding@gmail.com"
     static let shareMessage = "Check out Azkar Fold - Your Islamic Remembrance Companion!"
+    static let repositoryURL = "https://github.com/TahhanCoding/Azkar-Fold"
+    static let repositoryDisplayLabel = "github.com/TahhanCoding/Azkar-Fold"
 
     static var marketingVersion: String {
         Bundle.main.infoDictionary?["CFBundleShortVersionString"] as? String ?? "1.0.0"

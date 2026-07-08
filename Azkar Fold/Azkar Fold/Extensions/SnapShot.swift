@@ -129,7 +129,7 @@ struct ExportableZekrCard: View {
             .frame(maxHeight: maxCardHeight, alignment: .top)
             .fixedSize(horizontal: false, vertical: true)
 
-            Text("azkarfold.com")
+            Text(AppConfiguration.repositoryDisplayLabel)
                 .font(.system(size: 14, weight: .medium))
                 .foregroundColor(appearance.text.opacity(0.6))
                 .frame(maxWidth: .infinity)
