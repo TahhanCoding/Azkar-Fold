@@ -19,13 +19,7 @@ struct ZekrRowView: View {
     @State private var ignoreNextTap = false
     @Binding var isAlertPresented: Bool
 
-    private var isRTL: Bool {
-        appLanguage.layoutDirection == .rightToLeft
-    }
-
-    private var revealOffset: CGFloat {
-        isRTL ? deleteButtonWidth : -deleteButtonWidth
-    }
+    private var revealOffset: CGFloat { -deleteButtonWidth }
 
     private var formattedDate: String {
         let formatter = DateFormatter()
@@ -38,23 +32,17 @@ struct ZekrRowView: View {
     var body: some View {
         ZStack {
             HStack {
-                if isRTL {
-                    deleteButton
-                        .offset(x: offset < deleteButtonWidth ? offset - deleteButtonWidth : 0)
-                        .offset(x: 10)
-                    Spacer()
-                } else {
-                    Spacer()
-                    deleteButton
-                        .offset(x: offset > -deleteButtonWidth ? offset + deleteButtonWidth : 0)
-                        .offset(x: -10)
-                }
+                Spacer()
+                deleteButton
+                    .offset(x: offset > -deleteButtonWidth ? offset + deleteButtonWidth : 0)
+                    .offset(x: -10)
             }
+            .environment(\.layoutDirection, .leftToRight)
 
             HStack(spacing: 15) {
                 Spacer()
 
-                VStack(alignment: .leading, spacing: 4) {
+                VStack(alignment: .center, spacing: 4) {
                     Text(zekr.text)
                         .font(.headline)
                         .fontWeight(.bold)
@@ -69,6 +57,7 @@ struct ZekrRowView: View {
                     Text(appLanguage.text("azkary.last_updated", formattedDate))
                         .font(.caption)
                         .foregroundColor(theme.currentTheme.buttonText.opacity(0.35))
+                        .environment(\.layoutDirection, appLanguage.layoutDirection)
                 }
 
                 Text("\(zekr.counter)")
@@ -91,6 +80,7 @@ struct ZekrRowView: View {
             )
             .offset(x: offset)
             .contentShape(Rectangle())
+            .environment(\.layoutDirection, .leftToRight)
             .onTapGesture {
                 if ignoreNextTap { return }
 
