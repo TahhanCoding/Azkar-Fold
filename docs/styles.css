@@ -1,0 +1,138 @@
+:root {
+    color-scheme: light dark;
+    --bg: #faf8f2;
+    --card: #ffffff;
+    --text: #1c1c1e;
+    --muted: #636366;
+    --accent: #b8860b;
+    --border: rgba(0, 0, 0, 0.08);
+    --max-width: 720px;
+}
+
+@media (prefers-color-scheme: dark) {
+    :root {
+        --bg: #111111;
+        --card: #1c1c1e;
+        --text: #f2f2f7;
+        --muted: #aeaeb2;
+        --accent: #fad358;
+        --border: rgba(255, 255, 255, 0.12);
+    }
+}
+
+* {
+    box-sizing: border-box;
+}
+
+body {
+    margin: 0;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    line-height: 1.6;
+    color: var(--text);
+    background: var(--bg);
+}
+
+.page {
+    max-width: var(--max-width);
+    margin: 0 auto;
+    padding: 32px 20px 64px;
+}
+
+.card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 28px 24px;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.04);
+}
+
+header {
+    margin-bottom: 28px;
+}
+
+.app-name {
+    margin: 0 0 8px;
+    font-size: 1.75rem;
+    line-height: 1.2;
+}
+
+.subtitle {
+    margin: 0;
+    color: var(--muted);
+    font-size: 0.95rem;
+}
+
+.updated {
+    margin-top: 12px;
+    color: var(--muted);
+    font-size: 0.875rem;
+}
+
+nav.top-links {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+    margin-bottom: 20px;
+    font-size: 0.9rem;
+}
+
+nav.top-links a {
+    color: var(--accent);
+    text-decoration: none;
+}
+
+nav.top-links a:hover {
+    text-decoration: underline;
+}
+
+section {
+    margin-top: 28px;
+}
+
+section:first-of-type {
+    margin-top: 0;
+}
+
+h2 {
+    margin: 0 0 10px;
+    font-size: 1.125rem;
+}
+
+p {
+    margin: 0 0 12px;
+}
+
+ul {
+    margin: 0;
+    padding-left: 1.25rem;
+}
+
+li + li {
+    margin-top: 8px;
+}
+
+footer {
+    margin-top: 32px;
+    padding-top: 20px;
+    border-top: 1px solid var(--border);
+    color: var(--muted);
+    font-size: 0.875rem;
+}
+
+footer a {
+    color: var(--accent);
+}
+
+body.rtl {
+    direction: rtl;
+}
+
+body.rtl ul {
+    padding-right: 1.25rem;
+    padding-left: 0;
+}
+
+body.rtl nav.top-links {
+    flex-direction: row-reverse;
+    justify-content: flex-end;
+}

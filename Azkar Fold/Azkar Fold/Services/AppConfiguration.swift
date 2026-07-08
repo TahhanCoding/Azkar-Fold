@@ -17,6 +17,7 @@ enum AppConfiguration {
     }
     static let repositoryURL = "https://github.com/TahhanCoding/Azkar-Fold"
     static let repositoryDisplayLabel = "github.com/TahhanCoding/Azkar-Fold"
+    static let privacyPolicyURL = "https://tahhancoding.github.io/Azkar-Fold/privacy-policy.html"
 
     static var marketingVersion: String {
         Bundle.main.infoDictionary?["CFBundleShortVersionString"] as? String ?? "1.0.0"
