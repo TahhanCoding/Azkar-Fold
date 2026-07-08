@@ -1,0 +1,31 @@
+# macOS
+.DS_Store
+
+# Xcode
+build/
+DerivedData/
+*.xcuserstate
+*.xccheckout
+*.xcscmblueprint
+xcuserdata/
+
+# Swift Package Manager
+.build/
+Packages/
+Package.pins
+Package.resolved
+
+# CocoaPods / Carthage (if added later)
+Pods/
+Carthage/Build/
+
+# Firebase — use GoogleService-Info.plist.example locally
+Azkar Fold/Azkar Fold/GoogleService-Info.plist
+
+# Secrets / local config
+*.local.plist
+.env
+.env.*
+
+# Cursor / editor
+.cursor/
