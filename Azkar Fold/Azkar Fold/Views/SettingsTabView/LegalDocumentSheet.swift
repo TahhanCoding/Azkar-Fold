@@ -104,7 +104,7 @@ enum LegalDocuments {
         LegalDocumentSection(
             title: "Children's Privacy",
             body: """
-            Azkar Fold does not knowingly collect personal information from children. If you believe information has been provided by a child, please contact us so we can help address the request.
+            Azkar Fold does not knowingly collect personal information from children. If you believe information has been provided by a child, please use Contact Support in Settings so we can help address the request.
             """
         ),
         LegalDocumentSection(

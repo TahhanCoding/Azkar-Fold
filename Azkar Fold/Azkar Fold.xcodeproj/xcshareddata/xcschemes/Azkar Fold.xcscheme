@@ -57,9 +57,6 @@
             isEnabled = "YES">
          </AdditionalOption>
       </AdditionalOptions>
-      <StoreKitConfigurationFileReference
-         identifier = "../../Azkar Fold/Subscriptions/StoreKit.storekit">
-      </StoreKitConfigurationFileReference>
    </LaunchAction>
    <ProfileAction
       buildConfiguration = "Release"

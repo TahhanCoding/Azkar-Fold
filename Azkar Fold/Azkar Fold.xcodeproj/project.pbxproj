@@ -9,12 +9,10 @@
 /* Begin PBXBuildFile section */
 		326D1EC12F06487B00CCF7A5 /* FirebaseCore in Frameworks */ = {isa = PBXBuildFile; productRef = 326D1EC02F06487B00CCF7A5 /* FirebaseCore */; };
 		326D1EC32F06487B00CCF7A5 /* FirebaseRemoteConfig in Frameworks */ = {isa = PBXBuildFile; productRef = 326D1EC22F06487B00CCF7A5 /* FirebaseRemoteConfig */; };
-		32F902CD2E2BA986005BEE00 /* StoreKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 32F902CC2E2BA986005BEE00 /* StoreKit.framework */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
 		329D042C2DC5653500ED5D7E /* Azkar Fold.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "Azkar Fold.app"; sourceTree = BUILT_PRODUCTS_DIR; };
-		32F902CC2E2BA986005BEE00 /* StoreKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = StoreKit.framework; path = System/Library/Frameworks/StoreKit.framework; sourceTree = SDKROOT; };
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedRootGroup section */
@@ -32,7 +30,6 @@
 			files = (
 				326D1EC32F06487B00CCF7A5 /* FirebaseRemoteConfig in Frameworks */,
 				326D1EC12F06487B00CCF7A5 /* FirebaseCore in Frameworks */,
-				32F902CD2E2BA986005BEE00 /* StoreKit.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -43,7 +40,6 @@
 			isa = PBXGroup;
 			children = (
 				329D042E2DC5653500ED5D7E /* Azkar Fold */,
-				32F902CB2E2BA986005BEE00 /* Frameworks */,
 				329D042D2DC5653500ED5D7E /* Products */,
 			);
 			sourceTree = "<group>";
@@ -54,14 +50,6 @@
 				329D042C2DC5653500ED5D7E /* Azkar Fold.app */,
 			);
 			name = Products;
-			sourceTree = "<group>";
-		};
-		32F902CB2E2BA986005BEE00 /* Frameworks */ = {
-			isa = PBXGroup;
-			children = (
-				32F902CC2E2BA986005BEE00 /* StoreKit.framework */,
-			);
-			name = Frameworks;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -285,7 +273,7 @@
 				INFOPLIST_KEY_ITSAppUsesNonExemptEncryption = NO;
 				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.lifestyle";
 				INFOPLIST_KEY_NSMotionUsageDescription = "Used for 3-D tilt effect";
-				INFOPLIST_KEY_NSPhotoLibraryAddUsageDescription = "The app needs this persmission to be able to save or share zekr snap.";
+				INFOPLIST_KEY_NSPhotoLibraryAddUsageDescription = "The app needs this permission to be able to save or share zekr snap.";
 				INFOPLIST_KEY_NSPhotoLibraryUsageDescription = "Azkar Fold needs access to your photo library so you can attach photos or videos to support messages.";
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
@@ -297,7 +285,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 1.0;
+				MARKETING_VERSION = 1.0.0;
 				PRODUCT_BUNDLE_IDENTIFIER = "com.AhmedAlTahhan.Azkar-Fold";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";
@@ -324,7 +312,7 @@
 				INFOPLIST_KEY_ITSAppUsesNonExemptEncryption = NO;
 				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.lifestyle";
 				INFOPLIST_KEY_NSMotionUsageDescription = "Used for 3-D tilt effect";
-				INFOPLIST_KEY_NSPhotoLibraryAddUsageDescription = "The app needs this persmission to be able to save or share zekr snap.";
+				INFOPLIST_KEY_NSPhotoLibraryAddUsageDescription = "The app needs this permission to be able to save or share zekr snap.";
 				INFOPLIST_KEY_NSPhotoLibraryUsageDescription = "Azkar Fold needs access to your photo library so you can attach photos or videos to support messages.";
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
@@ -336,7 +324,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 1.0;
+				MARKETING_VERSION = 1.0.0;
 				PRODUCT_BUNDLE_IDENTIFIER = "com.AhmedAlTahhan.Azkar-Fold";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";

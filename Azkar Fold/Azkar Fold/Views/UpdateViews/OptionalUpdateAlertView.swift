@@ -67,23 +67,25 @@ struct OptionalUpdateAlertView: View {
                     Button(action: {
                         updateManager.dismissOptionalUpdate()
                     }) {
-                        Text("Later")
+                        Text(AppConfiguration.isAppStoreConfigured ? "Later" : "OK")
                             .font(.body)
                             .foregroundStyle(themeManager.currentTheme.text.opacity(0.7))
                             .padding(.vertical, 10)
                             .padding(.horizontal, 20)
                     }
-                    
-                    Button(action: {
-                        updateManager.openAppStore()
-                    }) {
-                        Text("Update")
-                            .font(.headline)
-                            .foregroundStyle(themeManager.currentTheme.buttonText)
-                            .padding(.vertical, 10)
-                            .padding(.horizontal, 25)
-                            .background(themeManager.currentTheme.primary)
-                            .cornerRadius(8)
+
+                    if AppConfiguration.isAppStoreConfigured {
+                        Button(action: {
+                            updateManager.openAppStore()
+                        }) {
+                            Text("Update")
+                                .font(.headline)
+                                .foregroundStyle(themeManager.currentTheme.buttonText)
+                                .padding(.vertical, 10)
+                                .padding(.horizontal, 25)
+                                .background(themeManager.currentTheme.primary)
+                                .cornerRadius(8)
+                        }
                     }
                 }
                 .padding(.top, 10)

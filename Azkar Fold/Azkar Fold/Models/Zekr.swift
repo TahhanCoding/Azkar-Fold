@@ -87,7 +87,7 @@ class ZekrStore: ObservableObject {
             // Force UserDefaults to save immediately
             UserDefaults.standard.synchronize()
         } catch {
-            print("Error saving zekrs: \(error.localizedDescription)")
+            AzkarDebugLog.log("Error saving zekrs: \(error.localizedDescription)")
         }
     }
     
@@ -101,7 +101,7 @@ class ZekrStore: ObservableObject {
                     self.objectWillChange.send()
                 }
             } catch {
-                print("Error loading zekrs: \(error.localizedDescription)")
+                AzkarDebugLog.log("Error loading zekrs: \(error.localizedDescription)")
             }
         }
     }

@@ -230,33 +230,11 @@ struct ZekrView: View {
                     
                     // One-time hint
                     if showDimHint {
-                        VStack {
-                            Text("Dim mode activated")
-                                .font(.title2)
-                                .fontWeight(.bold)
-                                .foregroundColor(.white)
-                                .padding(.bottom, 8)
-                            
-                            Text("Screen is dimmed for comfortable counting in dark environments. Tap anywhere to count, long press to exit.")
-                                .font(.body)
-                                .foregroundColor(.white)
-                                .multilineTextAlignment(.center)
-                                .padding(.horizontal, 30)
-                        }
-                        .padding()
-                        .background(
-                            RoundedRectangle(cornerRadius: 12)
-                                .fill(Color.black.opacity(0.7))
+                        TimedCoachMarkView(
+                            title: "Dim mode activated",
+                            message: "Screen is dimmed for comfortable counting in dark environments. Tap anywhere to count, long press to exit.",
+                            isPresented: $showDimHint
                         )
-                        .padding(.horizontal, 20)
-                        .transition(.opacity.combined(with: .scale))
-                        .onAppear {
-                            DispatchQueue.main.asyncAfter(deadline: .now() + 4) {
-                                withAnimation(.easeInOut(duration: 0.5)) {
-                                    showDimHint = false
-                                }
-                            }
-                        }
                     }
                 }
             }

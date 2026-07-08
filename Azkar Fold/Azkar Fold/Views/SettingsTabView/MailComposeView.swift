@@ -67,7 +67,7 @@ struct MailComposeView: UIViewControllerRepresentable {
 }
 
 enum SupportMailComposer {
-    static let supportEmail = "tahhancoding@gmail.com"
+    static let supportEmail = AppConfiguration.supportEmail
     static let subject = "Azkar Fold Support"
 
     static var canSendMail: Bool {

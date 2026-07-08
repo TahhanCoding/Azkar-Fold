@@ -53,7 +53,7 @@ struct SupportContactSheet: View {
     }
 
     private var appVersion: String {
-        Bundle.main.infoDictionary?["CFBundleShortVersionString"] as? String ?? "1.0"
+        AppConfiguration.marketingVersion
     }
 
     var body: some View {

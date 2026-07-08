@@ -123,7 +123,7 @@ class SunnahProgressStore: ObservableObject {
         }
         self.lastResetDate = Date()
         saveProgress()
-        print("Daily Sunnah Azkar progress has been reset.")
+        AzkarDebugLog.log("Daily Sunnah Azkar progress has been reset.")
     }
     
     func resetDailyProgressIfNeeded() {
@@ -137,12 +137,12 @@ class SunnahProgressStore: ObservableObject {
                 }
                 self.lastResetDate = now
                 saveProgress()
-                print("Daily Sunnah Azkar progress has been reset.")
+                AzkarDebugLog.log("Daily Sunnah Azkar progress has been reset.")
             }
         } else {
             self.lastResetDate = now
             saveProgress()
-            print("Initialized Sunnah Azkar progress for the first time.")
+            AzkarDebugLog.log("Initialized Sunnah Azkar progress for the first time.")
         }
     }
     
@@ -159,7 +159,7 @@ class SunnahProgressStore: ObservableObject {
         azkarCompleted[category]?.removeAll()
         azkarProgress[category]?.removeAll()
         saveProgress()
-        print("\(category.title) progress has been reset.")
+        AzkarDebugLog.log("\(category.title) progress has been reset.")
     }
     
     // MARK: - Azkar Order Management
@@ -183,7 +183,7 @@ class SunnahProgressStore: ObservableObject {
         let orderKey = azkarOrderKeyPrefix + category.rawValue
         defaults.removeObject(forKey: orderKey)
         objectWillChange.send()
-        print("\(category.title) order has been reset.")
+        AzkarDebugLog.log("\(category.title) order has been reset.")
     }
     
     // MARK: - Persistence

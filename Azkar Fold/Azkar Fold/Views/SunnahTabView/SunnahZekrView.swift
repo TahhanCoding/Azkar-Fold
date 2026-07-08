@@ -53,6 +53,8 @@ struct SunnahZekrView: View {
     @State private var showSaveAlert: Bool = false
     @State private var saveAlertMessage: String = ""
     @State private var isExporting: Bool = false
+    @AppStorage("hasSeenSunnahModeHint") private var hasSeenSunnahModeHint = false
+    @State private var showModeHint = false
     
     // Computed property for displayed azkar list (uses reordered if available)
     var displayedAzkarList: [SunnahZekrItem] {
@@ -83,6 +85,7 @@ struct SunnahZekrView: View {
     }
     
     var body: some View {
+        ZStack {
         VStack(spacing: 0) {
             TabView(selection: $currentIndex) {
                 ForEach(displayedAzkarList.indices, id: \.self) { index in
@@ -156,6 +159,15 @@ struct SunnahZekrView: View {
                 .fill(theme.currentTheme.background.opacity(0.35))
                 .ignoresSafeArea(.all)
         )
+
+            if showModeHint {
+                TimedCoachMarkView(
+                    title: "Simple & Full mode",
+                    message: "Long press on the zekr card to switch between Simple and Full reading modes.",
+                    isPresented: $showModeHint
+                )
+            }
+        }
         .navigationTitle(category.rawValue)
         .navigationBarTitleDisplayMode(.inline)
         .toolbar {
@@ -169,6 +181,10 @@ struct SunnahZekrView: View {
         }
         .onAppear {
             setupView()
+            if !hasSeenSunnahModeHint {
+                showModeHint = true
+                hasSeenSunnahModeHint = true
+            }
         }
         .onDisappear {
             cleanupView()

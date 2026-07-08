@@ -29,7 +29,7 @@ class CoreMotionManager: ObservableObject {
         interval: TimeInterval? = nil
     ) {
         guard motionManager.isDeviceMotionAvailable else {
-            print("CoreMotionManager: Device motion not available")
+            AzkarDebugLog.log("CoreMotionManager: Device motion not available")
             return
         }
         
@@ -52,7 +52,7 @@ class CoreMotionManager: ObservableObject {
                 if let error = error as NSError?,
                    error.domain != "NSCocoaErrorDomain" || error.code != 257 {
                     // Only log non-permission errors (257 is the permission error code)
-                    print("CoreMotionManager error: \(error.localizedDescription)")
+                    AzkarDebugLog.log("CoreMotionManager error: \(error.localizedDescription)")
                 }
                 return
             }

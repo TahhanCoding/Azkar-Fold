@@ -238,7 +238,7 @@ struct SettingsTabView: View {
     }
     
     private var appVersion: String {
-        Bundle.main.infoDictionary?["CFBundleShortVersionString"] as? String ?? "1.0"
+        AppConfiguration.marketingVersion
     }
     
     // MARK: - Actions
@@ -250,9 +250,11 @@ struct SettingsTabView: View {
     }
     
     private func shareApp() {
-        let appURL = "https://apps.apple.com/app/azkar-fold/id[YOUR_APP_ID]"
-        let shareText = "Check out Azkar Fold - Your Islamic Remembrance Companion!"
-        let activityItems = [shareText, appURL]
+        var activityItems: [Any] = [AppConfiguration.shareMessage]
+        if let appURL = AppConfiguration.appStoreURL {
+            activityItems.append(appURL)
+        }
+
         let activityVC = UIActivityViewController(activityItems: activityItems, applicationActivities: nil)
         
         if let windowScene = UIApplication.shared.connectedScenes.first as? UIWindowScene,

@@ -10,21 +10,20 @@ import Combine
 
 class UpdateManager: ObservableObject {
     static let shared = UpdateManager()
-    
+
     @Published var updateStatus: UpdateStatus = .upToDate
     @Published var showForceUpdate: Bool = false
     @Published var showOptionalUpdate: Bool = false
-    
-    // Stored properties for UI display
+
     @Published var requiredVersion: String = ""
     @Published var availableVersion: String = ""
     @Published var currentVersion: String = ""
     @Published var whatIsNew: String = ""
-    
+
     private let updateService = FirebaseUpdateService.shared
-    
+
     private init() {}
-    
+
     @MainActor
     func checkForUpdates() async {
         do {
@@ -33,42 +32,45 @@ class UpdateManager: ObservableObject {
             self.whatIsNew = updateService.getWhatIsNew()
             self.handleUpdateStatus(status)
         } catch {
-            print("Error checking updates: \(error)")
+            AzkarDebugLog.log("Error checking updates: \(error)")
         }
     }
-    
+
     private func handleUpdateStatus(_ status: UpdateStatus) {
         switch status {
         case .forceUpdate(let required, let current):
-            self.requiredVersion = required
-            self.currentVersion = current
-            self.showForceUpdate = true
-            self.showOptionalUpdate = false
-            
+            guard AppConfiguration.isAppStoreConfigured else {
+                AzkarDebugLog.log("Force update suppressed: App Store ID not configured")
+                showForceUpdate = false
+                showOptionalUpdate = false
+                return
+            }
+            requiredVersion = required
+            currentVersion = current
+            showForceUpdate = true
+            showOptionalUpdate = false
+
         case .optionalUpdate(let available, let current):
-            self.availableVersion = available
-            self.currentVersion = current
-            self.showForceUpdate = false
-            self.showOptionalUpdate = true
-            
+            availableVersion = available
+            currentVersion = current
+            showForceUpdate = false
+            showOptionalUpdate = true
+
         case .upToDate:
-            self.showForceUpdate = false
-            self.showOptionalUpdate = false
+            showForceUpdate = false
+            showOptionalUpdate = false
         }
     }
-    
+
     func dismissOptionalUpdate() {
         showOptionalUpdate = false
     }
-    
+
     func openAppStore() {
         if let url = updateService.getAppStoreURL() {
             UIApplication.shared.open(url)
         } else {
-            // Fallback: Search on App Store or open developer page if known
-            // For now, let's log
-            print("App Store URL not configured")
+            AzkarDebugLog.log("App Store URL not configured — set AppConfiguration.appStoreID")
         }
     }
 }
-
