@@ -9,20 +9,21 @@ import SwiftUI
 
 struct ColorPickerView: View {
     @EnvironmentObject var theme: ThemeManager
-    let title: String
+    @EnvironmentObject var appLanguage: AppLanguageManager
+    let titleKey: String.LocalizationValue
     @Binding var selectedColor: String
     @State private var showingColorPicker = false
     @State private var tempColor: Color
     
-    init(title: String, selectedColor: Binding<String>) {
-        self.title = title
+    init(titleKey: String.LocalizationValue, selectedColor: Binding<String>) {
+        self.titleKey = titleKey
         self._selectedColor = selectedColor
         self._tempColor = State(initialValue: Color(hex: selectedColor.wrappedValue))
     }
     
     var body: some View {
         HStack {
-            Text(title)
+            Text(appLanguage.text(titleKey))
                 .font(.system(size: 16, weight: .medium))
                 .foregroundColor(theme.currentTheme.text)
             
@@ -52,7 +53,7 @@ struct ColorPickerView: View {
         .padding(.vertical, 4)
         .sheet(isPresented: $showingColorPicker) {
             ColorPickerSheet(
-                title: title,
+                titleKey: titleKey,
                 selectedColor: $selectedColor,
                 tempColor: $tempColor
             )
@@ -62,7 +63,8 @@ struct ColorPickerView: View {
 
 struct ColorPickerSheet: View {
     @EnvironmentObject var theme: ThemeManager
-    let title: String
+    @EnvironmentObject var appLanguage: AppLanguageManager
+    let titleKey: String.LocalizationValue
     @Binding var selectedColor: String
     @Binding var tempColor: Color
     @Environment(\.dismiss) private var dismiss
@@ -73,7 +75,7 @@ struct ColorPickerSheet: View {
             VStack(spacing: 20) {
                 // Color preview
                 VStack(spacing: 12) {
-                    Text("Preview")
+                    Text("theme.color_preview")
                         .font(.headline)
                         .foregroundColor(theme.currentTheme.text)
                     
@@ -89,7 +91,7 @@ struct ColorPickerSheet: View {
                 
                 // Color picker
                 VStack(alignment: .leading, spacing: 8) {
-                    Text("Select Color")
+                    Text("theme.select_color")
                         .font(.headline)
                         .foregroundColor(theme.currentTheme.text)
                     
@@ -101,7 +103,7 @@ struct ColorPickerSheet: View {
                 
                 // Hex input
                 VStack(alignment: .leading, spacing: 8) {
-                    Text("Hex Code")
+                    Text("theme.hex_code")
                         .font(.headline)
                         .foregroundColor(theme.currentTheme.text)
                     
@@ -117,7 +119,7 @@ struct ColorPickerSheet: View {
                                 }
                             }
                         
-                        Button("Apply") {
+                        Button(appLanguage.text("common.apply")) {
                             if isValidHex(hexInput) {
                                 tempColor = Color(hex: hexInput)
                             }
@@ -130,7 +132,7 @@ struct ColorPickerSheet: View {
                 
                 // Preset colors
                 VStack(alignment: .leading, spacing: 8) {
-                    Text("Preset Colors")
+                    Text("theme.preset_colors")
                         .font(.headline)
                         .foregroundColor(theme.currentTheme.text)
                     
@@ -161,18 +163,18 @@ struct ColorPickerSheet: View {
                 
                 Spacer()
             }
-            .navigationTitle(title)
+            .navigationTitle(appLanguage.text(titleKey))
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
                 ToolbarItem(placement: .navigationBarLeading) {
-                    Button("Cancel") {
+                    Button(appLanguage.text("common.cancel")) {
                         dismiss()
                     }
                     .foregroundColor(theme.currentTheme.text)
                 }
                 
                 ToolbarItem(placement: .navigationBarTrailing) {
-                    Button("Done") {
+                    Button(appLanguage.text("common.done")) {
                         selectedColor = tempColor.toHex()
                         dismiss()
                     }
@@ -224,5 +226,5 @@ extension Color {
 }
 
 #Preview {
-    ColorPickerView(title: "Primary Color", selectedColor: .constant("#4A9897"))
+    ColorPickerView(titleKey: "theme.primary_color", selectedColor: .constant("#4A9897"))
 }

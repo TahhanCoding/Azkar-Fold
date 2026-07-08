@@ -31,6 +31,7 @@ private struct PickedMedia: Transferable {
 
 struct SupportContactSheet: View {
     @EnvironmentObject var theme: ThemeManager
+    @EnvironmentObject var appLanguage: AppLanguageManager
     @Environment(\.dismiss) private var dismiss
 
     @State private var message = ""
@@ -42,6 +43,7 @@ struct SupportContactSheet: View {
     @State private var showResultAlert = false
     @State private var resultAlertTitle = ""
     @State private var resultAlertMessage = ""
+    @State private var dismissOnResultAlertOK = false
     @State private var showFileImporter = false
 
     private var trimmedMessage: String {
@@ -60,12 +62,12 @@ struct SupportContactSheet: View {
         NavigationView {
             ScrollView {
                 VStack(alignment: .leading, spacing: 20) {
-                    Text("Describe your issue or feedback. You can attach images, videos, or files.")
+                    Text("support.intro")
                         .font(.subheadline)
                         .foregroundColor(theme.currentTheme.text.opacity(0.75))
 
                     VStack(alignment: .leading, spacing: 8) {
-                        Text("Message")
+                        Text("support.message")
                             .font(.headline)
                             .foregroundColor(theme.currentTheme.text)
 
@@ -84,7 +86,7 @@ struct SupportContactSheet: View {
                     }
 
                     VStack(alignment: .leading, spacing: 12) {
-                        Text("Attachments")
+                        Text("support.attachments")
                             .font(.headline)
                             .foregroundColor(theme.currentTheme.text)
 
@@ -94,26 +96,26 @@ struct SupportContactSheet: View {
                                 maxSelectionCount: 5,
                                 matching: .any(of: [.images, .videos])
                             ) {
-                                attachmentPickerButton(title: "Photo or Video", icon: "photo.on.rectangle")
+                                attachmentPickerButton(titleKey: "support.photo_video", icon: "photo.on.rectangle")
                             }
                             .disabled(isImportingAttachment)
 
                             Button {
                                 showFileImporter = true
                             } label: {
-                                attachmentPickerButton(title: "File", icon: "paperclip")
+                                attachmentPickerButton(titleKey: "support.file", icon: "paperclip")
                             }
                             .disabled(isImportingAttachment)
                         }
 
                         if isImportingAttachment {
-                            ProgressView("Adding attachment...")
+                            ProgressView("support.adding")
                                 .font(.caption)
                                 .foregroundColor(theme.currentTheme.text.opacity(0.7))
                         }
 
                         if attachments.isEmpty {
-                            Text("No attachments added.")
+                            Text("support.no_attachments")
                                 .font(.caption)
                                 .foregroundColor(theme.currentTheme.text.opacity(0.5))
                         } else {
@@ -126,18 +128,18 @@ struct SupportContactSheet: View {
                 .padding(20)
             }
             .background(theme.currentTheme.background.ignoresSafeArea())
-            .navigationTitle("Contact Support")
+            .navigationTitle("support.title")
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
                 ToolbarItem(placement: .navigationBarLeading) {
-                    Button("Cancel") {
+                    Button(appLanguage.text("common.cancel")) {
                         dismiss()
                     }
                     .foregroundStyle(theme.currentTheme.accent)
                 }
 
                 ToolbarItem(placement: .navigationBarTrailing) {
-                    Button("Send") {
+                    Button(appLanguage.text("common.send")) {
                         submitSupportRequest()
                     }
                     .fontWeight(.semibold)
@@ -162,17 +164,17 @@ struct SupportContactSheet: View {
                     handleMailResult(result)
                 }
             }
-            .alert("Mail Unavailable", isPresented: $showMailUnavailableAlert) {
-                Button("Copy Message", role: .none) {
+            .alert(appLanguage.text("support.mail_unavailable"), isPresented: $showMailUnavailableAlert) {
+                Button(appLanguage.text("common.copy_message"), role: .none) {
                     copyMessageToClipboard()
                 }
-                Button("OK", role: .cancel) {}
+                Button(appLanguage.text("common.ok"), role: .cancel) {}
             } message: {
-                Text("Set up a Mail account on this device to send support requests from the app.")
+                Text("support.mail_unavailable_message")
             }
             .alert(resultAlertTitle, isPresented: $showResultAlert) {
-                Button("OK", role: .cancel) {
-                    if resultAlertTitle == "Message Sent" {
+                Button(appLanguage.text("common.ok"), role: .cancel) {
+                    if dismissOnResultAlertOK {
                         dismiss()
                     }
                 }
@@ -182,11 +184,11 @@ struct SupportContactSheet: View {
         }
     }
 
-    private func attachmentPickerButton(title: String, icon: String) -> some View {
+    private func attachmentPickerButton(titleKey: String.LocalizationValue, icon: String) -> some View {
         VStack(spacing: 6) {
             Image(systemName: icon)
                 .font(.title3)
-            Text(title)
+            Text(appLanguage.text(titleKey))
                 .font(.caption)
         }
         .foregroundColor(theme.currentTheme.primary)
@@ -235,7 +237,7 @@ struct SupportContactSheet: View {
         mailComposeData = MailComposeData(
             recipients: [SupportMailComposer.supportEmail],
             subject: SupportMailComposer.subject,
-            body: SupportMailComposer.composeBody(message: trimmedMessage, appVersion: appVersion),
+            body: SupportMailComposer.composeBody(message: trimmedMessage, appVersion: appVersion, locale: appLanguage.locale),
             attachments: attachments
         )
     }
@@ -245,25 +247,29 @@ struct SupportContactSheet: View {
         case .success(let mailResult):
             switch mailResult {
             case .sent:
-                resultAlertTitle = "Message Sent"
-                resultAlertMessage = "Your support request was sent."
+                resultAlertTitle = appLanguage.text("support.sent_title")
+                resultAlertMessage = appLanguage.text("support.sent_message")
+                dismissOnResultAlertOK = true
                 showResultAlert = true
             case .saved:
-                resultAlertTitle = "Message Saved"
-                resultAlertMessage = "Your message was saved to Drafts in Mail."
+                resultAlertTitle = appLanguage.text("support.saved_title")
+                resultAlertMessage = appLanguage.text("support.saved_message")
+                dismissOnResultAlertOK = false
                 showResultAlert = true
             case .cancelled:
                 break
             case .failed:
-                resultAlertTitle = "Send Failed"
-                resultAlertMessage = "Mail could not send your message. Please try again."
+                resultAlertTitle = appLanguage.text("support.failed_title")
+                resultAlertMessage = appLanguage.text("support.failed_message")
+                dismissOnResultAlertOK = false
                 showResultAlert = true
             @unknown default:
                 break
             }
         case .failure:
-            resultAlertTitle = "Send Failed"
-            resultAlertMessage = "Mail could not send your message. Please try again."
+            resultAlertTitle = appLanguage.text("support.failed_title")
+            resultAlertMessage = appLanguage.text("support.failed_message")
+            dismissOnResultAlertOK = false
             showResultAlert = true
         }
     }
@@ -336,16 +342,18 @@ struct SupportContactSheet: View {
     }
 
     private func showError(_ error: Error) {
-        resultAlertTitle = "Attachment Error"
+        resultAlertTitle = appLanguage.text("support.attachment_error")
         resultAlertMessage = error.localizedDescription
+        dismissOnResultAlertOK = false
         showResultAlert = true
     }
 
     private func copyMessageToClipboard() {
-        let fullMessage = SupportMailComposer.composeBody(message: trimmedMessage, appVersion: appVersion)
+        let fullMessage = SupportMailComposer.composeBody(message: trimmedMessage, appVersion: appVersion, locale: appLanguage.locale)
         UIPasteboard.general.string = fullMessage
-        resultAlertTitle = "Copied"
-        resultAlertMessage = "Your message was copied. You can paste it into any Mail app."
+        resultAlertTitle = appLanguage.text("support.copied_title")
+        resultAlertMessage = appLanguage.text("support.copied_message")
+        dismissOnResultAlertOK = false
         showResultAlert = true
     }
 
@@ -360,14 +368,17 @@ struct SupportContactSheet: View {
     }
 
     private func formattedFileSize(_ bytes: Int) -> String {
-        let formatter = ByteCountFormatter()
-        formatter.allowedUnits = [.useKB, .useMB]
-        formatter.countStyle = .file
-        return formatter.string(fromByteCount: Int64(bytes))
+        let formatter = MeasurementFormatter()
+        formatter.locale = appLanguage.locale
+        formatter.unitOptions = .naturalScale
+        formatter.unitStyle = .medium
+        let measurement = Measurement(value: Double(bytes), unit: UnitInformationStorage.bytes)
+        return formatter.string(from: measurement)
     }
 }
 
 #Preview {
     SupportContactSheet()
         .environmentObject(ThemeManager.shared)
+        .environmentObject(AppLanguageManager.shared)
 }

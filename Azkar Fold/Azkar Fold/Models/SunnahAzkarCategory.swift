@@ -25,18 +25,26 @@ enum SunnahAzkarCategory: String, CaseIterable, Identifiable {
         }
     }
 
+    func localizedTitle(using language: AppLanguageManager) -> String {
+        language.text(localizationKey)
+    }
+
     var title: String {
+        AppLanguageManager.shared.text(localizationKey)
+    }
+
+    var localizationKey: String.LocalizationValue {
         switch self {
         case .morning:
-            return "Morning Azkar"
+            return "sunnah.category.morning"
         case .evening:
-            return "Evening Azkar"
+            return "sunnah.category.evening"
         case .prayer:
-            return "After Prayer Azkar"
+            return "sunnah.category.prayer"
         case .sleeping:
-            return "Before Sleeping Azkar"
+            return "sunnah.category.sleeping"
         case .wakeup:
-            return "Waking up Azkar"
+            return "sunnah.category.wakeup"
         }
     }
     

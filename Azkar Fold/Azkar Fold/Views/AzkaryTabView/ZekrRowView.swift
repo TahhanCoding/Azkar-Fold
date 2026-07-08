@@ -9,6 +9,7 @@ import SwiftUI
 
 struct ZekrRowView: View {
     @EnvironmentObject var theme: ThemeManager
+    @EnvironmentObject var appLanguage: AppLanguageManager
     let zekr: Zekr
     let onDelete: () -> Void
     let onTap: () -> Void
@@ -18,8 +19,17 @@ struct ZekrRowView: View {
     @State private var ignoreNextTap = false
     @Binding var isAlertPresented: Bool
 
+    private var isRTL: Bool {
+        appLanguage.layoutDirection == .rightToLeft
+    }
+
+    private var revealOffset: CGFloat {
+        isRTL ? deleteButtonWidth : -deleteButtonWidth
+    }
+
     private var formattedDate: String {
         let formatter = DateFormatter()
+        formatter.locale = appLanguage.locale
         formatter.dateStyle = .short
         formatter.timeStyle = .short
         return formatter.string(from: zekr.lastUpdated)
@@ -28,21 +38,17 @@ struct ZekrRowView: View {
     var body: some View {
         ZStack {
             HStack {
-                Spacer()
-
-                Button(action: onDelete) {
-                    Circle()
-                        .fill(theme.currentTheme.primary)
-                        .frame(width: 50, height: 50)
-                        .overlay(
-                            Image(systemName: "scissors")
-                                .foregroundColor(theme.currentTheme.buttonText)
-                        )
-                        .shadow(color: theme.currentTheme.text.opacity(0.25), radius: 3, x: 3, y: 3)
-                        .opacity(abs(offset) / deleteButtonWidth)
+                if isRTL {
+                    deleteButton
+                        .offset(x: offset < deleteButtonWidth ? offset - deleteButtonWidth : 0)
+                        .offset(x: 10)
+                    Spacer()
+                } else {
+                    Spacer()
+                    deleteButton
+                        .offset(x: offset > -deleteButtonWidth ? offset + deleteButtonWidth : 0)
+                        .offset(x: -10)
                 }
-                .offset(x: offset > -deleteButtonWidth ? offset + deleteButtonWidth : 0)
-                .offset(x: -10)
             }
 
             HStack(spacing: 15) {
@@ -53,22 +59,17 @@ struct ZekrRowView: View {
                         .font(.headline)
                         .fontWeight(.bold)
                         .foregroundColor(theme.currentTheme.buttonText)
-
                         .multilineTextAlignment(.center)
                         .padding(.horizontal)
                         .font(.system(size: 80))
                         .minimumScaleFactor(0.3)
                         .lineLimit(15)
-
-
                         .environment(\.layoutDirection, .rightToLeft)
 
-                    Text("Last updated: \(formattedDate)")
+                    Text(appLanguage.text("azkary.last_updated", formattedDate))
                         .font(.caption)
                         .foregroundColor(theme.currentTheme.buttonText.opacity(0.35))
-                        .environment(\.layoutDirection, .rightToLeft)
                 }
-                .environment(\.layoutDirection, .rightToLeft)
 
                 Text("\(zekr.counter)")
                     .font(.title2)
@@ -103,7 +104,7 @@ struct ZekrRowView: View {
             }
             .onLongPressGesture(minimumDuration: 0.5) {
                 withAnimation {
-                    offset = -deleteButtonWidth
+                    offset = revealOffset
                 }
                 ignoreNextTap = true
                 DispatchQueue.main.asyncAfter(deadline: .now() + 0.15) {
@@ -118,5 +119,20 @@ struct ZekrRowView: View {
                 }
             }
         }
+    }
+
+    private var deleteButton: some View {
+        Button(action: onDelete) {
+            Circle()
+                .fill(theme.currentTheme.primary)
+                .frame(width: 50, height: 50)
+                .overlay(
+                    Image(systemName: "scissors")
+                        .foregroundColor(theme.currentTheme.buttonText)
+                )
+                .shadow(color: theme.currentTheme.text.opacity(0.25), radius: 3, x: 3, y: 3)
+                .opacity(abs(offset) / deleteButtonWidth)
+        }
+        .accessibilityLabel(appLanguage.text("common.delete"))
     }
 }

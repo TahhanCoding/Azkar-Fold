@@ -1,5 +1,5 @@
 //
-//  SettingsTabView.swift
+//  EmptyZekrView.swift
 //  Azkar Fold
 //
 //  Created by Ahmed Shaban on 03/05/2025.
@@ -10,6 +10,7 @@ import SwiftUI
 struct EmptyZekrView: View {
     @EnvironmentObject var theme: ThemeManager
     @EnvironmentObject var coordinator: NavigationCoordinator
+    @EnvironmentObject var appLanguage: AppLanguageManager
     
     var body: some View {
         VStack(spacing: 20) {
@@ -17,12 +18,12 @@ struct EmptyZekrView: View {
                 .font(.system(size: 80))
                 .foregroundColor(theme.currentTheme.primary.opacity(0.7))
             
-            Text("No custom Azkar created yet")
+            Text(appLanguage.text("azkary.empty_title"))
                 .font(.title2)
                 .fontWeight(.bold)
                 .foregroundColor(theme.currentTheme.text)
             
-            Text("Tap the Create button to start your first Zekr")
+            Text(appLanguage.text("azkary.empty_subtitle"))
                 .font(.subheadline)
                 .foregroundColor(theme.currentTheme.text)
                 .multilineTextAlignment(.center)
@@ -31,7 +32,7 @@ struct EmptyZekrView: View {
             Button(action: {
                 coordinator.navigate(to: .createZekr)
             }) {
-                Text("Create Zekr")
+                Text(appLanguage.text("azkary.create_button"))
                     .font(.headline)
                     .foregroundColor(theme.currentTheme.buttonText)
                     .padding(.horizontal, 20)

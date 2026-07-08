@@ -10,6 +10,7 @@ import SwiftUI
 struct ThemeManagerView: View {
     @EnvironmentObject var themeManager: ThemeManager
     @EnvironmentObject var patternManager: PatternManager
+    @EnvironmentObject var appLanguage: AppLanguageManager
     @State private var showingThemeEditor = false
     @State private var editingTheme: Theme?
     @State private var showingDeleteAlert = false
@@ -20,16 +21,17 @@ struct ThemeManagerView: View {
             BackgroundPatternView()
             MainContentView()
         }
-        .navigationTitle("Theme Manager")
+        .navigationTitle("theme.manager_title")
         .navigationBarTitleDisplayMode(.large)
         .sheet(isPresented: $showingThemeEditor) {
             ThemeEditorView(theme: editingTheme)
                 .environmentObject(themeManager)
+                .environmentObject(appLanguage)
         }
-        .alert("Delete Theme", isPresented: $showingDeleteAlert) {
+        .alert(appLanguage.text("theme.delete_title"), isPresented: $showingDeleteAlert) {
             DeleteThemeAlert()
         } message: {
-            Text("Are you sure you want to delete \"\(themeToDelete?.name ?? "this theme")\"? This action cannot be undone.")
+            Text(appLanguage.text("theme.delete_named_message", themeToDelete?.localizedName(using: appLanguage) ?? appLanguage.text("theme.new")))
         }
     }
 }
@@ -80,7 +82,7 @@ extension ThemeManagerView {
     @ViewBuilder
     private func BackgroundPatternSection() -> some View {
         VStack(alignment: .leading, spacing: 12) {
-            SectionHeaderView(title: "Background Pattern")
+            SectionHeaderView(titleKey: "theme.background_pattern")
             
             ScrollView(.horizontal, showsIndicators: false) {
                 HStack {
@@ -107,7 +109,7 @@ extension ThemeManagerView {
     @ViewBuilder
     private func CurrentThemeSection() -> some View {
         VStack(alignment: .leading, spacing: 12) {
-            SectionHeaderView(title: "Current Theme")
+            SectionHeaderView(titleKey: "theme.current_theme")
             CurrentThemeCard()
         }
     }
@@ -116,7 +118,7 @@ extension ThemeManagerView {
     private func CurrentThemeCard() -> some View {
         VStack(alignment: .leading, spacing: 12) {
             HStack {
-                Text(themeManager.currentTheme.name)
+                Text(themeManager.currentTheme.localizedName(using: appLanguage))
                     .font(.headline)
                     .foregroundColor(themeManager.currentTheme.text)
                 
@@ -141,7 +143,7 @@ extension ThemeManagerView {
     
     @ViewBuilder
     private func DefaultThemeBadge() -> some View {
-        Text("Default")
+        Text("theme.default")
             .font(.caption)
             .padding(.horizontal, 8)
             .padding(.vertical, 4)
@@ -156,14 +158,14 @@ extension ThemeManagerView {
     @ViewBuilder
     private func DefaultThemesSection() -> some View {
         VStack(alignment: .leading, spacing: 12) {
-            SectionHeaderView(title: "Default Themes")
+            SectionHeaderView(titleKey: "theme.default_themes")
             
             ScrollView(.horizontal, showsIndicators: false) {
                 LazyHStack(spacing: 15) {
                     ForEach(Theme.defaultThemes) { theme in
                         ThemeCardView(
                             theme: theme,
-                            isSelected: theme.id == themeManager.currentTheme.id,
+                            isSelected: theme.isSameTheme(as: themeManager.currentTheme),
                             onSelect: {
                                 withAnimation(.easeInOut(duration: 0.3)) {
                                     themeManager.setCurrentTheme(theme)
@@ -186,7 +188,7 @@ extension ThemeManagerView {
     @ViewBuilder
     private func CustomThemesSection() -> some View {
         VStack(alignment: .leading, spacing: 12) {
-            SectionHeaderView(title: "Custom Themes")
+            SectionHeaderView(titleKey: "theme.custom_themes")
             
             ScrollView(.horizontal, showsIndicators: false) {
                 LazyHStack(spacing: 15) {
@@ -203,7 +205,7 @@ extension ThemeManagerView {
         ForEach(themeManager.customThemes) { theme in
             ThemeCardView(
                 theme: theme,
-                isSelected: theme.id == themeManager.currentTheme.id,
+                isSelected: theme.isSameTheme(as: themeManager.currentTheme),
                 onSelect: {
                     withAnimation(.easeInOut(duration: 0.3)) {
                         themeManager.setCurrentTheme(theme)
@@ -240,6 +242,7 @@ extension ThemeManagerView {
             )
         }
         .buttonStyle(PlainButtonStyle())
+        .accessibilityLabel(appLanguage.text("theme.create_title"))
         .padding(12)
     }
 }
@@ -247,8 +250,8 @@ extension ThemeManagerView {
 // MARK: - Helper Views
 extension ThemeManagerView {
     @ViewBuilder
-    private func SectionHeaderView(title: String) -> some View {
-        Text(title)
+    private func SectionHeaderView(titleKey: String.LocalizationValue) -> some View {
+        Text(appLanguage.text(titleKey))
             .font(.headline)
             .foregroundColor(themeManager.currentTheme.text)
     }
@@ -256,10 +259,10 @@ extension ThemeManagerView {
     @ViewBuilder
     private func DeleteThemeAlert() -> some View {
         Group {
-            Button("Cancel", role: .cancel) {
+            Button(appLanguage.text("common.cancel"), role: .cancel) {
                 themeToDelete = nil
             }
-            Button("Delete", role: .destructive) {
+            Button(appLanguage.text("common.delete"), role: .destructive) {
                 performDeleteTheme()
             }
         }
@@ -310,7 +313,7 @@ struct PatternCardView: View {
                 if pattern == "none" {
                     ZStack {
                         Color.clear
-                        Text("None")
+                        Text("theme.none")
                             .font(.caption)
                             .foregroundColor(themeManager.currentTheme.text)
                     }
@@ -348,6 +351,7 @@ struct PatternCardView: View {
 
 // MARK: - Theme Card View
 struct ThemeCardView: View {
+    @EnvironmentObject var appLanguage: AppLanguageManager
     let theme: Theme
     let isSelected: Bool
     let onSelect: () -> Void
@@ -377,22 +381,22 @@ struct ThemeCardView: View {
     @ViewBuilder
     private func ContextMenuItems() -> some View {
         Group {
-            Button("Select") {
+            Button(appLanguage.text("theme.select")) {
                 onSelect()
             }
             
             if let onEdit = onEdit {
-                Button("Edit") {
+                Button(appLanguage.text("common.edit")) {
                     onEdit()
                 }
             }
             
-            Button("Duplicate") {
+            Button(appLanguage.text("theme.duplicate")) {
                 onDuplicate()
             }
             
             if let onDelete = onDelete {
-                Button("Delete", role: .destructive) {
+                Button(appLanguage.text("common.delete"), role: .destructive) {
                     onDelete()
                 }
             }
@@ -402,6 +406,7 @@ struct ThemeCardView: View {
 
 // MARK: - Theme Mini Card View
 struct ThemeMiniCardView: View {
+    @EnvironmentObject var appLanguage: AppLanguageManager
     let theme: Theme
     let isSelected: Bool
     
@@ -409,7 +414,7 @@ struct ThemeMiniCardView: View {
         VStack(spacing: 0) {
             ThemeColorsGrid()
             
-            Text(theme.name)
+            Text(theme.localizedName(using: appLanguage))
                 .font(.system(size: 12, weight: .medium))
                 .foregroundColor(theme.text)
                 .padding(.vertical, 8)

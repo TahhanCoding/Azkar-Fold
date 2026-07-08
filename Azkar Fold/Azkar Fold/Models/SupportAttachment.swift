@@ -21,13 +21,17 @@ enum SupportAttachmentError: LocalizedError {
     case failedToLoad
 
     var errorDescription: String? {
+        localizedMessage(locale: AppLanguageManager.shared.locale)
+    }
+
+    func localizedMessage(locale: Locale) -> String {
         switch self {
         case .unreadableFile:
-            return "The selected file could not be read."
+            return L10n.t("support.error.unreadable_file", locale: locale)
         case .fileTooLarge(let maxMegabytes):
-            return "Attachments must be \(maxMegabytes) MB or smaller."
+            return L10n.t("support.error.file_too_large", locale: locale, maxMegabytes)
         case .failedToLoad:
-            return "The attachment could not be loaded."
+            return L10n.t("support.error.failed_to_load", locale: locale)
         }
     }
 }

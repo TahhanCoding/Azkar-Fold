@@ -99,6 +99,36 @@ struct Theme: Codable, Identifiable, Equatable {
         oceanTheme,
         sunsetTheme
     ]
+
+    var presetLocalizationKey: String.LocalizationValue? {
+        guard isDefault else { return nil }
+        switch name {
+        case "Default":
+            return "theme.preset.default"
+        case "Dark":
+            return "theme.preset.dark"
+        case "Ocean":
+            return "theme.preset.ocean"
+        case "Sunset":
+            return "theme.preset.sunset"
+        default:
+            return nil
+        }
+    }
+
+    func localizedName(using language: AppLanguageManager) -> String {
+        if let key = presetLocalizationKey {
+            return language.text(key)
+        }
+        return name
+    }
+
+    func isSameTheme(as other: Theme) -> Bool {
+        if isDefault && other.isDefault {
+            return name == other.name
+        }
+        return id == other.id
+    }
 }
 
 // Theme colors as SwiftUI Colors

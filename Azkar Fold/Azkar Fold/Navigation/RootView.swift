@@ -15,6 +15,7 @@ struct RootView: View {
     @StateObject private var progressStore = SunnahProgressStore()
     @StateObject private var coreMotionManager = CoreMotionManager()
     @StateObject private var updateManager = UpdateManager.shared
+    @StateObject private var appLanguage = AppLanguageManager.shared
 
     var body: some View {
         ZStack {
@@ -43,6 +44,10 @@ struct RootView: View {
         .environmentObject(progressStore)
         .environmentObject(coreMotionManager)
         .environmentObject(updateManager)
+        .environmentObject(appLanguage)
+        .environment(\.locale, appLanguage.locale)
+        .environment(\.layoutDirection, appLanguage.layoutDirection)
+        .id(appLanguage.refreshID)
     }
 }
 

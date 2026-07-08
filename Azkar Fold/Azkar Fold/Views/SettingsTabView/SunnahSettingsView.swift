@@ -10,6 +10,7 @@ import SwiftUI
 struct SunnahSettingsView: View {
     @EnvironmentObject var theme: ThemeManager
     @EnvironmentObject var patternManager: PatternManager
+    @EnvironmentObject var appLanguage: AppLanguageManager
     @ObservedObject private var settingsStore = SunnahSettingsStore.shared
     
     var body: some View {
@@ -18,9 +19,8 @@ struct SunnahSettingsView: View {
             
             List {
                 Section {
-                    // Initial View Mode
                     HStack {
-                        Text("Initial View Mode")
+                        Text("sunnah_settings.initial_view")
                             .foregroundColor(theme.currentTheme.text)
                         Spacer()
                         CustomSegmentedPicker(
@@ -33,7 +33,7 @@ struct SunnahSettingsView: View {
 
                     if !settingsStore.availableLanguages.isEmpty {
                         HStack {
-                            Text("Secondary Language")
+                            Text("sunnah_settings.secondary_language")
                                 .foregroundColor(theme.currentTheme.text)
                             Spacer()
 
@@ -42,7 +42,7 @@ struct SunnahSettingsView: View {
                                     settingsStore.secondaryLanguage = "ar_only"
                                 }) {
                                     HStack {
-                                        Text("Arabic Only")
+                                        Text("sunnah_settings.arabic_only")
                                         if settingsStore.secondaryLanguage == "ar_only" {
                                             Image(systemName: "checkmark")
                                         }
@@ -54,7 +54,7 @@ struct SunnahSettingsView: View {
                                         settingsStore.secondaryLanguage = lang
                                     }) {
                                         HStack {
-                                            Text(Locale.current.localizedString(forLanguageCode: lang)?.capitalized ?? lang.uppercased())
+                                            Text(appLanguage.locale.localizedString(forLanguageCode: lang)?.capitalized ?? lang.uppercased())
                                             if settingsStore.secondaryLanguage == lang {
                                                 Image(systemName: "checkmark")
                                             }
@@ -79,29 +79,30 @@ struct SunnahSettingsView: View {
                     }
 
                     HStack {
-                        Text("3D Effects")
-                                .foregroundColor(theme.currentTheme.text)
-                            Spacer()
+                        Text("sunnah_settings.3d_effects")
+                            .foregroundColor(theme.currentTheme.text)
+                        Spacer()
                         Toggle("", isOn: $settingsStore.enable3DEffects)
                             .toggleStyle(SwitchToggleStyle(tint: theme.currentTheme.primary))
-                        }
+                            .accessibilityLabel(appLanguage.text("sunnah_settings.3d_effects"))
+                    }
                     .listRowBackground(theme.currentTheme.cardBackground)
                 } header: {
-                    Text("Display Settings")
+                    Text("sunnah_settings.display_settings")
                         .foregroundColor(theme.currentTheme.text.opacity(0.8))
                 }
             }
             .scrollContentBackground(.hidden)
         }
-        .navigationTitle("Sunnah Zekr Manager")
+        .navigationTitle("settings.sunnah_manager")
         .navigationBarTitleDisplayMode(.inline)
     }
     
     private func languageDisplayName(for code: String) -> String {
         if code == "ar_only" {
-            return "Arabic Only"
+            return appLanguage.text("sunnah_settings.arabic_only")
         }
-        return Locale.current.localizedString(forLanguageCode: code)?.capitalized ?? code.uppercased()
+        return appLanguage.locale.localizedString(forLanguageCode: code)?.capitalized ?? code.uppercased()
     }
     
     @ViewBuilder

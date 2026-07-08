@@ -10,6 +10,7 @@ import SwiftUI
 struct ZekrView: View {
     @EnvironmentObject var theme: ThemeManager
     @EnvironmentObject var patternManager: PatternManager
+    @EnvironmentObject var appLanguage: AppLanguageManager
     let zekrId: UUID
     @EnvironmentObject var zekrStore: ZekrStore
     @Environment(\.dismiss) private var dismiss
@@ -42,6 +43,7 @@ struct ZekrView: View {
                                         .fontWeight(.bold)
                                         .multilineTextAlignment(.center)
                                         .padding()
+                                        .environment(\.layoutDirection, .rightToLeft)
                                         .background(theme.currentTheme.cardBackground.opacity(0.8))
                                         .cornerRadius(12)
                                         .padding()
@@ -51,10 +53,11 @@ struct ZekrView: View {
                                         .fontWeight(.bold)
                                         .foregroundColor(theme.currentTheme.text)
                                         .multilineTextAlignment(.center)
+                                        .environment(\.layoutDirection, .rightToLeft)
                                         .padding()
                                 }
                             } else {
-                                Text("Zekr not found")
+                                Text(appLanguage.text("azkary.not_found"))
                                         .font(.title)
                                         .foregroundColor(theme.currentTheme.text)
                             }
@@ -118,7 +121,7 @@ struct ZekrView: View {
                         if isEditMode {
                             // Edit mode buttons
                             HStack(spacing: 30) {
-                                Button("Cancel") {
+                                Button(appLanguage.text("common.cancel")) {
                                     withAnimation(.easeInOut(duration: 0.3)) {
                                         cancelEdit()
                                     }
@@ -135,7 +138,7 @@ struct ZekrView: View {
                                 .matchedGeometryEffect(id: "secButton", in: nameSpace)
 
                                 
-                                Button("Save") {
+                                Button(appLanguage.text("common.save")) {
                                     withAnimation(.easeInOut(duration: 0.3)) {
                                         saveEdit()
                                     }
@@ -163,7 +166,7 @@ struct ZekrView: View {
                                     .matchedGeometryEffect(id: "mainBuuton", in: nameSpace)
                             }
                             
-                            Text("Tap to count")
+                            Text(appLanguage.text("azkary.tap_to_count"))
                                 .font(.subheadline)
                                 .foregroundColor(theme.currentTheme.text)
                                 .padding(.top, 5)
@@ -231,14 +234,14 @@ struct ZekrView: View {
                     // One-time hint
                     if showDimHint {
                         TimedCoachMarkView(
-                            title: "Dim mode activated",
-                            message: "Screen is dimmed for comfortable counting in dark environments. Tap anywhere to count, long press to exit.",
+                            titleKey: "hint.dim.title",
+                            messageKey: "hint.dim.message",
                             isPresented: $showDimHint
                         )
                     }
                 }
             }
-            .navigationTitle("Zekr Counter")
+            .navigationTitle(appLanguage.text("azkary.counter_title"))
             .navigationBarTitleDisplayMode(.inline)
             .navigationBarHidden(isDimmed)
             .background(
@@ -250,47 +253,48 @@ struct ZekrView: View {
                 ToolbarItem(placement: .topBarTrailing) {
                     // Menu button
                     Menu {
-                        Button("Edit") {
+                        Button(appLanguage.text("common.edit")) {
                             withAnimation(.easeInOut(duration: 0.3)) {
                                 startEdit()
                             }
                         }
                         
-                        Button("Reset") {
+                        Button(appLanguage.text("azkary.reset")) {
                                 showingResetAlert = true
                         }
                         
-                        Button("Delete", role: .destructive) {
+                        Button(appLanguage.text("common.delete"), role: .destructive) {
                             showingDeleteAlert = true
                         }
                     } label: {
                         Image(systemName: "ellipsis")
                             .foregroundColor(theme.currentTheme.primary)
                     }
+                    .accessibilityLabel(appLanguage.text("common.edit"))
                     .disabled(isEditMode)
                 }
             }
-            .alert("Reset Counter", isPresented: $showingResetAlert) {
-                Button("Cancel", role: .cancel) { }
-                Button("Reset", role: .destructive) {
+            .alert(appLanguage.text("azkary.reset_title"), isPresented: $showingResetAlert) {
+                Button(appLanguage.text("common.cancel"), role: .cancel) { }
+                Button(appLanguage.text("azkary.reset"), role: .destructive) {
                     if let zekr = zekr {
                         zekrStore.resetCounter(for: zekr.id)
                     }
                 }
             } message: {
-                Text("Are you sure you want to reset the counter to 0?")
+                Text(appLanguage.text("azkary.reset_confirm_message"))
                     .foregroundColor(theme.currentTheme.text)
             }
-            .alert("Delete Zekr", isPresented: $showingDeleteAlert) {
-                Button("Cancel", role: .cancel) { }
-                Button("Delete", role: .destructive) {
+            .alert(appLanguage.text("azkary.delete_zekr_title"), isPresented: $showingDeleteAlert) {
+                Button(appLanguage.text("common.cancel"), role: .cancel) { }
+                Button(appLanguage.text("common.delete"), role: .destructive) {
                     if let zekr = zekr {
                         zekrStore.deleteZekr(withId: zekr.id)
                         dismiss()
                     }
                 }
             } message: {
-                Text("Are you sure you want to delete this zekr? This action cannot be undone.")
+                Text(appLanguage.text("azkary.delete_zekr_message"))
                     .foregroundColor(theme.currentTheme.text)
             }
         }

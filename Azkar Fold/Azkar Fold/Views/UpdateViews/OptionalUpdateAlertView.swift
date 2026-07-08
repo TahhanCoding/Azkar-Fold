@@ -10,6 +10,7 @@ import SwiftUI
 struct OptionalUpdateAlertView: View {
     @ObservedObject var updateManager: UpdateManager
     @EnvironmentObject var themeManager: ThemeManager
+    @EnvironmentObject var appLanguage: AppLanguageManager
     
     private var formattedImprovements: [String] {
         guard !updateManager.whatIsNew.isEmpty else { return [] }
@@ -21,28 +22,26 @@ struct OptionalUpdateAlertView: View {
     
     var body: some View {
         ZStack {
-            // Dimmed background
             Color.black.opacity(0.4)
                 .ignoresSafeArea()
                 .onTapGesture {
                     updateManager.dismissOptionalUpdate()
                 }
             
-            // Alert Content
             VStack(spacing: 20) {
-                Text("Update Available")
+                Text("update.available_title")
                     .font(.headline)
                     .fontWeight(.bold)
                     .foregroundStyle(themeManager.currentTheme.text)
                 
-                Text("A new version (\(updateManager.availableVersion)) of Azkar Fold is available with new features and improvements.")
+                Text(appLanguage.text("update.available_message", updateManager.availableVersion))
                     .font(.subheadline)
                     .multilineTextAlignment(.center)
                     .foregroundStyle(themeManager.currentTheme.text.opacity(0.7))
                 
                 if !formattedImprovements.isEmpty {
                     VStack(alignment: .leading, spacing: 6) {
-                        Text("What's New:")
+                        Text("update.whats_new")
                             .font(.caption)
                             .fontWeight(.semibold)
                             .foregroundStyle(themeManager.currentTheme.text)
@@ -67,7 +66,7 @@ struct OptionalUpdateAlertView: View {
                     Button(action: {
                         updateManager.dismissOptionalUpdate()
                     }) {
-                        Text(AppConfiguration.isAppStoreConfigured ? "Later" : "OK")
+                        Text(AppConfiguration.isAppStoreConfigured ? appLanguage.text("common.later") : appLanguage.text("common.ok"))
                             .font(.body)
                             .foregroundStyle(themeManager.currentTheme.text.opacity(0.7))
                             .padding(.vertical, 10)
@@ -78,7 +77,7 @@ struct OptionalUpdateAlertView: View {
                         Button(action: {
                             updateManager.openAppStore()
                         }) {
-                            Text("Update")
+                            Text(appLanguage.text("common.update"))
                                 .font(.headline)
                                 .foregroundStyle(themeManager.currentTheme.buttonText)
                                 .padding(.vertical, 10)
@@ -106,5 +105,5 @@ struct OptionalUpdateAlertView: View {
     
     return OptionalUpdateAlertView(updateManager: mockManager)
         .environmentObject(ThemeManager.shared)
+        .environmentObject(AppLanguageManager.shared)
 }
-

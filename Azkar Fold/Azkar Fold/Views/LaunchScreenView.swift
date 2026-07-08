@@ -9,6 +9,7 @@ import SwiftUI
 
 struct LaunchScreenView: View {
     @EnvironmentObject var theme: ThemeManager
+    @EnvironmentObject var appLanguage: AppLanguageManager
     // Animation state management
     @State private var animationState = AnimationState()
     @State private var showMainView = false
@@ -127,26 +128,23 @@ struct LaunchScreenView: View {
             
             VStack(spacing: 12) {
                 // App title with refined animation
-                Text("Azkar Fold")
+                Text("app.name")
                     .font(.system(size: 42, weight: .black))
                     .foregroundColor(theme.currentTheme.primary)
                     .opacity(animationState.titleOpacity)
                     .offset(y: animationState.titleOffset)
                     .shadow(color: theme.currentTheme.text.opacity(0.2), radius: 0, x: 2, y: 2)
                     .overlay(
-                        // Advanced shimmer effect
-                        shimmerOverlay(text: "Azkar Fold", fontSize: 42)
+                        shimmerOverlay(textKey: "app.name", fontSize: 42)
                     )
                 
-                // Subtitle with staggered animation
-                Text("Your Daily Islamic Remembrance")
+                Text("app.tagline")
                     .font(.headline)
                     .foregroundColor(theme.currentTheme.primary.opacity(0.8))
                     .opacity(animationState.subtitleOpacity)
                     .offset(y: animationState.subtitleOffset)
                     .overlay(
-                        // Subtle shimmer for subtitle
-                        shimmerOverlay(text: "Your Daily Islamic Remembrance", fontSize: 17)
+                        shimmerOverlay(textKey: "app.tagline", fontSize: 17)
                             .opacity(0.7)
                     )
                 
@@ -160,8 +158,8 @@ struct LaunchScreenView: View {
         .padding()
     }
     
-    private func shimmerOverlay(text: String, fontSize: CGFloat) -> some View {
-        Text(text)
+    private func shimmerOverlay(textKey: String.LocalizationValue, fontSize: CGFloat) -> some View {
+        Text(appLanguage.text(textKey))
             .font(.system(size: fontSize, weight: .black))
             .foregroundColor(theme.currentTheme.buttonText.opacity(0.7))
             .mask(

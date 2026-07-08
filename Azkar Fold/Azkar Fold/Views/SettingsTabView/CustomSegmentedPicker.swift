@@ -15,6 +15,7 @@ extension SunnahSettingsStore.InitialViewMode: DisplayNameProviding {}
 
 struct CustomSegmentedPicker<SelectionValue: Hashable & CaseIterable & Identifiable & DisplayNameProviding>: View where SelectionValue.AllCases: RandomAccessCollection {
     @Binding var selection: SelectionValue
+    @EnvironmentObject private var appLanguage: AppLanguageManager
     let theme: ThemeManager
     
     var body: some View {
@@ -60,6 +61,7 @@ struct CustomSegmentedPicker<SelectionValue: Hashable & CaseIterable & Identifia
                 }
             }
         }
+        .id(appLanguage.refreshID)
         .frame(height: 32)
     }
 }

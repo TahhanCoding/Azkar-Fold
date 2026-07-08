@@ -9,23 +9,24 @@
 import SwiftUI
 
 struct TimedCoachMarkView: View {
-    let title: String
-    let message: String
+    let titleKey: String.LocalizationValue
+    let messageKey: String.LocalizationValue
     @Binding var isPresented: Bool
     var duration: TimeInterval = 7
     var onDismiss: (() -> Void)? = nil
 
+    @EnvironmentObject private var appLanguage: AppLanguageManager
     @State private var dismissTask: Task<Void, Never>?
 
     var body: some View {
         VStack {
-            Text(title)
+            Text(appLanguage.text(titleKey))
                 .font(.title2)
                 .fontWeight(.bold)
                 .foregroundColor(.white)
                 .padding(.bottom, 8)
 
-            Text(message)
+            Text(appLanguage.text(messageKey))
                 .font(.body)
                 .foregroundColor(.white)
                 .multilineTextAlignment(.center)

@@ -10,6 +10,7 @@ import SwiftUI
 struct ThemeEditorView: View {
     @Environment(\.dismiss) private var dismiss
     @EnvironmentObject var themeManager: ThemeManager
+    @EnvironmentObject var appLanguage: AppLanguageManager
     
     @State private var editingTheme: Theme
     @State private var showingPreview = false
@@ -34,66 +35,60 @@ struct ThemeEditorView: View {
     var body: some View {
         NavigationView {
             Form {
-                // Theme name section
-                Section(header: Text("Theme Name").foregroundColor(themeManager.currentTheme.text)) {
-                    TextField("Enter theme name", text: $editingTheme.name)
+                Section(header: Text("theme.name_section").foregroundColor(themeManager.currentTheme.text)) {
+                    TextField("theme.enter_name", text: $editingTheme.name)
                         .textFieldStyle(RoundedBorderTextFieldStyle())
                         .foregroundColor(themeManager.currentTheme.text)
                 }
                 
-                // Color customization section
-                Section(header: Text("Colors").foregroundColor(themeManager.currentTheme.text)) {
-                    ColorPickerView(title: "Primary Color", selectedColor: $editingTheme.primaryColor)
-                    ColorPickerView(title: "Secondary Color", selectedColor: $editingTheme.secondaryColor)
-                    ColorPickerView(title: "Background Color", selectedColor: $editingTheme.backgroundColor)
-                    ColorPickerView(title: "Accent Color", selectedColor: $editingTheme.accentColor)
-                    ColorPickerView(title: "Text Color", selectedColor: $editingTheme.textColor)
-                    ColorPickerView(title: "Card Background", selectedColor: $editingTheme.cardBackgroundColor)
-                    ColorPickerView(title: "Button Text Color", selectedColor: $editingTheme.buttonTextColor)
+                Section(header: Text("theme.colors_section").foregroundColor(themeManager.currentTheme.text)) {
+                    ColorPickerView(titleKey: "theme.primary_color", selectedColor: $editingTheme.primaryColor)
+                    ColorPickerView(titleKey: "theme.secondary_color", selectedColor: $editingTheme.secondaryColor)
+                    ColorPickerView(titleKey: "theme.background_color", selectedColor: $editingTheme.backgroundColor)
+                    ColorPickerView(titleKey: "theme.accent_color", selectedColor: $editingTheme.accentColor)
+                    ColorPickerView(titleKey: "theme.text_color", selectedColor: $editingTheme.textColor)
+                    ColorPickerView(titleKey: "theme.card_background_color", selectedColor: $editingTheme.cardBackgroundColor)
+                    ColorPickerView(titleKey: "theme.button_text_color", selectedColor: $editingTheme.buttonTextColor)
                 }
                 
-                // Preview section
-                Section(header: Text("Preview").foregroundColor(themeManager.currentTheme.text)) {
+                Section(header: Text("theme.preview_section").foregroundColor(themeManager.currentTheme.text)) {
                     Button(action: {
                         showingPreview = true
                     }) {
                         HStack {
                             Image(systemName: "eye")
                                 .foregroundColor(themeManager.currentTheme.primary)
-                            Text("View Full Preview")
+                            Text("theme.view_full_preview")
                                 .foregroundColor(themeManager.currentTheme.text)
                             Spacer()
-                            Image(systemName: "chevron.right")
+                            Image(systemName: "chevron.forward")
                                 .font(.caption)
                                 .foregroundColor(themeManager.currentTheme.text)
                         }
                     }
                     
-                    // Compact preview
                     ThemePreviewView(theme: editingTheme, isCompact: true)
                         .frame(height: 80)
                         .padding(.vertical, 8)
                 }
                 
-                // Actions section
                 if isEditing && originalTheme?.isDefault == false {
                     Section {
-                        Button("Delete Theme", role: .destructive) {
+                        Button(appLanguage.text("theme.delete_title"), role: .destructive) {
                             showingDeleteAlert = true
                         }
                         .foregroundColor(themeManager.currentTheme.text)
                     }
                 } else if isEditing && originalTheme?.isDefault == true {
                     Section {
-                        Text("Default themes cannot be deleted.")
+                        Text("theme.cannot_delete_default")
                             .foregroundColor(themeManager.currentTheme.text)
                             .font(.caption)
                     }
                 }
                 
-                // Validation errors
                 if !validationErrors.isEmpty {
-                    Section(header: Text("Errors").foregroundColor(themeManager.currentTheme.text)) {
+                    Section(header: Text("theme.errors").foregroundColor(themeManager.currentTheme.text)) {
                         ForEach(validationErrors, id: \.self) { error in
                             Text(error)
                                 .foregroundColor(.red)
@@ -102,18 +97,18 @@ struct ThemeEditorView: View {
                     }
                 }
             }
-            .navigationTitle(isEditing ? "Edit Theme" : "New Theme")
+            .navigationTitle(isEditing ? "theme.edit_title" : "theme.create_title")
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
                 ToolbarItem(placement: .navigationBarLeading) {
-                    Button("Cancel") {
+                    Button(appLanguage.text("common.cancel")) {
                         dismiss()
                     }
                     .foregroundColor(themeManager.currentTheme.text)
                 }
                 
                 ToolbarItem(placement: .navigationBarTrailing) {
-                    Button(isEditing ? "Save" : "Create") {
+                    Button(isEditing ? appLanguage.text("common.save") : appLanguage.text("common.create")) {
                         saveTheme()
                     }
                     .fontWeight(.semibold)
@@ -128,24 +123,25 @@ struct ThemeEditorView: View {
                     ThemePreviewView(theme: editingTheme)
                         .padding()
                 }
-                .navigationTitle("Theme Preview")
+                .navigationTitle("theme.preview_title")
                 .navigationBarTitleDisplayMode(.inline)
                 .toolbar {
                     ToolbarItem(placement: .navigationBarTrailing) {
-                        Button("Done") {
+                        Button(appLanguage.text("common.done")) {
                             showingPreview = false
                         }
                     }
                 }
             }
+            .environmentObject(appLanguage)
         }
-        .alert("Delete Theme", isPresented: $showingDeleteAlert) {
-            Button("Cancel", role: .cancel) { }
-            Button("Delete", role: .destructive) {
+        .alert(appLanguage.text("theme.delete_title"), isPresented: $showingDeleteAlert) {
+            Button(appLanguage.text("common.cancel"), role: .cancel) { }
+            Button(appLanguage.text("common.delete"), role: .destructive) {
                 deleteTheme()
             }
         } message: {
-            Text("Are you sure you want to delete this theme? This action cannot be undone.")
+            Text("theme.delete_message")
         }
         .onChange(of: editingTheme.name) { _ in validateTheme() }
         .onChange(of: editingTheme.primaryColor) { _ in validateTheme() }
@@ -156,6 +152,9 @@ struct ThemeEditorView: View {
         .onChange(of: editingTheme.cardBackgroundColor) { _ in validateTheme() }
         .onChange(of: editingTheme.buttonTextColor) { _ in validateTheme() }
         .onAppear {
+            if !isEditing, editingTheme.name == "My Custom Theme" {
+                editingTheme.name = appLanguage.text("theme.new_default_name")
+            }
             validateTheme()
         }
     }
@@ -188,9 +187,11 @@ struct ThemeEditorView: View {
 #Preview {
     ThemeEditorView()
         .environmentObject(ThemeManager.shared)
+        .environmentObject(AppLanguageManager.shared)
 }
 
 #Preview("Editing") {
     ThemeEditorView(theme: Theme.defaultTheme)
         .environmentObject(ThemeManager.shared)
+        .environmentObject(AppLanguageManager.shared)
 }

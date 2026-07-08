@@ -11,6 +11,7 @@ import FirebaseCore
 
 @main
 struct Azkar_FoldApp: App {
+    @StateObject private var appLanguage = AppLanguageManager.shared
     @State private var showLaunchScreen = true
     
     init() {
@@ -27,6 +28,9 @@ struct Azkar_FoldApp: App {
                     LaunchScreenView()
                         .environmentObject(ThemeManager.shared)
                         .environmentObject(PatternManager.shared)
+                        .environmentObject(appLanguage)
+                        .environment(\.locale, appLanguage.locale)
+                        .environment(\.layoutDirection, appLanguage.layoutDirection)
                         .transition(.opacity)
                         .onAppear {
                             // Dismiss launch screen after animations complete

@@ -8,6 +8,7 @@
 import SwiftUI
 
 struct ThemePreviewView: View {
+    @EnvironmentObject private var appLanguage: AppLanguageManager
     let theme: Theme
     let isCompact: Bool
     
@@ -26,9 +27,8 @@ struct ThemePreviewView: View {
     
     private var compactPreview: some View {
         VStack(spacing: 8) {
-            // Header
             HStack {
-                Text("Preview")
+                Text(appLanguage.text("theme.preview.label"))
                     .font(.caption)
                     .foregroundColor(theme.text)
                 Spacer()
@@ -37,7 +37,6 @@ struct ThemePreviewView: View {
                     .frame(width: 12, height: 12)
             }
             
-            // Sample card
             RoundedRectangle(cornerRadius: 6)
                 .fill(theme.cardBackground)
                 .frame(height: 40)
@@ -69,19 +68,10 @@ struct ThemePreviewView: View {
     private var fullPreview: some View {
         ScrollView {
             VStack(spacing: 16) {
-                // Header section
                 headerSection
-                
-                // Card section
                 cardSection
-                
-                // Button section
                 buttonSection
-                
-                // List section
                 listSection
-                
-                // Tab bar section
                 tabBarSection
             }
             .padding()
@@ -92,13 +82,13 @@ struct ThemePreviewView: View {
     
     private var headerSection: some View {
         VStack(alignment: .leading, spacing: 8) {
-            Text("App Header")
+            Text(appLanguage.text("theme.preview.app_header"))
                 .font(.caption)
                 .foregroundColor(theme.text.opacity(0.7))
                 .textCase(.uppercase)
             
             HStack {
-                Text("Azkar Fold")
+                Text(appLanguage.text("app.name"))
                     .font(.title2)
                     .fontWeight(.bold)
                     .foregroundColor(theme.primary)
@@ -109,6 +99,7 @@ struct ThemePreviewView: View {
                     Image(systemName: "gear")
                         .foregroundColor(theme.accent)
                 }
+                .accessibilityLabel(appLanguage.text("tab.settings"))
             }
         }
         .frame(maxWidth: .infinity, alignment: .leading)
@@ -116,13 +107,12 @@ struct ThemePreviewView: View {
     
     private var cardSection: some View {
         VStack(alignment: .leading, spacing: 8) {
-            Text("Cards")
+            Text(appLanguage.text("theme.preview.cards"))
                 .font(.caption)
                 .foregroundColor(theme.text.opacity(0.7))
                 .textCase(.uppercase)
             
             VStack(spacing: 12) {
-                // Main card
                 RoundedRectangle(cornerRadius: 12)
                     .fill(theme.cardBackground)
                     .frame(height: 80)
@@ -138,11 +128,11 @@ struct ThemePreviewView: View {
                                 )
                             
                             VStack(alignment: .leading, spacing: 4) {
-                                Text("Morning Azkar")
+                                Text(appLanguage.text("sunnah.category.morning"))
                                     .font(.headline)
                                     .foregroundColor(theme.text)
                                 
-                                Text("Daily remembrance")
+                                Text(appLanguage.text("theme.preview.sample_subtitle"))
                                     .font(.caption)
                                     .foregroundColor(theme.text.opacity(0.6))
                             }
@@ -164,7 +154,6 @@ struct ThemePreviewView: View {
                             .stroke(theme.primary.opacity(0.2), lineWidth: 1)
                     )
                 
-                // Secondary card
                 RoundedRectangle(cornerRadius: 12)
                     .fill(theme.secondary.opacity(0.1))
                     .frame(height: 60)
@@ -179,13 +168,13 @@ struct ThemePreviewView: View {
                                         .font(.system(size: 14))
                                 )
                             
-                            Text("Sunnah Azkar")
+                            Text(appLanguage.text("tab.sunnah"))
                                 .font(.subheadline)
                                 .foregroundColor(theme.text)
                             
                             Spacer()
                             
-                            Image(systemName: "chevron.right")
+                            Image(systemName: "chevron.forward")
                                 .foregroundColor(theme.text.opacity(0.4))
                                 .font(.system(size: 12))
                         }
@@ -198,15 +187,14 @@ struct ThemePreviewView: View {
     
     private var buttonSection: some View {
         VStack(alignment: .leading, spacing: 8) {
-            Text("Buttons")
+            Text(appLanguage.text("theme.preview.buttons"))
                 .font(.caption)
                 .foregroundColor(theme.text.opacity(0.7))
                 .textCase(.uppercase)
             
             VStack(spacing: 12) {
-                // Primary button
                 Button(action: {}) {
-                    Text("Primary Button")
+                    Text(appLanguage.text("theme.preview.primary_button"))
                         .font(.subheadline)
                         .fontWeight(.semibold)
                         .foregroundColor(theme.buttonText)
@@ -215,9 +203,8 @@ struct ThemePreviewView: View {
                         .cornerRadius(8)
                 }
                 
-                // Secondary button
                 Button(action: {}) {
-                    Text("Secondary Button")
+                    Text(appLanguage.text("theme.preview.secondary_button"))
                         .font(.subheadline)
                         .fontWeight(.semibold)
                         .foregroundColor(theme.primary)
@@ -236,7 +223,7 @@ struct ThemePreviewView: View {
     
     private var listSection: some View {
         VStack(alignment: .leading, spacing: 8) {
-            Text("List Items")
+            Text(appLanguage.text("theme.preview.list_items"))
                 .font(.caption)
                 .foregroundColor(theme.text.opacity(0.7))
                 .textCase(.uppercase)
@@ -248,13 +235,13 @@ struct ThemePreviewView: View {
                             .fill(theme.accent.opacity(0.2))
                             .frame(width: 8, height: 8)
                         
-                        Text("List item \(index + 1)")
+                        Text(appLanguage.text("theme.preview.list_item", index + 1))
                             .font(.body)
                             .foregroundColor(theme.text)
                         
                         Spacer()
                         
-                        Text("Detail")
+                        Text(appLanguage.text("theme.preview.detail"))
                             .font(.caption)
                             .foregroundColor(theme.text.opacity(0.6))
                     }
@@ -270,7 +257,7 @@ struct ThemePreviewView: View {
     
     private var tabBarSection: some View {
         VStack(alignment: .leading, spacing: 8) {
-            Text("Tab Bar")
+            Text(appLanguage.text("theme.preview.tab_bar"))
                 .font(.caption)
                 .foregroundColor(theme.text.opacity(0.7))
                 .textCase(.uppercase)
@@ -307,4 +294,5 @@ struct ThemePreviewView: View {
             .frame(height: 400)
     }
     .padding()
+    .environmentObject(AppLanguageManager.shared)
 }

@@ -10,6 +10,7 @@ import StoreKit
 
 struct SettingsTabView: View {
     @EnvironmentObject var theme: ThemeManager
+    @EnvironmentObject var appLanguage: AppLanguageManager
     @State private var showingPrivacyPolicy = false
     @State private var showingTerms = false
     @State private var showingSupportSheet = false
@@ -20,15 +21,21 @@ struct SettingsTabView: View {
                 headerSection
                     .padding(.vertical, 20)
                 
-                    sectionHeader("Preferences")
+                sectionHeader("settings.preferences")
                     .padding(.horizontal, 14)
 
-                    VStack(spacing: 0) {
+                VStack(spacing: 0) {
+                    languagePickerRow
+
+                    Divider()
+                        .background(.gray.opacity(0.3))
+                        .padding(.horizontal, 32)
+
                     sunnahSettingsNavigationLink
                         
-                        Divider()
-                            .background(.gray.opacity(0.3))
-                            .padding(.horizontal, 32)
+                    Divider()
+                        .background(.gray.opacity(0.3))
+                        .padding(.horizontal, 32)
                         
                     themeNavigationLink
                 }
@@ -37,12 +44,12 @@ struct SettingsTabView: View {
                 .cornerRadius(12)
                 .padding(.horizontal, 14)
                 
-                sectionHeader("Actions")
+                sectionHeader("settings.actions")
                     .padding(.horizontal, 14)
 
                 VStack {
                     actionButton(
-                        title: "Rate This App",
+                        titleKey: "settings.rate",
                         icon: "star.fill",
                         action: requestAppReview
                     )
@@ -52,7 +59,7 @@ struct SettingsTabView: View {
                         .padding(.horizontal, 32)
 
                     actionButton(
-                        title: "Share With Friends",
+                        titleKey: "settings.share_friends",
                         icon: "square.and.arrow.up",
                         action: shareApp
                     )
@@ -62,7 +69,7 @@ struct SettingsTabView: View {
                         .padding(.horizontal, 32)
 
                     actionButton(
-                        title: "Contact Support",
+                        titleKey: "settings.contact_support",
                         icon: "envelope.fill",
                         action: { showingSupportSheet = true }
                     )
@@ -75,12 +82,12 @@ struct SettingsTabView: View {
                 Divider()
                     .background(theme.currentTheme.secondary.opacity(0.2))
                 
-                sectionHeader("Legal")
+                sectionHeader("settings.legal")
                     .padding(.horizontal, 14)
 
                 VStack {
                     actionButton(
-                        title: "Privacy Policy",
+                        titleKey: "settings.privacy",
                         icon: "person.badge.shield.checkmark.fill",
                         action: { showingPrivacyPolicy = true }
                     )
@@ -90,7 +97,7 @@ struct SettingsTabView: View {
                         .padding(.horizontal, 32)
 
                     actionButton(
-                        title: "Terms of Service",
+                        titleKey: "settings.terms",
                         icon: "newspaper.fill",
                         action: { showingTerms = true }
                     )
@@ -103,36 +110,29 @@ struct SettingsTabView: View {
             }
             .padding(.bottom, 20)
         }
-        .navigationTitle("Settings")
+        .navigationTitle(appLanguage.text("settings.title"))
         .scrollContentBackground(.hidden)
         .background(BackgroundView())
         .sheet(isPresented: $showingPrivacyPolicy) {
-            LegalDocumentSheet(
-                title: "Privacy Policy",
-                lastUpdated: LegalDocuments.lastUpdated,
-                sections: LegalDocuments.privacyPolicySections
-            )
-            .environmentObject(theme)
+            LegalDocumentSheet(documentKind: .privacy)
+                .environmentObject(theme)
+                .environmentObject(appLanguage)
         }
         .sheet(isPresented: $showingTerms) {
-            LegalDocumentSheet(
-                title: "Terms of Service",
-                lastUpdated: LegalDocuments.lastUpdated,
-                sections: LegalDocuments.termsOfServiceSections
-            )
-            .environmentObject(theme)
+            LegalDocumentSheet(documentKind: .terms)
+                .environmentObject(theme)
+                .environmentObject(appLanguage)
         }
         .sheet(isPresented: $showingSupportSheet) {
             SupportContactSheet()
                 .environmentObject(theme)
+                .environmentObject(appLanguage)
         }
     }
     
-    // MARK: - Sections
-    
-    private func sectionHeader(_ title: String) -> some View {
+    private func sectionHeader(_ titleKey: String.LocalizationValue) -> some View {
         HStack {
-            Text(title)
+            Text(appLanguage.text(titleKey))
                 .font(.subheadline)
                 .foregroundColor(theme.currentTheme.text.opacity(0.7))
                 .padding(.vertical, 8)
@@ -142,77 +142,109 @@ struct SettingsTabView: View {
     
     private var headerSection: some View {
         VStack(alignment: .center, spacing: 8) {
-            Text("Azkar Fold")
+            Text(appLanguage.text("app.name"))
                 .font(.system(size: 28, weight: .black))
                 .foregroundColor(theme.currentTheme.primary)
                         
-            Text("Version \(appVersion)")
+            Text(appLanguage.text("app.version", appVersion))
                 .font(.caption)
                 .foregroundColor(theme.currentTheme.text.opacity(0.6))
         }
         .frame(maxWidth: .infinity)
     }
-    
-    // MARK: - Subviews
+
+    private var languagePickerRow: some View {
+        HStack(spacing: 12) {
+            Image(systemName: "globe")
+                .foregroundColor(theme.currentTheme.primary)
+                .frame(width: 24, height: 24)
+
+            VStack(alignment: .leading, spacing: 2) {
+                Text(appLanguage.text("settings.language"))
+                    .font(.headline)
+                    .foregroundColor(theme.currentTheme.text)
+
+                Text(appLanguage.text("settings.language.subtitle"))
+                    .font(.caption)
+                    .foregroundColor(theme.currentTheme.text.opacity(0.7))
+            }
+
+            Spacer()
+
+            Picker("", selection: Binding(
+                get: { appLanguage.current },
+                set: { appLanguage.setLanguage($0) }
+            )) {
+                ForEach(AppLanguage.allCases) { language in
+                    Text(language.displayName(using: appLanguage)).tag(language)
+                }
+            }
+            .labelsHidden()
+            .pickerStyle(.menu)
+            .tint(theme.currentTheme.primary)
+            .accessibilityLabel(appLanguage.text("settings.language"))
+        }
+        .padding(.vertical, 12)
+        .padding(.horizontal, 14)
+    }
     
     private var sunnahSettingsNavigationLink: some View {
         NavigationLink(destination: SunnahSettingsView()) {
-                HStack(spacing: 12) {
-                    Image(systemName: "slider.horizontal.3")
-                        .foregroundColor(theme.currentTheme.primary)
-                        .frame(width: 24, height: 24)
+            HStack(spacing: 12) {
+                Image(systemName: "slider.horizontal.3")
+                    .foregroundColor(theme.currentTheme.primary)
+                    .frame(width: 24, height: 24)
                     
-                    VStack(alignment: .leading, spacing: 2) {
-                        Text("Sunnah Zekr Manager")
-                            .font(.headline)
-                            .foregroundColor(theme.currentTheme.text)
-                        
-                    Text("Customize reading experience")
-                            .font(.caption)
-                            .foregroundColor(theme.currentTheme.text.opacity(0.7))
-                    }
-                    
-                    Spacer()
-                    
-                    Image(systemName: "chevron.right")
-                        .font(.system(size: 14, weight: .semibold))
-                    .foregroundColor(theme.currentTheme.text.opacity(0.5))
+                VStack(alignment: .leading, spacing: 2) {
+                    Text(appLanguage.text("settings.sunnah_manager"))
+                        .font(.headline)
+                        .foregroundColor(theme.currentTheme.text)
+
+                    Text(appLanguage.text("settings.sunnah_manager.subtitle"))
+                        .font(.caption)
+                        .foregroundColor(theme.currentTheme.text.opacity(0.7))
                 }
-                .padding(.vertical, 12)
-                .padding(.horizontal, 14)
-        }
-            }
-            
-    private var themeNavigationLink: some View {
-            NavigationLink(destination: ThemeManagerView().environmentObject(ThemeManager.shared)) {
-                HStack(spacing: 12) {
-                    Image(systemName: "paintbrush.fill")
-                        .foregroundColor(theme.currentTheme.primary)
-                        .frame(width: 24, height: 24)
                     
-                    VStack(alignment: .leading, spacing: 2) {
-                        Text("Theme Manager")
-                            .font(.headline)
-                            .foregroundColor(theme.currentTheme.text)
-                        
-                        Text("Customize app colors and themes")
-                            .font(.caption)
-                            .foregroundColor(theme.currentTheme.text.opacity(0.7))
-                    }
+                Spacer()
                     
-                    Spacer()
-                    
-                Image(systemName: "chevron.right")
+                Image(systemName: "chevron.forward")
                     .font(.system(size: 14, weight: .semibold))
                     .foregroundColor(theme.currentTheme.text.opacity(0.5))
-                }
-                .padding(.vertical, 12)
-                .padding(.horizontal, 14)
-        }
             }
+            .padding(.vertical, 12)
+            .padding(.horizontal, 14)
+        }
+    }
+            
+    private var themeNavigationLink: some View {
+        NavigationLink(destination: ThemeManagerView().environmentObject(ThemeManager.shared)) {
+            HStack(spacing: 12) {
+                Image(systemName: "paintbrush.fill")
+                    .foregroundColor(theme.currentTheme.primary)
+                    .frame(width: 24, height: 24)
+                    
+                VStack(alignment: .leading, spacing: 2) {
+                    Text(appLanguage.text("settings.theme_manager"))
+                        .font(.headline)
+                        .foregroundColor(theme.currentTheme.text)
+
+                    Text(appLanguage.text("settings.theme_manager.subtitle"))
+                        .font(.caption)
+                        .foregroundColor(theme.currentTheme.text.opacity(0.7))
+                }
+                    
+                Spacer()
+                    
+                Image(systemName: "chevron.forward")
+                    .font(.system(size: 14, weight: .semibold))
+                    .foregroundColor(theme.currentTheme.text.opacity(0.5))
+            }
+            .padding(.vertical, 12)
+            .padding(.horizontal, 14)
+        }
+    }
     
-        
-    private func actionButton(title: String, icon: String, action: @escaping () -> Void) -> some View {
+    private func actionButton(titleKey: String.LocalizationValue, icon: String, action: @escaping () -> Void) -> some View {
         Button(action: action) {
             HStack(spacing: 12) {
                 Image(systemName: icon)
@@ -220,13 +252,13 @@ struct SettingsTabView: View {
                     .foregroundColor(theme.currentTheme.primary)
                     .frame(width: 24, height: 24)
                 
-                Text(title)
+                Text(appLanguage.text(titleKey))
                     .font(.headline)
                     .foregroundColor(theme.currentTheme.text)
                 
                 Spacer()
                 
-                Image(systemName: "chevron.right")
+                Image(systemName: "chevron.forward")
                     .font(.caption)
                     .foregroundColor(theme.currentTheme.text.opacity(0.5))
             }
@@ -240,8 +272,6 @@ struct SettingsTabView: View {
     private var appVersion: String {
         AppConfiguration.marketingVersion
     }
-    
-    // MARK: - Actions
     
     private func requestAppReview() {
         if let scene = UIApplication.shared.connectedScenes.first(where: { $0.activationState == .foregroundActive }) as? UIWindowScene {
@@ -260,7 +290,6 @@ struct SettingsTabView: View {
         if let windowScene = UIApplication.shared.connectedScenes.first as? UIWindowScene,
            let window = windowScene.windows.first {
             
-            // For iPad support
             if let popover = activityVC.popoverPresentationController {
                 popover.sourceView = window
                 popover.sourceRect = CGRect(x: window.bounds.midX, y: window.bounds.midY, width: 0, height: 0)
@@ -275,5 +304,5 @@ struct SettingsTabView: View {
 #Preview {
     SettingsTabView()
         .environmentObject(ThemeManager.shared)
+        .environmentObject(AppLanguageManager.shared)
 }
-

@@ -11,6 +11,7 @@ struct SunnahTabView: View {
     @EnvironmentObject var theme: ThemeManager
     @EnvironmentObject var coordinator: NavigationCoordinator
     @EnvironmentObject var progressStore: SunnahProgressStore
+    @EnvironmentObject var appLanguage: AppLanguageManager
 
     private let azkarService = SunnahAzkarService()
 
@@ -41,7 +42,7 @@ struct SunnahTabView: View {
 
     private var headerView: some View {
         HStack {
-            Text("Daily Sunnah Azkar")
+            Text(appLanguage.text("sunnah.daily_title"))
                 .font(.title2)
                 .fontWeight(.bold)
                 .foregroundColor(theme.currentTheme.primary)
@@ -51,7 +52,7 @@ struct SunnahTabView: View {
             Button {
                 handleEditTap()
             } label: {
-                Text(isEditing ? "Save" : "Edit")
+                Text(isEditing ? appLanguage.text("common.save") : appLanguage.text("common.edit"))
                     .font(.headline)
                     .foregroundColor(theme.currentTheme.buttonText)
                     .padding(.horizontal, 20)
@@ -80,7 +81,7 @@ struct SunnahTabView: View {
     private var editModeContent: some View {
         ForEach(SunnahAzkarCategory.allCases) { category in
             AzkarCard(
-                title: category.title,
+                title: category.localizedTitle(using: appLanguage),
                 iconName: category.iconName,
                 isEditing: true,
                 isSelectedForEditing: temporarySelectedCategories.contains(category),
@@ -94,7 +95,7 @@ struct SunnahTabView: View {
     private var displayModeContent: some View {
         VStack(spacing: 16) {
             if progressStore.selectedSunnahCategories.isEmpty {
-                Text("No Sunnah categories selected. Tap 'Edit' to choose categories.")
+                Text(appLanguage.text("sunnah.no_categories"))
                     .foregroundColor(theme.currentTheme.text)
                     .padding()
                     .multilineTextAlignment(.center)
@@ -104,7 +105,7 @@ struct SunnahTabView: View {
                         loadSunnahZekrView(for: category)
                     } label: {
                         AzkarCard(
-                            title: category.title,
+                            title: category.localizedTitle(using: appLanguage),
                             iconName: category.iconName,
                             isCompleted: isCategoryCompleted(for: category),
                             backgroundColor: category.color
@@ -130,7 +131,7 @@ struct SunnahTabView: View {
             ))
         case .failure(let error):
             AzkarDebugLog.log("loadSunnahZekrView failure category=\(category.rawValue) error=\(error.localizedDescription)")
-            return AnyView(ErrorView(error: "Failed to load \(category.rawValue): \(error.localizedDescription)"))
+            return AnyView(ErrorView(error: appLanguage.text("sunnah.load_failed", category.localizedTitle(using: appLanguage), error.localizedDescription)))
         }
     }
 
@@ -180,6 +181,7 @@ struct SunnahTabView: View {
 // Helper view for Azkar cards
 struct AzkarCard: View {
     @EnvironmentObject var theme: ThemeManager
+    @EnvironmentObject var appLanguage: AppLanguageManager
 
     let title: String
     let iconName: String
@@ -204,7 +206,7 @@ struct AzkarCard: View {
                     .foregroundColor(theme.currentTheme.buttonText)
                 
                 if !isEditing {
-                    Text(isCompleted ? "Completed" : "Not completed yet")
+                    Text(isCompleted ? appLanguage.text("sunnah.completed") : appLanguage.text("sunnah.not_completed"))
                         .font(.subheadline)
                         .foregroundColor(theme.currentTheme.buttonText.opacity(0.7))
                 }
@@ -241,6 +243,7 @@ struct AzkarCard: View {
 // Simple error view
 struct ErrorView: View {
     @EnvironmentObject var theme: ThemeManager
+    @EnvironmentObject var appLanguage: AppLanguageManager
     let error: String
     
     var body: some View {
@@ -249,7 +252,7 @@ struct ErrorView: View {
                 .font(.system(size: 50))
                 .foregroundColor(theme.currentTheme.primary)
             
-            Text("Error")
+            Text(appLanguage.text("common.error"))
                 .font(.title)
                 .fontWeight(.bold)
             

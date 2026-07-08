@@ -12,7 +12,9 @@ enum AppConfiguration {
     static let appStoreID = "6745419190"
 
     static let supportEmail = "tahhancoding@gmail.com"
-    static let shareMessage = "Check out Azkar Fold - Your Islamic Remembrance Companion!"
+    static var shareMessage: String {
+        L10n.t("share.app_message")
+    }
     static let repositoryURL = "https://github.com/TahhanCoding/Azkar-Fold"
     static let repositoryDisplayLabel = "github.com/TahhanCoding/Azkar-Fold"
 

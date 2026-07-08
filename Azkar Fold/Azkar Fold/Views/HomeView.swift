@@ -1,5 +1,5 @@
 //
-//  SettingsTabView.swift
+//  HomeView.swift
 //  Azkar Fold
 //
 //  Created by Ahmed Shaban on 03/05/2025.
@@ -14,20 +14,20 @@ struct HomeView: View {
         TabView {
             AzkaryTabView()
                 .tabItem {
-                    Label("Azkary", systemImage: "heart.fill")
+                    Label("tab.azkary", systemImage: "heart.fill")
                 }
                 .tag(0)
 
             
             SunnahTabView()
                 .tabItem {
-                    Label("Sunnah", systemImage: "book.fill")
+                    Label("tab.sunnah", systemImage: "book.fill")
                 }
                 .tag(1)
             
             SettingsTabView()
                 .tabItem {
-                    Label("Settings", systemImage: "gear")
+                    Label("tab.settings", systemImage: "gear")
                 }
                 .tag(2)
         }

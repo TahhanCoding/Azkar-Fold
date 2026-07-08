@@ -1,5 +1,5 @@
 //
-//  SettingsTabView.swift
+//  AzkaryTabView.swift
 //  Azkar Fold
 //
 //  Created by Ahmed Shaban on 03/05/2025.
@@ -10,6 +10,7 @@ import SwiftUI
 struct AzkaryTabView: View {
     @EnvironmentObject var coordinator: NavigationCoordinator
     @EnvironmentObject var theme: ThemeManager
+    @EnvironmentObject var appLanguage: AppLanguageManager
     @EnvironmentObject var zekrStore: ZekrStore
     @State private var showingDeleteAlert = false
     @State private var indexSetToDelete: IndexSet?
@@ -22,7 +23,7 @@ struct AzkaryTabView: View {
                     EmptyZekrView()
                 } else {
                     VStack(spacing: 0) {
-                        Text("Azkary")
+                        Text(appLanguage.text("azkary.title"))
                             .font(.title2)
                             .fontWeight(.bold)
                             .foregroundColor(theme.currentTheme.text)
@@ -52,15 +53,15 @@ struct AzkaryTabView: View {
                     }
                     .alert(isPresented: $showingDeleteAlert) {
                         Alert(
-                            title: Text("Confirm Deletion"),
-                            message: Text("Are you sure you want to delete this Zekr?"),
-                            primaryButton: .destructive(Text("Delete").foregroundColor(.red)) {
+                            title: Text(appLanguage.text("azkary.delete_confirm_title")),
+                            message: Text(appLanguage.text("azkary.delete_confirm_message")),
+                            primaryButton: .destructive(Text(appLanguage.text("common.delete")).foregroundColor(.red)) {
                                 if let indexSet = indexSetToDelete {
                                     zekrStore.deleteZekr(at: indexSet)
                                 }
                                 indexSetToDelete = nil
                             },
-                            secondaryButton: .cancel(Text("Cancel").foregroundColor(theme.currentTheme.text)) {
+                            secondaryButton: .cancel(Text(appLanguage.text("common.cancel")).foregroundColor(theme.currentTheme.text)) {
                                 indexSetToDelete = nil
                             }
                         )
@@ -74,7 +75,7 @@ struct AzkaryTabView: View {
                     Button(action: {
                         coordinator.navigate(to: .createZekr)
                     }) {
-                        Text("Create")
+                        Text(appLanguage.text("azkary.create"))
                     }
                 }
             }

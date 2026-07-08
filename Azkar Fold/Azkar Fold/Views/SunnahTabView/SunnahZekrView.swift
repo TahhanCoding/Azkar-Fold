@@ -12,6 +12,7 @@ import Combine
 struct SunnahZekrView: View {
     @EnvironmentObject var theme: ThemeManager
     @EnvironmentObject var patternManager: PatternManager
+    @EnvironmentObject var appLanguage: AppLanguageManager
     @State var azkarList: [SunnahZekrItem]
     let category: SunnahAzkarCategory
     @ObservedObject var progressStore: SunnahProgressStore
@@ -162,13 +163,13 @@ struct SunnahZekrView: View {
 
             if showModeHint {
                 TimedCoachMarkView(
-                    title: "Simple & Full mode",
-                    message: "Long press on the zekr card to switch between Simple and Full reading modes.",
+                    titleKey: "hint.mode.title",
+                    messageKey: "hint.mode.message",
                     isPresented: $showModeHint
                 )
             }
         }
-        .navigationTitle(category.rawValue)
+        .navigationTitle(category.localizedTitle(using: appLanguage))
         .navigationBarTitleDisplayMode(.inline)
         .toolbar {
             ToolbarItem(placement: .navigationBarTrailing) {
@@ -176,6 +177,7 @@ struct SunnahZekrView: View {
                     Image(systemName: "square.and.arrow.up")
                         .foregroundStyle(theme.currentTheme.accent)
                 }
+                .accessibilityLabel(appLanguage.text("common.share"))
                 .disabled(isExporting)
             }
         }
@@ -204,15 +206,15 @@ struct SunnahZekrView: View {
                 motionManager.stopMotionUpdates()
             }
         }
-        .alert("Congratulations!", isPresented: $showCompletionAlert) {
-            Button("OK", role: .cancel) {
+        .alert(appLanguage.text("sunnah.congratulations"), isPresented: $showCompletionAlert) {
+            Button(appLanguage.text("common.ok"), role: .cancel) {
                 presentationMode.wrappedValue.dismiss()
             }
         } message: {
-            Text("You have completed all Azkar for the \(category.rawValue) category.")
+            Text(appLanguage.text("sunnah.completed_category", category.localizedTitle(using: appLanguage)))
         }
-        .alert("Share", isPresented: $showSaveAlert) {
-            Button("OK", role: .cancel) { }
+        .alert(appLanguage.text("common.share"), isPresented: $showSaveAlert) {
+            Button(appLanguage.text("common.ok"), role: .cancel) { }
         } message: {
             Text(saveAlertMessage)
         }
@@ -227,7 +229,7 @@ struct SunnahZekrView: View {
                             .scaleEffect(1.2)
                             .tint(theme.currentTheme.accent)
                         
-                        Text("Preparing...")
+                        Text(appLanguage.text("common.preparing"))
                             .font(.subheadline)
                             .foregroundColor(theme.currentTheme.text)
                     }
@@ -290,8 +292,8 @@ struct SunnahZekrView: View {
                 navigateToPrevious()
             }) {
                 HStack {
-                    Image(systemName: "chevron.left")
-                    Text("Previous")
+                    Image(systemName: "chevron.backward")
+                    Text(appLanguage.text("sunnah.previous"))
                 }
                 .padding(.horizontal, 20)
                 .padding(.vertical, 12)
@@ -302,7 +304,7 @@ struct SunnahZekrView: View {
             .disabled(currentIndex == 0)
             
             VStack {
-                Text("\(currentIndex + 1) of \(displayedAzkarList.count)")
+                Text(appLanguage.text("sunnah.progress_of", currentIndex + 1, displayedAzkarList.count))
                 .font(.caption)
                 .foregroundColor(theme.currentTheme.text)
             }
@@ -311,8 +313,8 @@ struct SunnahZekrView: View {
                 navigateToNext()
             }) {
                 HStack {
-                    Text("Next")
-                    Image(systemName: "chevron.right")
+                    Text(appLanguage.text("sunnah.next"))
+                    Image(systemName: "chevron.forward")
                 }
                 .padding(.horizontal, 20)
                 .padding(.vertical, 12)
@@ -333,10 +335,10 @@ struct SunnahZekrView: View {
             if isArabicOnly {
                 // Arabic Only Layout: 3 Buttons
                 HStack(spacing: 12) {
-                    contentButton(text: "Arabic", mode: .arabic)
-                    contentButton(text: "Source", mode: .sourceArabic)
+                    contentButton(textKey: "sunnah.arabic", mode: .arabic)
+                    contentButton(textKey: "sunnah.source", mode: .sourceArabic)
                     if zekrItem.bless != nil {
-                        contentButton(text: "Bless", mode: .blessArabic)
+                        contentButton(textKey: "sunnah.bless", mode: .blessArabic)
                     }
                 }
             } else {
@@ -347,28 +349,26 @@ struct SunnahZekrView: View {
                 
                 LazyVGrid(columns: columns, spacing: 8) {
                     // 1. Arabic (Always present)
-                    contentButton(text: "Arabic", mode: .arabic)
+                    contentButton(textKey: "sunnah.arabic", mode: .arabic)
                     
-                    // 2. Selected Language
                     let langCode = settingsStore.secondaryLanguage
-                    let langName = Locale.current.localizedString(forLanguageCode: langCode)?.capitalized ?? langCode.uppercased()
+                    let langName = appLanguage.locale.localizedString(forLanguageCode: langCode)?.capitalized ?? langCode.uppercased()
                     contentButton(text: langName, mode: .translation)
                     
-                    // 3. Source (Arabic)
-                    contentButton(text: "Source", mode: .sourceArabic)
+                    contentButton(textKey: "sunnah.source", mode: .sourceArabic)
                     
                     // 4. Source (Translated) - Source_[Lang]
                     // e.g. "Source_En"
-                    contentButton(text: "Source \(langCode.uppercased())", mode: .sourceTranslated)
+                    contentButton(text: appLanguage.text("sunnah.source_lang", langCode.uppercased()), mode: .sourceTranslated)
                     
                     // 5. Bless (Arabic)
                     if zekrItem.bless != nil {
-                        contentButton(text: "Bless", mode: .blessArabic)
+                        contentButton(textKey: "sunnah.bless", mode: .blessArabic)
                     }
                     
                     // 6. Bless (Translated) - Bless_[Lang]
                     if zekrItem.translatedBless != nil {
-                        contentButton(text: "Bless \(langCode.uppercased())", mode: .blessTranslated)
+                        contentButton(text: appLanguage.text("sunnah.bless_lang", langCode.uppercased()), mode: .blessTranslated)
                     }
                 }
             }
@@ -376,6 +376,10 @@ struct SunnahZekrView: View {
         .padding(.horizontal)
     }
     
+    private func contentButton(textKey: String.LocalizationValue, mode: ZekrDisplayMode) -> some View {
+        contentButton(text: appLanguage.text(textKey), mode: mode)
+    }
+
     private func contentButton(text: String, mode: ZekrDisplayMode) -> some View {
         Button(action: {
             currentDisplayMode = mode
@@ -579,7 +583,7 @@ struct SunnahZekrView: View {
             let text = shareText(for: currentZekr)
             guard !text.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty else {
                 isExporting = false
-                saveAlertMessage = "Nothing to share for the current view."
+                saveAlertMessage = appLanguage.text("sunnah.share_nothing")
                 showSaveAlert = true
                 return
             }
@@ -592,7 +596,7 @@ struct SunnahZekrView: View {
                 patternManager: patternManager
             ) else {
                 isExporting = false
-                saveAlertMessage = "Couldn't prepare the image. Please try again."
+                saveAlertMessage = appLanguage.text("sunnah.share_failed")
                 showSaveAlert = true
                 return
             }
@@ -602,8 +606,8 @@ struct SunnahZekrView: View {
                 Task { @MainActor in
                     guard activity == .saveToCameraRoll else { return }
                     saveAlertMessage = success
-                        ? "Image saved to Photos successfully!"
-                        : "Failed to save image to Photos."
+                        ? appLanguage.text("sunnah.share_saved")
+                        : appLanguage.text("sunnah.share_save_failed")
                     showSaveAlert = true
                 }
             }

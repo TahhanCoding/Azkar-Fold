@@ -79,7 +79,8 @@ class ThemeManager: ObservableObject {
     
     func duplicateTheme(_ theme: Theme) -> Theme {
         var newTheme = theme
-        newTheme.name = "\(theme.name) Copy"
+        let language = AppLanguageManager.shared
+        newTheme.name = language.text("theme.duplicate_name", theme.localizedName(using: language))
         newTheme.isDefault = false
         return newTheme
     }

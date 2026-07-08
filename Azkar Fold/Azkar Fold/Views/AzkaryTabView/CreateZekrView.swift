@@ -11,20 +11,20 @@ struct CreateZekrView: View {
     @EnvironmentObject var coordinator: NavigationCoordinator
     @EnvironmentObject var theme: ThemeManager
     @EnvironmentObject var zekrStore: ZekrStore
+    @EnvironmentObject var appLanguage: AppLanguageManager
     @Environment(\.presentationMode) var presentationMode
     @State private var zekrText = ""
     @State private var showAlert = false
     
     var body: some View {
         VStack(spacing: 20) {
-            Text("Create New Zekr")
+            Text(appLanguage.text("azkary.create_new"))
                 .font(.title)
                 .fontWeight(.bold)
                 .foregroundColor(theme.currentTheme.primary)
                 .padding(.top)
             
-            // Neo-brutalism style text field
-            TextField("سبحان الله وبحمده", text: $zekrText)
+            TextField(appLanguage.text("azkary.placeholder"), text: $zekrText)
                 .font(.headline)
                 .foregroundColor(theme.currentTheme.text)
                 .padding()
@@ -40,8 +40,6 @@ struct CreateZekrView: View {
                 )
                 .padding(.horizontal)
             
-            
-            // Modified button action
             Button(action: {
                 if !zekrText.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty {
                     zekrStore.addZekr(text: zekrText) {
@@ -51,7 +49,7 @@ struct CreateZekrView: View {
                     showAlert = true
                 }
             }) {
-                Text("Create Zekr")
+                Text(appLanguage.text("azkary.create_button"))
                     .font(.headline)
                     .fontWeight(.bold)
                     .foregroundColor(theme.currentTheme.buttonText)
@@ -69,16 +67,16 @@ struct CreateZekrView: View {
             Spacer()
         }
         .padding()
-        .navigationTitle("Create Zekr")
+        .navigationTitle(appLanguage.text("azkary.create_title"))
         .navigationBarTitleDisplayMode(.inline)
         .background(
             BackgroundView()
         )
         .alert(isPresented: $showAlert) {
             Alert(
-                title: Text("Empty Zekr"),
-                message: Text("Please enter some text for your Zekr."),
-                dismissButton: .default(Text("OK").foregroundColor(theme.currentTheme.text))
+                title: Text(appLanguage.text("azkary.empty_alert_title")),
+                message: Text(appLanguage.text("azkary.empty_alert_message")),
+                dismissButton: .default(Text(appLanguage.text("common.ok")).foregroundColor(theme.currentTheme.text))
             )
         }
     }

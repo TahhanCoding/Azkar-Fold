@@ -10,6 +10,7 @@ import SwiftUI
 struct ForceUpdateModalView: View {
     @ObservedObject var updateManager: UpdateManager
     @EnvironmentObject var themeManager: ThemeManager
+    @EnvironmentObject var appLanguage: AppLanguageManager
     
     private var formattedImprovements: [String] {
         guard !updateManager.whatIsNew.isEmpty else { return [] }
@@ -21,7 +22,6 @@ struct ForceUpdateModalView: View {
     
     var body: some View {
         ZStack {
-            // Background
             themeManager.currentTheme.background
                 .ignoresSafeArea()
             
@@ -35,12 +35,12 @@ struct ForceUpdateModalView: View {
                     .foregroundStyle(themeManager.currentTheme.primary)
                 
                 VStack(spacing: 12) {
-                    Text("Update Required")
+                    Text("update.required_title")
                         .font(.title2)
                         .fontWeight(.bold)
                         .foregroundStyle(themeManager.currentTheme.text)
                     
-                    Text("A new version of Azkar Fold is available. Please update to continue using the app.")
+                    Text("update.required_message")
                         .font(.body)
                         .multilineTextAlignment(.center)
                         .foregroundStyle(themeManager.currentTheme.text.opacity(0.7))
@@ -48,7 +48,7 @@ struct ForceUpdateModalView: View {
                     
                     if !formattedImprovements.isEmpty {
                         VStack(alignment: .leading, spacing: 8) {
-                            Text("What's New:")
+                            Text("update.whats_new")
                                 .font(.subheadline)
                                 .fontWeight(.semibold)
                                 .foregroundStyle(themeManager.currentTheme.text)
@@ -69,7 +69,7 @@ struct ForceUpdateModalView: View {
                         .padding(.top, 8)
                     }
                     
-                    Text("Current: \(updateManager.currentVersion) • Required: \(updateManager.requiredVersion)")
+                    Text(appLanguage.text("update.versions", updateManager.currentVersion, updateManager.requiredVersion))
                         .font(.caption)
                         .foregroundStyle(themeManager.currentTheme.text.opacity(0.7))
                         .padding(.top, 4)
@@ -78,7 +78,7 @@ struct ForceUpdateModalView: View {
                 Button(action: {
                     updateManager.openAppStore()
                 }) {
-                    Text("Update Now")
+                    Text("update.now")
                         .font(.headline)
                         .foregroundStyle(themeManager.currentTheme.buttonText)
                         .frame(maxWidth: .infinity)
@@ -104,5 +104,5 @@ struct ForceUpdateModalView: View {
     
     return ForceUpdateModalView(updateManager: mockManager)
         .environmentObject(ThemeManager.shared)
+        .environmentObject(AppLanguageManager.shared)
 }
-

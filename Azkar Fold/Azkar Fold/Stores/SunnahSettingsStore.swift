@@ -13,17 +13,19 @@ class SunnahSettingsStore: ObservableObject {
 
     enum InitialViewMode: String, CaseIterable, Identifiable {
         case simple
-    case full
-    
-    var id: String { rawValue }
-    
+        case full
+
+        var id: String { rawValue }
+
         var displayName: String {
-        switch self {
-            case .simple: return "Simple"
-            case .full: return "Full"
+            switch self {
+            case .simple:
+                return L10n.t("sunnah_settings.simple")
+            case .full:
+                return L10n.t("sunnah_settings.full")
+            }
         }
     }
-}
 
     @AppStorage("sunnah_initial_view_mode") var initialViewMode: InitialViewMode = .full
     @AppStorage("sunnah_secondary_language") var secondaryLanguage: String = "ar_only"
