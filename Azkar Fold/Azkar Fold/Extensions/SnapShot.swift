@@ -101,8 +101,7 @@ struct ExportableZekrCard: View {
     let text: String
     let isCompleted: Bool
     let isSimpleMode: Bool
-    let theme: ThemeManager
-    let patternManager: PatternManager
+    let appearance: ZekrShareAppearance
 
     static let cornerRadius: CGFloat = 33
     static let outerHorizontalPadding: CGFloat = 21
@@ -111,7 +110,6 @@ struct ExportableZekrCard: View {
     private let textVerticalPadding: CGFloat = 12
     private let cardHorizontalPadding: CGFloat = 18
     private let cardVerticalPadding: CGFloat = 12
-    private let pageBackgroundOpacity: Double = 0.35
 
     private var maxCardHeight: CGFloat {
         ZekrExportFontCalculator.maxCardHeight(isSimpleMode: isSimpleMode)
@@ -119,10 +117,6 @@ struct ExportableZekrCard: View {
 
     private var exportFontSize: CGFloat {
         ZekrExportFontCalculator.exportFontSize(for: text, isSimpleMode: isSimpleMode)
-    }
-
-    private var cardBackgroundOpacity: Double {
-        isCompleted ? 0.65 : 0.45
     }
 
     var body: some View {
@@ -137,16 +131,17 @@ struct ExportableZekrCard: View {
 
             Text("azkarfold.com")
                 .font(.system(size: 14, weight: .medium))
-                .foregroundColor(theme.currentTheme.text.opacity(0.6))
+                .foregroundColor(appearance.text.opacity(0.6))
                 .frame(maxWidth: .infinity)
         }
         .padding(.horizontal, Self.outerHorizontalPadding)
+        .padding(.vertical, 24)
     }
 
     private var zekrLabel: some View {
         Text(text)
             .font(.system(size: exportFontSize, weight: .bold))
-            .foregroundColor(theme.currentTheme.text)
+            .foregroundColor(appearance.text)
             .multilineTextAlignment(.center)
             .frame(maxWidth: .infinity, alignment: .center)
             .padding(.horizontal, textHorizontalPadding)
@@ -159,24 +154,35 @@ struct ExportableZekrCard: View {
             .padding(.horizontal, cardHorizontalPadding)
             .padding(.vertical, cardVerticalPadding)
             .frame(maxWidth: .infinity, alignment: .top)
-            .background(cardBackground)
+            .background(
+                ZekrCardBackground(
+                    background: appearance.background,
+                    patternName: appearance.patternName,
+                    isCompleted: isCompleted,
+                    cornerRadius: Self.cornerRadius
+                )
+            )
             .clipShape(RoundedRectangle(cornerRadius: Self.cornerRadius, style: .continuous))
     }
+}
 
-    private var cardBackground: some View {
+struct ExportableZekrShareCanvas: View {
+    let text: String
+    let isCompleted: Bool
+    let isSimpleMode: Bool
+    let appearance: ZekrShareAppearance
+
+    var body: some View {
         ZStack {
-            RoundedRectangle(cornerRadius: Self.cornerRadius, style: .continuous)
-                .fill(theme.currentTheme.background.opacity(pageBackgroundOpacity))
+            appearance.background
+                .ignoresSafeArea()
 
-            RoundedRectangle(cornerRadius: Self.cornerRadius, style: .continuous)
-                .fill(theme.currentTheme.background.opacity(cardBackgroundOpacity))
-                .overlay {
-                    if patternManager.currentPattern != "none" {
-                        Image(patternManager.currentPattern)
-                            .resizable(resizingMode: .tile)
-                            .opacity(0.35)
-                    }
-                }
+            ExportableZekrCard(
+                text: text,
+                isCompleted: isCompleted,
+                isSimpleMode: isSimpleMode,
+                appearance: appearance
+            )
         }
     }
 }
@@ -217,12 +223,13 @@ func renderZekrImage(
     theme: ThemeManager,
     patternManager: PatternManager
 ) -> UIImage? {
-    let exportView = ExportableZekrCard(
+    let appearance = ZekrShareAppearance(theme: theme, patternManager: patternManager)
+
+    let exportView = ExportableZekrShareCanvas(
         text: text,
         isCompleted: isCompleted,
         isSimpleMode: isSimpleMode,
-        theme: theme,
-        patternManager: patternManager
+        appearance: appearance
     )
 
     return snapshotRoundedSwiftUIView(
@@ -236,12 +243,11 @@ private func snapshotRoundedSwiftUIView<V: View>(
     _ view: V,
     cornerRadius: CGFloat
 ) -> UIImage? {
-    let interfaceStyle = activeUserInterfaceStyle()
     let screenWidth = UIScreen.main.bounds.width
 
     let hostingController = UIHostingController(rootView: view)
     hostingController.view.backgroundColor = .clear
-    hostingController.overrideUserInterfaceStyle = interfaceStyle
+    hostingController.overrideUserInterfaceStyle = .light
 
     guard let hostedView = hostingController.view else { return nil }
 
@@ -282,12 +288,12 @@ private func snapshotRoundedSwiftUIView<V: View>(
     let window = UIWindow(frame: CGRect(origin: .zero, size: size))
     window.screen = UIScreen.main
     window.backgroundColor = .clear
-    window.overrideUserInterfaceStyle = interfaceStyle
+    window.overrideUserInterfaceStyle = .light
     window.isHidden = false
 
     let rootController = UIViewController()
     rootController.view.backgroundColor = .clear
-    rootController.overrideUserInterfaceStyle = interfaceStyle
+    rootController.overrideUserInterfaceStyle = .light
     rootController.view.frame = CGRect(origin: .zero, size: size)
     rootController.view.addSubview(container)
     container.frame = rootController.view.bounds
@@ -298,7 +304,7 @@ private func snapshotRoundedSwiftUIView<V: View>(
     hostedView.layoutIfNeeded()
 
     let format = UIGraphicsImageRendererFormat()
-    format.opaque = false
+    format.opaque = true
     format.scale = UIScreen.main.scale
     format.preferredRange = .standard
 
@@ -310,15 +316,6 @@ private func snapshotRoundedSwiftUIView<V: View>(
     window.rootViewController = nil
 
     return image
-}
-
-@MainActor
-private func activeUserInterfaceStyle() -> UIUserInterfaceStyle {
-    UIApplication.shared.connectedScenes
-        .compactMap { $0 as? UIWindowScene }
-        .flatMap(\.windows)
-        .first { $0.isKeyWindow }?
-        .overrideUserInterfaceStyle ?? .unspecified
 }
 
 @MainActor

@@ -81,15 +81,11 @@ struct SunnahZekrTextCard: View {
     }
 
     private var cardBackground: some View {
-        RoundedRectangle(cornerRadius: 33)
-            .fill(isCompleted ? theme.currentTheme.background.opacity(0.65) : theme.currentTheme.background.opacity(0.45))
-            .overlay {
-                if patternManager.currentPattern != "none" {
-                    Image(patternManager.currentPattern)
-                        .resizable(resizingMode: .tile)
-                        .opacity(0.35)
-                }
-            }
+        ZekrCardBackground(
+            background: theme.currentTheme.background,
+            patternName: patternManager.currentPattern,
+            isCompleted: isCompleted
+        )
     }
 }
 
