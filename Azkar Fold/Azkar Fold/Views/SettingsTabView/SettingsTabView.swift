@@ -36,6 +36,12 @@ struct SettingsTabView: View {
                     Divider()
                         .background(.gray.opacity(0.3))
                         .padding(.horizontal, 32)
+
+                    tabSettingsNavigationLink
+
+                    Divider()
+                        .background(.gray.opacity(0.3))
+                        .padding(.horizontal, 32)
                         
                     themeNavigationLink
                 }
@@ -217,6 +223,30 @@ struct SettingsTabView: View {
                         .foregroundColor(theme.currentTheme.text.opacity(0.7))
                 }
                     
+                Spacer()
+            }
+            .padding(.vertical, 12)
+            .padding(.horizontal, 14)
+        }
+    }
+
+    private var tabSettingsNavigationLink: some View {
+        NavigationLink(destination: TabSettingsView()) {
+            HStack(spacing: 12) {
+                Image(systemName: "rectangle.split.3x1")
+                    .foregroundColor(theme.currentTheme.primary)
+                    .frame(width: 24, height: 24)
+
+                VStack(alignment: .leading, spacing: 2) {
+                    Text(appLanguage.text("settings.tabs"))
+                        .font(.headline)
+                        .foregroundColor(theme.currentTheme.text)
+
+                    Text(appLanguage.text("settings.tabs.subtitle"))
+                        .font(.caption)
+                        .foregroundColor(theme.currentTheme.text.opacity(0.7))
+                }
+
                 Spacer()
             }
             .padding(.vertical, 12)

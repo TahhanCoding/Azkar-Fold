@@ -22,6 +22,8 @@ struct ViewFactory {
             AzkaryTabView()
         case .sunnahTab:
             SunnahTabView()
+        case .prayerTab:
+            PrayerTabView()
         case .settingsTab:
             SettingsTabView()
         }
