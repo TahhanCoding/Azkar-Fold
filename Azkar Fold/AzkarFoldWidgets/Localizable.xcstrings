@@ -1,6 +1,16 @@
 {
   "sourceLanguage" : "en",
   "strings" : {
+    "%@ – %@" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "%1$@ – %2$@"
+          }
+        }
+      }
+    },
     "%@ %@ · %@" : {
       "localizations" : {
         "en" : {
@@ -14,7 +24,7 @@
     "Prayer Clock" : {
 
     },
-    "Shows today’s prayer periods on the Home and Lock Screen." : {
+    "Prayer periods clock. Prefer Medium or Large on the Home Screen for a bigger dial." : {
 
     },
     "widget.prayer_clock.description" : {

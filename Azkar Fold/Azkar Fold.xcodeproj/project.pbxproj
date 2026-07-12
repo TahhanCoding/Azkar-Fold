@@ -14,6 +14,30 @@
 		WDGBF0022F8C000100000001 /* AzkarFoldWidgets.appex in Embed Foundation Extensions */ = {isa = PBXBuildFile; fileRef = WDGFREF02F8C000100000001 /* AzkarFoldWidgets.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
 /* End PBXBuildFile section */
 
+/* Begin PBXContainerItemProxy section */
+		WDGPROXY2F8C000100000001 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 329D04242DC5653500ED5D7E /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = WDGNTARG2F8C000100000001;
+			remoteInfo = AzkarFoldWidgets;
+		};
+/* End PBXContainerItemProxy section */
+
+/* Begin PBXCopyFilesBuildPhase section */
+		WDGEMBED2F8C000100000001 /* Embed Foundation Extensions */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = "";
+			dstSubfolderSpec = 13;
+			files = (
+				WDGBF0022F8C000100000001 /* AzkarFoldWidgets.appex in Embed Foundation Extensions */,
+			);
+			name = "Embed Foundation Extensions";
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXCopyFilesBuildPhase section */
+
 /* Begin PBXFileReference section */
 		329D042C2DC5653500ED5D7E /* Azkar Fold.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "Azkar Fold.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		WDGFREF02F8C000100000001 /* AzkarFoldWidgets.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = AzkarFoldWidgets.appex; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -181,38 +205,6 @@
 		};
 /* End PBXProject section */
 
-/* Begin PBXCopyFilesBuildPhase section */
-		WDGEMBED2F8C000100000001 /* Embed Foundation Extensions */ = {
-			isa = PBXCopyFilesBuildPhase;
-			buildActionMask = 2147483647;
-			dstPath = "";
-			dstSubfolderSpec = 13;
-			files = (
-				WDGBF0022F8C000100000001 /* AzkarFoldWidgets.appex in Embed Foundation Extensions */,
-			);
-			name = "Embed Foundation Extensions";
-			runOnlyForDeploymentPostprocessing = 0;
-		};
-/* End PBXCopyFilesBuildPhase section */
-
-/* Begin PBXContainerItemProxy section */
-		WDGPROXY2F8C000100000001 /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = 329D04242DC5653500ED5D7E /* Project object */;
-			proxyType = 1;
-			remoteGlobalIDString = WDGNTARG2F8C000100000001;
-			remoteInfo = AzkarFoldWidgets;
-		};
-/* End PBXContainerItemProxy section */
-
-/* Begin PBXTargetDependency section */
-		WDGDEP012F8C000100000001 /* PBXTargetDependency */ = {
-			isa = PBXTargetDependency;
-			target = WDGNTARG2F8C000100000001 /* AzkarFoldWidgets */;
-			targetProxy = WDGPROXY2F8C000100000001 /* PBXContainerItemProxy */;
-		};
-/* End PBXTargetDependency section */
-
 /* Begin PBXResourcesBuildPhase section */
 		329D042A2DC5653500ED5D7E /* Resources */ = {
 			isa = PBXResourcesBuildPhase;
@@ -246,6 +238,14 @@
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXSourcesBuildPhase section */
+
+/* Begin PBXTargetDependency section */
+		WDGDEP012F8C000100000001 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = WDGNTARG2F8C000100000001 /* AzkarFoldWidgets */;
+			targetProxy = WDGPROXY2F8C000100000001 /* PBXContainerItemProxy */;
+		};
+/* End PBXTargetDependency section */
 
 /* Begin XCBuildConfiguration section */
 		329D04382DC5653700ED5D7E /* Debug */ = {
@@ -449,7 +449,6 @@
 			};
 			name = Release;
 		};
-
 		WDGCFGDF2F8C000100000001 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {

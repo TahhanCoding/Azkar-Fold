@@ -78,77 +78,91 @@ struct PrayerClockWidgetEntryView: View {
     @Environment(\.widgetFamily) private var family
     var entry: PrayerClockEntry
 
+    private let cream = Color(red: 0.996, green: 0.996, blue: 0.969)
+
     var body: some View {
         Group {
             switch family {
             case .accessoryCircular:
-                circularContent
-                    .widgetBackground { AccessoryWidgetBackground() }
+                // Lock Screen circular slot is fixed by Apple — fill every pixel of it.
+                WidgetPrayerClockDialView(
+                    schedule: entry.schedule,
+                    activePeriod: entry.activePeriod,
+                    minutesFromMidnight: entry.minutesFromMidnight,
+                    showHourLabels: true,
+                    showCenterStatus: true,
+                    compactCenter: true,
+                    dense: true
+                )
+                .expandIntoWidgetMargins()
+                .widgetBackground { EmptyView() }
+
             case .accessoryRectangular:
-                rectangularContent
-                    .widgetBackground { AccessoryWidgetBackground() }
+                // Wider Lock Screen slot — dial fills height (largest Lock Screen option).
+                HStack(spacing: 6) {
+                    WidgetPrayerClockDialView(
+                        schedule: entry.schedule,
+                        activePeriod: entry.activePeriod,
+                        minutesFromMidnight: entry.minutesFromMidnight,
+                        showHourLabels: true,
+                        showCenterStatus: false,
+                        compactCenter: true,
+                        dense: true
+                    )
+                    .aspectRatio(1, contentMode: .fit)
+
+                    periodSummary(compact: true)
+                        .frame(maxWidth: .infinity, alignment: .leading)
+                }
+                .expandIntoWidgetMargins()
+                .widgetBackground { AccessoryWidgetBackground() }
+
             case .accessoryInline:
-                inlineView
+                Text("\(entry.activePeriod.localizedName()) \(entry.schedule.hhmm(entry.schedule.startMinutes(for: entry.activePeriod))) · \(WidgetCountdown.text(minutes: entry.minutesUntilNext))")
                     .widgetBackground { EmptyView() }
-            case .systemSmall:
-                homeSmallContent
-                    .widgetBackground { Color(.systemBackground) }
+
+            case .systemSmall, .systemMedium, .systemLarge:
+                clockOnlyDial
+                    .padding(family == .systemLarge ? 8 : 2)
+                    .widgetBackground { cream }
+
             default:
-                homeSmallContent
-                    .widgetBackground { Color(.systemBackground) }
+                clockOnlyDial
+                    .padding(2)
+                    .widgetBackground { cream }
             }
         }
         .widgetURL(URL(string: "azkarfold://prayer"))
     }
 
-    private var circularContent: some View {
-        MiniPrayerDialView(
+    /// Home Screen: dial only — full center status + hour numbers.
+    private var clockOnlyDial: some View {
+        WidgetPrayerClockDialView(
             schedule: entry.schedule,
             activePeriod: entry.activePeriod,
-            minutesFromMidnight: entry.minutesFromMidnight
+            minutesFromMidnight: entry.minutesFromMidnight,
+            showHourLabels: true,
+            showCenterStatus: true,
+            compactCenter: false,
+            dense: false
         )
-        .padding(4)
-    }
-
-    private var rectangularContent: some View {
-        periodSummary(compact: true)
-            .padding(.horizontal, 4)
-    }
-
-    private var inlineView: some View {
-        Text("\(entry.activePeriod.localizedName()) \(entry.schedule.hhmm(entry.schedule.startMinutes(for: entry.activePeriod))) · \(WidgetCountdown.text(minutes: entry.minutesUntilNext))")
-    }
-
-    private var homeSmallContent: some View {
-        VStack(spacing: 8) {
-            MiniPrayerDialView(
-                schedule: entry.schedule,
-                activePeriod: entry.activePeriod,
-                minutesFromMidnight: entry.minutesFromMidnight
-            )
-            .frame(width: 72, height: 72)
-
-            periodSummary(compact: false)
-        }
-        .padding(12)
+        .frame(maxWidth: .infinity, maxHeight: .infinity)
     }
 
     private func periodSummary(compact: Bool) -> some View {
-        HStack(spacing: 10) {
+        VStack(alignment: .leading, spacing: 2) {
             Image(systemName: entry.activePeriod.systemImage)
                 .font(compact ? .title3 : .body)
-            VStack(alignment: .leading, spacing: 2) {
-                Text(entry.activePeriod.localizedName())
-                    .font(compact ? .headline : .subheadline.weight(.semibold))
-                    .lineLimit(1)
-                Text(entry.schedule.hhmm(entry.schedule.startMinutes(for: entry.activePeriod)))
-                    .font(.caption.monospacedDigit())
-                    .opacity(0.8)
-                Text(WidgetCountdown.text(minutes: entry.minutesUntilNext))
-                    .font(.caption2.monospacedDigit())
-                    .opacity(0.7)
-            }
-            Spacer(minLength: 0)
+            Text(entry.activePeriod.localizedName())
+                .font(compact ? .headline : .subheadline.weight(.semibold))
+                .lineLimit(1)
+                .minimumScaleFactor(0.8)
+            Text(entry.schedule.hhmm(entry.schedule.startMinutes(for: entry.activePeriod)))
+                .font(.caption.monospacedDigit())
+                .opacity(0.8)
+            Text(WidgetCountdown.text(minutes: entry.minutesUntilNext))
+                .font(.caption2.monospacedDigit())
+                .opacity(0.7)
         }
     }
 }
@@ -164,76 +178,24 @@ private extension View {
             self.background(background())
         }
     }
-}
 
-struct MiniPrayerDialView: View {
-    let schedule: WidgetPrayerSchedule
-    let activePeriod: WidgetPrayerPeriod
-    let minutesFromMidnight: Int
-
-    var body: some View {
-        Canvas { context, size in
-            let center = CGPoint(x: size.width / 2, y: size.height / 2)
-            let radius = min(size.width, size.height) / 2 - 1
-            let lineWidth = max(4, radius * 0.22)
-
-            for period in WidgetPrayerPeriod.allCases {
-                let isActive = period == activePeriod
-                drawArc(
-                    context: context,
-                    center: center,
-                    radius: radius - lineWidth / 2,
-                    start: periodStart(period),
-                    end: periodEnd(period),
-                    color: period.color.opacity(isActive ? 1 : (period == .shuruq ? 0.25 : 0.55)),
-                    lineWidth: isActive ? lineWidth + 1.5 : lineWidth
-                )
-            }
-
-            let nowAngle = Double(minutesFromMidnight) / Double(24 * 60) * 360
-            let tip = point(center: center, radius: radius - 1, angle: nowAngle)
-            let hub = point(center: center, radius: radius - lineWidth - 2, angle: nowAngle)
-            var hand = Path()
-            hand.move(to: hub)
-            hand.addLine(to: tip)
-            context.stroke(hand, with: .color(.primary), style: StrokeStyle(lineWidth: 1.5, lineCap: .round))
+    /// Pulls content into system widget margins so Lock Screen dials read larger (iOS 17+).
+    @ViewBuilder
+    func expandIntoWidgetMargins() -> some View {
+        if #available(iOSApplicationExtension 17.0, *) {
+            modifier(_ExpandIntoWidgetMargins())
+        } else {
+            self
         }
     }
+}
 
-    private func periodStart(_ period: WidgetPrayerPeriod) -> Double {
-        schedule.startAngle(for: period)
-    }
+@available(iOSApplicationExtension 17.0, *)
+private struct _ExpandIntoWidgetMargins: ViewModifier {
+    @Environment(\.widgetContentMargins) private var margins
 
-    private func periodEnd(_ period: WidgetPrayerPeriod) -> Double {
-        schedule.endAngle(for: period)
-    }
-
-    private func drawArc(
-        context: GraphicsContext,
-        center: CGPoint,
-        radius: CGFloat,
-        start: Double,
-        end: Double,
-        color: Color,
-        lineWidth: CGFloat
-    ) {
-        var path = Path()
-        path.addArc(
-            center: center,
-            radius: radius,
-            startAngle: .degrees(start - 90),
-            endAngle: .degrees(end - 90),
-            clockwise: false
-        )
-        context.stroke(path, with: .color(color), style: StrokeStyle(lineWidth: lineWidth, lineCap: .butt))
-    }
-
-    private func point(center: CGPoint, radius: CGFloat, angle: Double) -> CGPoint {
-        let radians = (angle - 90) * .pi / 180
-        return CGPoint(
-            x: center.x + radius * CGFloat(cos(radians)),
-            y: center.y + radius * CGFloat(sin(radians))
-        )
+    func body(content: Content) -> some View {
+        content.padding(-margins)
     }
 }
 
@@ -245,9 +207,11 @@ struct PrayerClockWidget: Widget {
             PrayerClockWidgetEntryView(entry: entry)
         }
         .configurationDisplayName("Prayer Clock")
-        .description("Shows today’s prayer periods on the Home and Lock Screen.")
+        .description("Prayer periods clock. Prefer Medium or Large on the Home Screen for a bigger dial.")
         .supportedFamilies([
             .systemSmall,
+            .systemMedium,
+            .systemLarge,
             .accessoryCircular,
             .accessoryRectangular,
             .accessoryInline

@@ -94,6 +94,8 @@ enum WidgetPrayerPeriod: String, CaseIterable {
         }
     }
 
+    var isFard: Bool { self != .shuruq }
+
     func localizedName(locale: Locale = .current) -> String {
         let code = locale.languageCode ?? locale.identifier.prefix(2).description
         if code.hasPrefix("ar") {
@@ -236,5 +238,20 @@ enum WidgetCountdown {
             return String(format: "%dh %02dm", hours, mins)
         }
         return String(format: "%dm", mins)
+    }
+
+    static func nextInText(minutes: Int, locale: Locale = .current) -> String {
+        let time = text(minutes: minutes)
+        return WidgetL10n.nextIn(time, locale: locale)
+    }
+}
+
+enum WidgetL10n {
+    static func nextIn(_ time: String, locale: Locale = .current) -> String {
+        let code = locale.languageCode ?? locale.identifier.prefix(2).description
+        if code.hasPrefix("ar") {
+            return "التالي خلال \(time)"
+        }
+        return "Next in \(time)"
     }
 }
