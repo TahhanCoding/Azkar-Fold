@@ -10,7 +10,7 @@ struct PrayerClockView: View {
     @EnvironmentObject var appLanguage: AppLanguageManager
     let state: PrayerClockState
 
-    private let dialSize: CGFloat = 280
+    private let dialSize: CGFloat = 300
 
     var body: some View {
         ZStack {
@@ -24,8 +24,8 @@ struct PrayerClockView: View {
         Canvas { context, size in
             let center = CGPoint(x: size.width / 2, y: size.height / 2)
             let radius = min(size.width, size.height) / 2 - 8
-            let trackWidth: CGFloat = 28
-            let activeWidth: CGFloat = 34
+            let trackWidth: CGFloat = 26
+            let activeWidth: CGFloat = 32
 
             let plateRect = CGRect(
                 x: center.x - radius - 6,
@@ -89,7 +89,7 @@ struct PrayerClockView: View {
                 let outer = point(on: center, radius: radius - trackWidth - 2, angleDegrees: angle)
                 let inner = point(
                     on: center,
-                    radius: radius - trackWidth - (isMajor ? 12 : 7),
+                    radius: radius - trackWidth - (isMajor ? 11 : 7),
                     angleDegrees: angle
                 )
                 var tick = Path()
@@ -100,6 +100,16 @@ struct PrayerClockView: View {
                     with: .color(theme.currentTheme.text.opacity(isMajor ? 0.35 : 0.15)),
                     style: StrokeStyle(lineWidth: isMajor ? 1.5 : 1, lineCap: .round)
                 )
+
+                let labelPoint = point(
+                    on: center,
+                    radius: radius - trackWidth - 18,
+                    angleDegrees: angle
+                )
+                let label = Text(String(format: "%02d", hour))
+                    .font(.system(size: isMajor ? 9 : 7, weight: isMajor ? .semibold : .medium).monospacedDigit())
+                    .foregroundColor(theme.currentTheme.text.opacity(isMajor ? 0.72 : 0.48))
+                context.draw(label, at: labelPoint, anchor: .center)
             }
 
             for period in PrayerPeriod.allCases {
@@ -117,7 +127,7 @@ struct PrayerClockView: View {
             }
 
             let handOuter = point(on: center, radius: radius + 4, angleDegrees: state.nowAngleDegrees)
-            let handInner = point(on: center, radius: radius - trackWidth - 18, angleDegrees: state.nowAngleDegrees)
+            let handInner = point(on: center, radius: radius - trackWidth - 28, angleDegrees: state.nowAngleDegrees)
             var hand = Path()
             hand.move(to: handInner)
             hand.addLine(to: handOuter)
@@ -136,7 +146,7 @@ struct PrayerClockView: View {
             context.fill(tip, with: .color(theme.currentTheme.primary))
             context.stroke(tip, with: .color(theme.currentTheme.cardBackground), lineWidth: 1.5)
 
-            let hubRadius: CGFloat = radius - trackWidth - 22
+            let hubRadius: CGFloat = radius - trackWidth - 32
             let hubRect = CGRect(
                 x: center.x - hubRadius,
                 y: center.y - hubRadius,
@@ -153,28 +163,28 @@ struct PrayerClockView: View {
 
     private var centerStatus: some View {
         let period = state.activePeriod
-        return VStack(spacing: 6) {
+        return VStack(spacing: 5) {
             Image(systemName: period.systemImage)
-                .font(.title2)
+                .font(.title3)
                 .foregroundColor(blendedColor(for: period, isActive: true))
 
             Text(appLanguage.text(period.nameKey))
-                .font(.headline.weight(.semibold))
+                .font(.subheadline.weight(.semibold))
                 .foregroundColor(theme.currentTheme.text)
                 .multilineTextAlignment(.center)
 
             Text("\(formatTime(state.schedule.startTimeString(for: period))) – \(formatTime(state.schedule.endTimeString(for: period)))")
-                .font(.caption)
+                .font(.caption2)
                 .foregroundColor(theme.currentTheme.text.opacity(0.55))
                 .monospacedDigit()
 
             Text(appLanguage.text("prayer.countdown", state.countdownText))
-                .font(.caption.weight(.medium))
+                .font(.caption2.weight(.medium))
                 .foregroundColor(theme.currentTheme.primary)
-                .padding(.top, 2)
+                .padding(.top, 1)
         }
-        .frame(maxWidth: 140)
-        .padding(.horizontal, 8)
+        .frame(maxWidth: 118)
+        .padding(.horizontal, 6)
     }
 
     private func drawArc(

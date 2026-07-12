@@ -51,6 +51,9 @@ struct Azkar_FoldApp: App {
                     }
                 }
             }
+            .onOpenURL { url in
+                AppDeepLink.handle(url)
+            }
         }
     }
 }

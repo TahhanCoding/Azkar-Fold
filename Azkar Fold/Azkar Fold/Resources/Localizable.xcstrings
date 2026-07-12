@@ -1501,6 +1501,40 @@
         }
       }
     },
+    "widget.prayer_clock.name" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "ar" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "ساعة الصلاة"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Prayer Clock"
+          }
+        }
+      }
+    },
+    "widget.prayer_clock.description" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "ar" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "عرض أوقات الصلاة على شاشة القفل"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Shows today’s prayer periods on the Lock Screen"
+          }
+        }
+      }
+    },
     "settings.terms" : {
       "extractionState" : "manual",
       "localizations" : {

@@ -33,6 +33,9 @@ struct HomeView: View {
         .onChange(of: tabPreferences.tabOrder) { _ in
             ensureValidSelection()
         }
+        .onReceive(NotificationCenter.default.publisher(for: AppDeepLink.openPrayerTab)) { _ in
+            openPrayerTabIfAvailable()
+        }
     }
 
     @ViewBuilder
@@ -58,6 +61,12 @@ struct HomeView: View {
     private func ensureValidSelection() {
         if !tabPreferences.visibleTabs.contains(selectedTab) {
             selectedTab = tabPreferences.resolvedStartupTab()
+        }
+    }
+
+    private func openPrayerTabIfAvailable() {
+        if tabPreferences.visibleTabs.contains(.prayer) {
+            selectedTab = .prayer
         }
     }
 }
