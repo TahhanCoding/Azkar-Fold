@@ -2,41 +2,9 @@
 //  PrayerPeriod.swift
 //  Azkar Fold
 //
-//  TEMPORARY: Hardcoded Makkah prayer times snapshot (AlAdhan Umm Al-Qura, 10 Jul 2026).
-//
 
 import Foundation
 import SwiftUI
-
-/// Temporary Makkah schedule — replace with live calculation later.
-enum MakkahPrayerTimesSnapshot {
-    static let locationNameKey: String.LocalizationValue = "prayer.location_makkah"
-    static let dateLabel = "10 Jul 2026"
-    static let hijriLabel = "25 Muharram 1448"
-    static let timeZoneIdentifier = "Asia/Riyadh"
-
-    // TEMPORARY hardcoded wall-clock times (HH:mm, Asia/Riyadh)
-    static let fajr = "04:18"
-    static let sunrise = "05:45"
-    static let dhuhr = "12:26"
-    static let asr = "15:42"
-    static let maghrib = "19:07"
-    static let isha = "20:37"
-
-    static var timeZone: TimeZone {
-        TimeZone(identifier: timeZoneIdentifier) ?? .current
-    }
-
-    static func minutes(fromHHMM string: String) -> Int {
-        let parts = string.split(separator: ":")
-        guard parts.count == 2,
-              let hour = Int(parts[0]),
-              let minute = Int(parts[1]) else {
-            return 0
-        }
-        return hour * 60 + minute
-    }
-}
 
 enum PrayerPeriod: String, CaseIterable, Identifiable {
     case fajr
@@ -74,70 +42,38 @@ enum PrayerPeriod: String, CaseIterable, Identifiable {
         }
     }
 
-    /// Start time as HH:mm from the Makkah snapshot.
-    var startTimeString: String {
-        switch self {
-        case .fajr: return MakkahPrayerTimesSnapshot.fajr
-        case .shuruq: return MakkahPrayerTimesSnapshot.sunrise
-        case .dhuhr: return MakkahPrayerTimesSnapshot.dhuhr
-        case .asr: return MakkahPrayerTimesSnapshot.asr
-        case .maghrib: return MakkahPrayerTimesSnapshot.maghrib
-        case .isha: return MakkahPrayerTimesSnapshot.isha
-        }
-    }
-
-    /// End time as HH:mm (next period start). Isha ends at next Fajr.
-    var endTimeString: String {
-        switch self {
-        case .fajr: return MakkahPrayerTimesSnapshot.sunrise
-        case .shuruq: return MakkahPrayerTimesSnapshot.dhuhr
-        case .dhuhr: return MakkahPrayerTimesSnapshot.asr
-        case .asr: return MakkahPrayerTimesSnapshot.maghrib
-        case .maghrib: return MakkahPrayerTimesSnapshot.isha
-        case .isha: return MakkahPrayerTimesSnapshot.fajr
-        }
-    }
-
-    var startMinutes: Int {
-        MakkahPrayerTimesSnapshot.minutes(fromHHMM: startTimeString)
-    }
-
-    var endMinutes: Int {
-        MakkahPrayerTimesSnapshot.minutes(fromHHMM: endTimeString)
-    }
-
-    /// Whether this period wraps past midnight (Isha → Fajr).
-    var wrapsMidnight: Bool {
-        endMinutes <= startMinutes
-    }
-
-    /// Semantic day-part color (blended with theme primary in the view).
     var semanticColor: Color {
         switch self {
-        case .fajr: return Color(red: 0.35, green: 0.38, blue: 0.72)      // dawn indigo
-        case .shuruq: return Color(red: 0.85, green: 0.68, blue: 0.28)    // morning gold
-        case .dhuhr: return Color(red: 0.22, green: 0.62, blue: 0.58)     // noon teal
-        case .asr: return Color(red: 0.88, green: 0.55, blue: 0.22)       // afternoon amber
-        case .maghrib: return Color(red: 0.82, green: 0.38, blue: 0.42)   // sunset rose
-        case .isha: return Color(red: 0.22, green: 0.28, blue: 0.48)      // night deep blue
+        case .fajr: return Color(red: 0.35, green: 0.38, blue: 0.72)
+        case .shuruq: return Color(red: 0.85, green: 0.68, blue: 0.28)
+        case .dhuhr: return Color(red: 0.22, green: 0.62, blue: 0.58)
+        case .asr: return Color(red: 0.88, green: 0.55, blue: 0.22)
+        case .maghrib: return Color(red: 0.82, green: 0.38, blue: 0.42)
+        case .isha: return Color(red: 0.22, green: 0.28, blue: 0.48)
         }
     }
 
-    func contains(minutesFromMidnight minutes: Int) -> Bool {
-        if wrapsMidnight {
-            return minutes >= startMinutes || minutes < endMinutes
+    func wrapsMidnight(in schedule: DailyPrayerSchedule) -> Bool {
+        schedule.endMinutes(for: self) <= schedule.startMinutes(for: self)
+    }
+
+    func contains(minutesFromMidnight minutes: Int, in schedule: DailyPrayerSchedule) -> Bool {
+        let start = schedule.startMinutes(for: self)
+        let end = schedule.endMinutes(for: self)
+        if wrapsMidnight(in: schedule) {
+            return minutes >= start || minutes < end
         }
-        return minutes >= startMinutes && minutes < endMinutes
+        return minutes >= start && minutes < end
     }
 
-    /// Start angle in degrees for a 24h dial (0° = midnight at top, clockwise).
-    var startAngleDegrees: Double {
-        Self.angleDegrees(forMinutes: startMinutes)
+    func startAngleDegrees(in schedule: DailyPrayerSchedule) -> Double {
+        Self.angleDegrees(forMinutes: schedule.startMinutes(for: self))
     }
 
-    var endAngleDegrees: Double {
-        var end = Self.angleDegrees(forMinutes: endMinutes)
-        if wrapsMidnight && end <= startAngleDegrees {
+    func endAngleDegrees(in schedule: DailyPrayerSchedule) -> Double {
+        var end = Self.angleDegrees(forMinutes: schedule.endMinutes(for: self))
+        let start = startAngleDegrees(in: schedule)
+        if wrapsMidnight(in: schedule) && end <= start {
             end += 360
         }
         return end
@@ -148,8 +84,8 @@ enum PrayerPeriod: String, CaseIterable, Identifiable {
         return Double(clamped) / Double(24 * 60) * 360.0
     }
 
-    static func period(containing minutesFromMidnight: Int) -> PrayerPeriod {
-        for period in PrayerPeriod.allCases where period.contains(minutesFromMidnight: minutesFromMidnight) {
+    static func period(containing minutesFromMidnight: Int, in schedule: DailyPrayerSchedule) -> PrayerPeriod {
+        for period in PrayerPeriod.allCases where period.contains(minutesFromMidnight: minutesFromMidnight, in: schedule) {
             return period
         }
         return .isha
@@ -158,46 +94,46 @@ enum PrayerPeriod: String, CaseIterable, Identifiable {
     static func minutesFromMidnight(in timeZone: TimeZone, date: Date = Date()) -> Int {
         var calendar = Calendar(identifier: .gregorian)
         calendar.timeZone = timeZone
-        let components = calendar.dateComponents([.hour, .minute, .second], from: date)
-        let hour = components.hour ?? 0
-        let minute = components.minute ?? 0
-        return hour * 60 + minute
+        let components = calendar.dateComponents([.hour, .minute], from: date)
+        return (components.hour ?? 0) * 60 + (components.minute ?? 0)
     }
 
-    /// Minutes remaining until this period's end (handles midnight wrap).
-    func minutesUntilEnd(from minutesFromMidnight: Int) -> Int {
-        if wrapsMidnight {
-            if minutesFromMidnight >= startMinutes {
-                return (24 * 60 - minutesFromMidnight) + endMinutes
+    func minutesUntilEnd(from minutesFromMidnight: Int, in schedule: DailyPrayerSchedule) -> Int {
+        let end = schedule.endMinutes(for: self)
+        if wrapsMidnight(in: schedule) {
+            if minutesFromMidnight >= schedule.startMinutes(for: self) {
+                return (24 * 60 - minutesFromMidnight) + end
             }
-            return endMinutes - minutesFromMidnight
+            return end - minutesFromMidnight
         }
-        return max(0, endMinutes - minutesFromMidnight)
-    }
-
-    func nextPeriod() -> PrayerPeriod {
-        let all = PrayerPeriod.allCases
-        guard let index = all.firstIndex(of: self) else { return .fajr }
-        return all[(index + 1) % all.count]
+        return max(0, end - minutesFromMidnight)
     }
 }
 
 struct PrayerClockState {
     let now: Date
-    let timeZone: TimeZone
+    let schedule: DailyPrayerSchedule
+    let location: PrayerLocation
     let minutesFromMidnight: Int
     let activePeriod: PrayerPeriod
     let minutesUntilNext: Int
 
-    init(date: Date = Date(), timeZone: TimeZone = MakkahPrayerTimesSnapshot.timeZone) {
+    init(
+        date: Date = Date(),
+        location: PrayerLocation = PrayerSettingsStore.shared.location
+    ) {
         self.now = date
-        self.timeZone = timeZone
-        let minutes = PrayerPeriod.minutesFromMidnight(in: timeZone, date: date)
+        self.location = location
+        let schedule = PrayerTimesCalculator.schedule(for: location, on: date)
+        self.schedule = schedule
+        let minutes = PrayerPeriod.minutesFromMidnight(in: schedule.timeZone, date: date)
         self.minutesFromMidnight = minutes
-        let active = PrayerPeriod.period(containing: minutes)
+        let active = PrayerPeriod.period(containing: minutes, in: schedule)
         self.activePeriod = active
-        self.minutesUntilNext = active.minutesUntilEnd(from: minutes)
+        self.minutesUntilNext = active.minutesUntilEnd(from: minutes, in: schedule)
     }
+
+    var timeZone: TimeZone { schedule.timeZone }
 
     var nowAngleDegrees: Double {
         PrayerPeriod.angleDegrees(forMinutes: minutesFromMidnight)
@@ -210,5 +146,14 @@ struct PrayerClockState {
             return String(format: "%dh %02dm", hours, mins)
         }
         return String(format: "%dm", mins)
+    }
+
+    func subtitle(using appLanguage: AppLanguageManager) -> String {
+        let place = location.resolvedDisplayName(using: appLanguage)
+        let dateText = now.formatted(
+            Date.FormatStyle(date: .abbreviated, time: .omitted)
+                .locale(appLanguage.locale)
+        )
+        return "\(place) · \(dateText)"
     }
 }

@@ -8,7 +8,7 @@ import SwiftUI
 struct PrayerPeriodLegendView: View {
     @EnvironmentObject var theme: ThemeManager
     @EnvironmentObject var appLanguage: AppLanguageManager
-    let activePeriod: PrayerPeriod
+    let state: PrayerClockState
 
     var body: some View {
         VStack(spacing: 0) {
@@ -31,8 +31,10 @@ struct PrayerPeriodLegendView: View {
     }
 
     private func periodRow(_ period: PrayerPeriod) -> some View {
-        let isActive = period == activePeriod
+        let isActive = period == state.activePeriod
         let tint = period.semanticColor.opacity(isActive ? 1 : 0.75)
+        let start = state.schedule.startTimeString(for: period)
+        let end = state.schedule.endTimeString(for: period)
 
         return HStack(spacing: 14) {
             ZStack {
@@ -65,7 +67,7 @@ struct PrayerPeriodLegendView: View {
                     }
                 }
 
-                Text("\(formatTime(period.startTimeString)) – \(formatTime(period.endTimeString))")
+                Text("\(formatTime(start)) – \(formatTime(end))")
                     .font(.caption)
                     .foregroundColor(theme.currentTheme.text.opacity(0.45))
                     .monospacedDigit()
@@ -73,7 +75,7 @@ struct PrayerPeriodLegendView: View {
 
             Spacer(minLength: 8)
 
-            Text(formatTime(period.startTimeString))
+            Text(formatTime(start))
                 .font(.subheadline.weight(isActive ? .bold : .medium))
                 .foregroundColor(
                     isActive
@@ -99,7 +101,7 @@ struct PrayerPeriodLegendView: View {
             return hhmm
         }
         var calendar = Calendar(identifier: .gregorian)
-        calendar.timeZone = MakkahPrayerTimesSnapshot.timeZone
+        calendar.timeZone = state.timeZone
         var components = DateComponents()
         components.hour = hour
         components.minute = minute

@@ -9,6 +9,7 @@
 /* Begin PBXBuildFile section */
 		326D1EC12F06487B00CCF7A5 /* FirebaseCore in Frameworks */ = {isa = PBXBuildFile; productRef = 326D1EC02F06487B00CCF7A5 /* FirebaseCore */; };
 		326D1EC32F06487B00CCF7A5 /* FirebaseRemoteConfig in Frameworks */ = {isa = PBXBuildFile; productRef = 326D1EC22F06487B00CCF7A5 /* FirebaseRemoteConfig */; };
+		A1ADHAN012F8B000100000001 /* Adhan in Frameworks */ = {isa = PBXBuildFile; productRef = A1ADHAN022F8B000100000001 /* Adhan */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -30,6 +31,7 @@
 			files = (
 				326D1EC32F06487B00CCF7A5 /* FirebaseRemoteConfig in Frameworks */,
 				326D1EC12F06487B00CCF7A5 /* FirebaseCore in Frameworks */,
+				A1ADHAN012F8B000100000001 /* Adhan in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -74,6 +76,7 @@
 			packageProductDependencies = (
 				326D1EC02F06487B00CCF7A5 /* FirebaseCore */,
 				326D1EC22F06487B00CCF7A5 /* FirebaseRemoteConfig */,
+				A1ADHAN022F8B000100000001 /* Adhan */,
 			);
 			productName = "Azkar Fold";
 			productReference = 329D042C2DC5653500ED5D7E /* Azkar Fold.app */;
@@ -106,6 +109,7 @@
 			minimizedProjectReferenceProxies = 1;
 			packageReferences = (
 				326D1EBF2F06487B00CCF7A5 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */,
+				A1ADHAN032F8B000100000001 /* XCRemoteSwiftPackageReference "adhan-swift" */,
 			);
 			preferredProjectObjectVersion = 77;
 			productRefGroup = 329D042D2DC5653500ED5D7E /* Products */;
@@ -273,6 +277,7 @@
 				INFOPLIST_KEY_CFBundleDisplayName = "Azkar Fold";
 				INFOPLIST_KEY_ITSAppUsesNonExemptEncryption = NO;
 				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.lifestyle";
+				INFOPLIST_KEY_NSLocationWhenInUseUsageDescription = "Azkar Fold uses your location to calculate prayer times for where you are.";
 				INFOPLIST_KEY_NSMotionUsageDescription = "Used for 3-D tilt effect";
 				INFOPLIST_KEY_NSPhotoLibraryAddUsageDescription = "The app needs this permission to be able to save or share zekr snap.";
 				INFOPLIST_KEY_NSPhotoLibraryUsageDescription = "Azkar Fold needs access to your photo library so you can attach photos or videos to support messages.";
@@ -312,6 +317,7 @@
 				INFOPLIST_KEY_CFBundleDisplayName = "Azkar Fold";
 				INFOPLIST_KEY_ITSAppUsesNonExemptEncryption = NO;
 				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.lifestyle";
+				INFOPLIST_KEY_NSLocationWhenInUseUsageDescription = "Azkar Fold uses your location to calculate prayer times for where you are.";
 				INFOPLIST_KEY_NSMotionUsageDescription = "Used for 3-D tilt effect";
 				INFOPLIST_KEY_NSPhotoLibraryAddUsageDescription = "The app needs this permission to be able to save or share zekr snap.";
 				INFOPLIST_KEY_NSPhotoLibraryUsageDescription = "Azkar Fold needs access to your photo library so you can attach photos or videos to support messages.";
@@ -367,6 +373,14 @@
 				minimumVersion = 12.7.0;
 			};
 		};
+		A1ADHAN032F8B000100000001 /* XCRemoteSwiftPackageReference "adhan-swift" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/batoulapps/adhan-swift";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 1.4.0;
+			};
+		};
 /* End XCRemoteSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
@@ -379,6 +393,11 @@
 			isa = XCSwiftPackageProductDependency;
 			package = 326D1EBF2F06487B00CCF7A5 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
 			productName = FirebaseRemoteConfig;
+		};
+		A1ADHAN022F8B000100000001 /* Adhan */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = A1ADHAN032F8B000100000001 /* XCRemoteSwiftPackageReference "adhan-swift" */;
+			productName = Adhan;
 		};
 /* End XCSwiftPackageProductDependency section */
 	};

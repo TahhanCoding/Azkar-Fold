@@ -57,13 +57,15 @@ struct PrayerClockView: View {
                 let width = isActive ? activeWidth : trackWidth
                 let color = blendedColor(for: period, isActive: isActive)
                 let opacity = period.isFard ? (isActive ? 1.0 : 0.78) : (isActive ? 0.55 : 0.32)
+                let startDegrees = period.startAngleDegrees(in: state.schedule)
+                let endDegrees = period.endAngleDegrees(in: state.schedule)
 
                 drawArc(
                     context: context,
                     center: center,
                     radius: radius - trackWidth / 2,
-                    startDegrees: period.startAngleDegrees,
-                    endDegrees: period.endAngleDegrees,
+                    startDegrees: startDegrees,
+                    endDegrees: endDegrees,
                     color: color.opacity(opacity),
                     lineWidth: width
                 )
@@ -73,8 +75,8 @@ struct PrayerClockView: View {
                         context: context,
                         center: center,
                         radius: radius - trackWidth / 2,
-                        startDegrees: period.startAngleDegrees,
-                        endDegrees: period.endAngleDegrees,
+                        startDegrees: startDegrees,
+                        endDegrees: endDegrees,
                         color: color.opacity(0.28),
                         lineWidth: width + 10
                     )
@@ -101,7 +103,7 @@ struct PrayerClockView: View {
             }
 
             for period in PrayerPeriod.allCases {
-                let angle = period.startAngleDegrees
+                let angle = period.startAngleDegrees(in: state.schedule)
                 let outer = point(on: center, radius: radius + 2, angleDegrees: angle)
                 let inner = point(on: center, radius: radius - trackWidth - 4, angleDegrees: angle)
                 var boundary = Path()
@@ -161,7 +163,7 @@ struct PrayerClockView: View {
                 .foregroundColor(theme.currentTheme.text)
                 .multilineTextAlignment(.center)
 
-            Text("\(formatTime(period.startTimeString)) – \(formatTime(period.endTimeString))")
+            Text("\(formatTime(state.schedule.startTimeString(for: period))) – \(formatTime(state.schedule.endTimeString(for: period)))")
                 .font(.caption)
                 .foregroundColor(theme.currentTheme.text.opacity(0.55))
                 .monospacedDigit()
@@ -221,7 +223,7 @@ struct PrayerClockView: View {
             return hhmm
         }
         var calendar = Calendar(identifier: .gregorian)
-        calendar.timeZone = MakkahPrayerTimesSnapshot.timeZone
+        calendar.timeZone = state.timeZone
         var components = DateComponents()
         components.hour = hour
         components.minute = minute
