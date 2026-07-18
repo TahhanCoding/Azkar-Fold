@@ -16,6 +16,7 @@ struct Azkar_FoldApp: App {
     
     init() {
         FirebaseApp.configure()
+        FirebaseTelemetry.configure()
         AzkarFont.registerIfNeeded()
         AppStoreShareQRCode.prefetch()
     }
@@ -46,9 +47,11 @@ struct Azkar_FoldApp: App {
             }
             .onChange(of: showLaunchScreen) { newValue in
                 if !newValue {
-                    // Trigger update check when launch screen dismisses
-                    Task {
+                    Task { @MainActor in
                         await UpdateManager.shared.checkForUpdates()
+                        WhatsNewManager.shared.evaluate(
+                            forceUpdateShowing: UpdateManager.shared.showForceUpdate
+                        )
                     }
                 }
             }

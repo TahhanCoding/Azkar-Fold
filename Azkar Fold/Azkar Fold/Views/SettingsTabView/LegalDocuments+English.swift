@@ -29,6 +29,8 @@ extension LegalDocuments {
                 • Azkar you create, counters, progress, theme choices, and related preferences are stored locally on your device.
                 • We do not require you to create an account to use the app.
                 • The app may check for available updates using Firebase Remote Config. These requests can include standard technical information such as app version and general device or network details needed to deliver update information.
+                • The app uses Firebase Analytics (without advertising identifiers) to understand anonymous usage such as sessions and selected feature events. We do not use this data for advertising.
+                • The app uses Firebase Crashlytics to collect crash and diagnostic information so we can improve stability. Crash reports can include device and app technical details; they do not include the text of your personal azkar.
                 """
             ),
             LegalDocumentSection(
@@ -37,6 +39,8 @@ extension LegalDocuments {
                 Locally stored information is used only to provide app features, including saving your azkar, tracking progress, applying themes, and restoring your preferences.
 
                 Update-related requests are used only to determine whether a newer version of the app is available and to present update messaging when appropriate.
+
+                Analytics and crash diagnostics are used only to improve the app’s reliability and features. They are not used to sell personal information or to show ads.
                 """
             ),
             LegalDocumentSection(

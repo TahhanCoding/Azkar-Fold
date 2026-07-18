@@ -601,6 +601,7 @@ struct SunnahZekrView: View {
             }
 
             isExporting = false
+            FirebaseTelemetry.logEvent(FirebaseTelemetry.Event.shareZekr)
             presentShareSheet(activityItems: [shareURL]) { activity, success, _, _ in
                 Task { @MainActor in
                     guard activity == .saveToCameraRoll else { return }

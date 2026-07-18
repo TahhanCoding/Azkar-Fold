@@ -15,6 +15,7 @@ struct RootView: View {
     @StateObject private var progressStore = SunnahProgressStore()
     @StateObject private var coreMotionManager = CoreMotionManager()
     @StateObject private var updateManager = UpdateManager.shared
+    @StateObject private var whatsNewManager = WhatsNewManager.shared
     @StateObject private var appLanguage = AppLanguageManager.shared
 
     var body: some View {
@@ -27,7 +28,20 @@ struct RootView: View {
             }
             
             // Overlays
-            if updateManager.showOptionalUpdate {
+            if whatsNewManager.isPresented && !updateManager.showForceUpdate {
+                WhatsNewOverlayView(
+                    changes: [
+                        appLanguage.text("whats_new.feature.prayer_tab"),
+                        appLanguage.text("whats_new.feature.tab_settings"),
+                        appLanguage.text("whats_new.feature.prayer_widget"),
+                        appLanguage.text("whats_new.feature.share_qr")
+                    ],
+                    onDismiss: whatsNewManager.dismiss
+                )
+                .zIndex(90)
+            }
+
+            if updateManager.showOptionalUpdate && !whatsNewManager.isPresented {
                 OptionalUpdateAlertView(updateManager: updateManager)
                     .zIndex(100)
             }
@@ -44,6 +58,7 @@ struct RootView: View {
         .environmentObject(progressStore)
         .environmentObject(coreMotionManager)
         .environmentObject(updateManager)
+        .environmentObject(whatsNewManager)
         .environmentObject(appLanguage)
         .environment(\.locale, appLanguage.locale)
         .environment(\.layoutDirection, appLanguage.layoutDirection)

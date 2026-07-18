@@ -18,7 +18,6 @@ class UpdateManager: ObservableObject {
     @Published var requiredVersion: String = ""
     @Published var availableVersion: String = ""
     @Published var currentVersion: String = ""
-    @Published var whatIsNew: String = ""
 
     private let updateService = FirebaseUpdateService.shared
 
@@ -29,7 +28,6 @@ class UpdateManager: ObservableObject {
         do {
             let status = try await updateService.checkForUpdates()
             self.updateStatus = status
-            self.whatIsNew = updateService.getWhatIsNew()
             self.handleUpdateStatus(status)
         } catch {
             AzkarDebugLog.log("Error checking updates: \(error)")
@@ -68,6 +66,7 @@ class UpdateManager: ObservableObject {
 
     func openAppStore() {
         if let url = updateService.getAppStoreURL() {
+            FirebaseTelemetry.logEvent(FirebaseTelemetry.Event.openAppStore)
             UIApplication.shared.open(url)
         } else {
             AzkarDebugLog.log("App Store URL not configured — set AppConfiguration.appStoreID")

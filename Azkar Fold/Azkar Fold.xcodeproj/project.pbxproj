@@ -10,6 +10,8 @@
 		326D1EC12F06487B00CCF7A5 /* FirebaseCore in Frameworks */ = {isa = PBXBuildFile; productRef = 326D1EC02F06487B00CCF7A5 /* FirebaseCore */; };
 		326D1EC32F06487B00CCF7A5 /* FirebaseRemoteConfig in Frameworks */ = {isa = PBXBuildFile; productRef = 326D1EC22F06487B00CCF7A5 /* FirebaseRemoteConfig */; };
 		A1ADHAN012F8B000100000001 /* Adhan in Frameworks */ = {isa = PBXBuildFile; productRef = A1ADHAN022F8B000100000001 /* Adhan */; };
+		A1FBANL12F9D000100000001 /* FirebaseAnalyticsCore in Frameworks */ = {isa = PBXBuildFile; productRef = A1FBANL22F9D000100000001 /* FirebaseAnalyticsCore */; };
+		A1FBCRSH12F9D000100000001 /* FirebaseCrashlytics in Frameworks */ = {isa = PBXBuildFile; productRef = A1FBCRSH22F9D000100000001 /* FirebaseCrashlytics */; };
 		WDGBF0012F8C000100000001 /* Adhan in Frameworks */ = {isa = PBXBuildFile; productRef = WDGPPROD2F8C000100000001 /* Adhan */; };
 		WDGBF0022F8C000100000001 /* AzkarFoldWidgets.appex in Embed Foundation Extensions */ = {isa = PBXBuildFile; fileRef = WDGFREF02F8C000100000001 /* AzkarFoldWidgets.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
 /* End PBXBuildFile section */
@@ -76,6 +78,8 @@
 			files = (
 				326D1EC32F06487B00CCF7A5 /* FirebaseRemoteConfig in Frameworks */,
 				326D1EC12F06487B00CCF7A5 /* FirebaseCore in Frameworks */,
+				A1FBANL12F9D000100000001 /* FirebaseAnalyticsCore in Frameworks */,
+				A1FBCRSH12F9D000100000001 /* FirebaseCrashlytics in Frameworks */,
 				A1ADHAN012F8B000100000001 /* Adhan in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -120,6 +124,7 @@
 				329D04292DC5653500ED5D7E /* Frameworks */,
 				329D042A2DC5653500ED5D7E /* Resources */,
 				WDGEMBED2F8C000100000001 /* Embed Foundation Extensions */,
+				A1FBCRSH32F9D000100000001 /* Upload Crashlytics dSYM */,
 			);
 			buildRules = (
 			);
@@ -133,6 +138,8 @@
 			packageProductDependencies = (
 				326D1EC02F06487B00CCF7A5 /* FirebaseCore */,
 				326D1EC22F06487B00CCF7A5 /* FirebaseRemoteConfig */,
+				A1FBANL22F9D000100000001 /* FirebaseAnalyticsCore */,
+				A1FBCRSH22F9D000100000001 /* FirebaseCrashlytics */,
 				A1ADHAN022F8B000100000001 /* Adhan */,
 			);
 			productName = "Azkar Fold";
@@ -221,6 +228,33 @@
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXResourcesBuildPhase section */
+
+/* Begin PBXShellScriptBuildPhase section */
+		A1FBCRSH32F9D000100000001 /* Upload Crashlytics dSYM */ = {
+			isa = PBXShellScriptBuildPhase;
+			alwaysOutOfDate = 1;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+			);
+			inputPaths = (
+				"${DWARF_DSYM_FOLDER_PATH}/${DWARF_DSYM_FILE_NAME}",
+				"${DWARF_DSYM_FOLDER_PATH}/${DWARF_DSYM_FILE_NAME}/Contents/Resources/DWARF/${PRODUCT_NAME}",
+				"${DWARF_DSYM_FOLDER_PATH}/${DWARF_DSYM_FILE_NAME}/Contents/Info.plist",
+				"$(TARGET_BUILD_DIR)/$(UNLOCALIZED_RESOURCES_FOLDER_PATH)/GoogleService-Info.plist",
+				"$(TARGET_BUILD_DIR)/$(EXECUTABLE_PATH)",
+			);
+			name = "Upload Crashlytics dSYM";
+			outputFileListPaths = (
+			);
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "\"${BUILD_DIR%/Build/*}/SourcePackages/checkouts/firebase-ios-sdk/Crashlytics/run\"\n";
+		};
+/* End PBXShellScriptBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
 		329D04282DC5653500ED5D7E /* Sources */ = {
@@ -467,7 +501,7 @@
 					"@executable_path/Frameworks",
 					"@executable_path/../../Frameworks",
 				);
-				MARKETING_VERSION = 1.0.1;
+				MARKETING_VERSION = 1.0.2;
 				PRODUCT_BUNDLE_IDENTIFIER = "com.AhmedAlTahhan.Azkar-Fold.Widgets";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SKIP_INSTALL = YES;
@@ -495,7 +529,7 @@
 					"@executable_path/Frameworks",
 					"@executable_path/../../Frameworks",
 				);
-				MARKETING_VERSION = 1.0.1;
+				MARKETING_VERSION = 1.0.2;
 				PRODUCT_BUNDLE_IDENTIFIER = "com.AhmedAlTahhan.Azkar-Fold.Widgets";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SKIP_INSTALL = YES;
@@ -571,6 +605,16 @@
 			isa = XCSwiftPackageProductDependency;
 			package = A1ADHAN032F8B000100000001 /* XCRemoteSwiftPackageReference "adhan-swift" */;
 			productName = Adhan;
+		};
+		A1FBANL22F9D000100000001 /* FirebaseAnalyticsCore */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 326D1EBF2F06487B00CCF7A5 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
+			productName = FirebaseAnalyticsCore;
+		};
+		A1FBCRSH22F9D000100000001 /* FirebaseCrashlytics */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 326D1EBF2F06487B00CCF7A5 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
+			productName = FirebaseCrashlytics;
 		};
 		WDGPPROD2F8C000100000001 /* Adhan */ = {
 			isa = XCSwiftPackageProductDependency;

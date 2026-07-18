@@ -30,9 +30,6 @@
         }
       }
     },
-    "•" : {
-
-    },
     "12/15" : {
 
     },
@@ -3788,6 +3785,125 @@
     },
     "Volume" : {
 
+    },
+    "whats_new.continue" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "ar" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "حسنًا"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Got it"
+          }
+        }
+      }
+    },
+    "whats_new.feature.prayer_tab" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "ar" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "تبويب جديد لأوقات الصلاة مع ساعة يومية"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "New Prayer Times tab with a daily prayer clock"
+          }
+        }
+      }
+    },
+    "whats_new.feature.prayer_widget" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "ar" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "ودجت ساعة الصلاة على الشاشة الرئيسية"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Prayer Clock widget for the Home Screen"
+          }
+        }
+      }
+    },
+    "whats_new.feature.share_qr" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "ar" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "مشاركة الذكر كصورة مع رمز QR لمتجر التطبيقات"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Share a zekr as an image with an App Store QR code"
+          }
+        }
+      }
+    },
+    "whats_new.feature.tab_settings" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "ar" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "إظهار التبويبات أو إخفاؤها وترتيبها من الإعدادات"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Show, hide, and rearrange tabs in Settings"
+          }
+        }
+      }
+    },
+    "whats_new.subtitle" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "ar" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "إليك أبرز ما في الإصدار %@:"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Here’s what’s new in version %@:"
+          }
+        }
+      }
+    },
+    "whats_new.title" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "ar" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "مرحباً بالتحديث"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Welcome to the update"
+          }
+        }
+      }
     },
     "widget.prayer_clock.description" : {
       "extractionState" : "manual",

@@ -33,6 +33,11 @@ struct HomeView: View {
         .onChange(of: tabPreferences.tabOrder) { _ in
             ensureValidSelection()
         }
+        .onChange(of: selectedTab) { newTab in
+            if newTab == .prayer {
+                FirebaseTelemetry.logEvent(FirebaseTelemetry.Event.prayerTabOpen)
+            }
+        }
         .onReceive(NotificationCenter.default.publisher(for: AppDeepLink.openPrayerTab)) { _ in
             openPrayerTabIfAvailable()
         }

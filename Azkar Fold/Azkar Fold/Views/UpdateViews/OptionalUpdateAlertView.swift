@@ -12,14 +12,6 @@ struct OptionalUpdateAlertView: View {
     @EnvironmentObject var themeManager: ThemeManager
     @EnvironmentObject var appLanguage: AppLanguageManager
     
-    private var formattedImprovements: [String] {
-        guard !updateManager.whatIsNew.isEmpty else { return [] }
-        return updateManager.whatIsNew
-            .split(separator: ",")
-            .map { $0.trimmingCharacters(in: .whitespacesAndNewlines) }
-            .filter { !$0.isEmpty }
-    }
-    
     var body: some View {
         ZStack {
             Color.black.opacity(0.4)
@@ -38,29 +30,6 @@ struct OptionalUpdateAlertView: View {
                     .font(.subheadline)
                     .multilineTextAlignment(.center)
                     .foregroundStyle(themeManager.currentTheme.text.opacity(0.7))
-                
-                if !formattedImprovements.isEmpty {
-                    VStack(alignment: .leading, spacing: 6) {
-                        Text("update.whats_new")
-                            .font(.caption)
-                            .fontWeight(.semibold)
-                            .foregroundStyle(themeManager.currentTheme.text)
-                            .padding(.top, 4)
-                        
-                        ForEach(formattedImprovements, id: \.self) { improvement in
-                            HStack(alignment: .top, spacing: 6) {
-                                Text("•")
-                                    .font(.caption)
-                                    .foregroundStyle(themeManager.currentTheme.primary)
-                                Text(improvement)
-                                    .font(.caption)
-                                    .foregroundStyle(themeManager.currentTheme.text.opacity(0.7))
-                            }
-                        }
-                    }
-                    .frame(maxWidth: .infinity, alignment: .leading)
-                    .padding(.top, 4)
-                }
                 
                 HStack(spacing: 15) {
                     Button(action: {

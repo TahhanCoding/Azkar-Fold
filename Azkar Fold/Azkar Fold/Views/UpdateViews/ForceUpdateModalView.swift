@@ -12,14 +12,6 @@ struct ForceUpdateModalView: View {
     @EnvironmentObject var themeManager: ThemeManager
     @EnvironmentObject var appLanguage: AppLanguageManager
     
-    private var formattedImprovements: [String] {
-        guard !updateManager.whatIsNew.isEmpty else { return [] }
-        return updateManager.whatIsNew
-            .split(separator: ",")
-            .map { $0.trimmingCharacters(in: .whitespacesAndNewlines) }
-            .filter { !$0.isEmpty }
-    }
-    
     var body: some View {
         ZStack {
             themeManager.currentTheme.background
@@ -45,29 +37,6 @@ struct ForceUpdateModalView: View {
                         .multilineTextAlignment(.center)
                         .foregroundStyle(themeManager.currentTheme.text.opacity(0.7))
                         .padding(.horizontal)
-                    
-                    if !formattedImprovements.isEmpty {
-                        VStack(alignment: .leading, spacing: 8) {
-                            Text("update.whats_new")
-                                .font(.subheadline)
-                                .fontWeight(.semibold)
-                                .foregroundStyle(themeManager.currentTheme.text)
-                                .padding(.top, 8)
-                            
-                            ForEach(formattedImprovements, id: \.self) { improvement in
-                                HStack(alignment: .top, spacing: 8) {
-                                    Text("•")
-                                        .foregroundStyle(themeManager.currentTheme.primary)
-                                    Text(improvement)
-                                        .font(.subheadline)
-                                        .foregroundStyle(themeManager.currentTheme.text.opacity(0.7))
-                                }
-                            }
-                        }
-                        .frame(maxWidth: .infinity, alignment: .leading)
-                        .padding(.horizontal)
-                        .padding(.top, 8)
-                    }
                     
                     Text(appLanguage.text("update.versions", updateManager.currentVersion, updateManager.requiredVersion))
                         .font(.caption)
