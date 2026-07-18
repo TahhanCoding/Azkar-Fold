@@ -184,13 +184,38 @@ struct ExportableZekrCard: View {
             .fixedSize(horizontal: false, vertical: true)
 
             if let qrImage = AppStoreShareQRCode.image() {
-                Image(uiImage: qrImage)
-                    .interpolation(.none)
-                    .resizable()
-                    .frame(width: AppStoreShareQRCode.displaySize, height: AppStoreShareQRCode.displaySize)
-                    .padding(AppStoreShareQRCode.quietZone)
-                    .background(Color.white)
-                    .clipShape(RoundedRectangle(cornerRadius: 6, style: .continuous))
+                HStack(spacing: 12) {
+                    Image(uiImage: qrImage)
+                        .interpolation(.none)
+                        .resizable()
+                        .frame(width: AppStoreShareQRCode.displaySize, height: AppStoreShareQRCode.displaySize)
+                        .padding(AppStoreShareQRCode.quietZone)
+                        .background(Color.white)
+                        .clipShape(RoundedRectangle(cornerRadius: 6, style: .continuous))
+
+                    HStack(spacing: 8) {
+                        Image("ShareAppIcon")
+                            .resizable()
+                            .aspectRatio(contentMode: .fill)
+                            .frame(width: 28, height: 28)
+                            .clipShape(RoundedRectangle(cornerRadius: 6, style: .continuous))
+
+                        VStack(alignment: .leading, spacing: 2) {
+                            Text(L10n.t("app.name"))
+                                .font(.system(size: 13, weight: .semibold))
+                                .foregroundColor(appearance.text.opacity(0.75))
+                                .lineLimit(1)
+
+                            HStack(spacing: 3) {
+                                Image(systemName: "apple.logo")
+                                    .font(.system(size: 9, weight: .medium))
+                                Text("App Store")
+                                    .font(.system(size: 10, weight: .medium))
+                            }
+                            .foregroundColor(appearance.text.opacity(0.5))
+                        }
+                    }
+                }
             }
         }
         .padding(.horizontal, Self.outerHorizontalPadding)
@@ -292,6 +317,8 @@ func renderZekrImage(
         isSimpleMode: isSimpleMode,
         appearance: appearance
     )
+    .environment(\.locale, AppLanguageManager.shared.locale)
+    .environment(\.layoutDirection, AppLanguageManager.shared.layoutDirection)
 
     return snapshotRoundedSwiftUIView(
         exportView,
