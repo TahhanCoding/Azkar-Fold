@@ -11,20 +11,10 @@
         }
       }
     },
-    "%@ %@ · %@" : {
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "new",
-            "value" : "%1$@ %2$@ · %3$@"
-          }
-        }
-      }
-    },
     "Prayer Clock" : {
 
     },
-    "Prayer periods clock. Prefer Medium or Large on the Home Screen for a bigger dial." : {
+    "Prayer periods clock for the Home Screen." : {
 
     },
     "widget.prayer_clock.description" : {

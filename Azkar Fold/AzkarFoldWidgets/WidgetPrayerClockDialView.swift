@@ -14,6 +14,8 @@ struct WidgetPrayerClockDialView: View {
     var showHourLabels: Bool = true
     var showCenterStatus: Bool = true
     var compactCenter: Bool = false
+    /// When true, countdown is just "1h 33m" (no "Next in" prefix).
+    var shortCountdown: Bool = false
     /// Boosts stroke scale so Lock Screen circular uses the slot aggressively.
     var dense: Bool = false
 
@@ -245,13 +247,16 @@ struct WidgetPrayerClockDialView: View {
                     .lineLimit(1)
                     .minimumScaleFactor(0.7)
 
-                Text(WidgetCountdown.nextInText(minutes: remaining))
-                    .font(.system(size: metaSize, weight: .medium))
+                Text(
+                    shortCountdown
+                        ? WidgetCountdown.text(minutes: remaining)
+                        : WidgetCountdown.nextInText(minutes: remaining)
+                )
+                    .font(.system(size: metaSize, weight: .medium).monospacedDigit())
                     .foregroundColor(accent)
                     .lineLimit(1)
                     .minimumScaleFactor(0.7)
             } else {
-                // Lock Screen circular: still show the active name + short countdown.
                 Text(WidgetCountdown.text(minutes: remaining))
                     .font(.system(size: max(9, 10 * scale), weight: .medium).monospacedDigit())
                     .foregroundColor(accent)

@@ -17,6 +17,7 @@ struct Azkar_FoldApp: App {
     init() {
         FirebaseApp.configure()
         AzkarFont.registerIfNeeded()
+        AppStoreShareQRCode.prefetch()
     }
     
     var body: some Scene {

@@ -570,8 +570,6 @@ struct SunnahZekrView: View {
         isExporting = true
 
         Task { @MainActor in
-            try? await Task.sleep(nanoseconds: 350_000_000)
-
             guard currentIndex < displayedAzkarList.count else {
                 isExporting = false
                 return
