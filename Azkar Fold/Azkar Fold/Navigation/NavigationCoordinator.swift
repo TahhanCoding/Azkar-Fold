@@ -16,6 +16,7 @@ enum Route: Hashable {
     // Tab views
     case azkaryTab
     case sunnahTab
+    case prayerTab
     case settingsTab
 }
 

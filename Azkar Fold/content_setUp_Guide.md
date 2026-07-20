@@ -53,4 +53,4 @@ azkar-db is Arabic-only. Secondary language settings are hidden until translatio
 
 ## Firebase
 
-Firebase Remote Config is used for app version checks only, not for azkar content.
+Firebase is used for Remote Config (app version checks), Analytics without Ad ID (anonymous usage), and Crashlytics (crash diagnostics)—not for azkar content.

@@ -1,5 +1,5 @@
 {
-  "originHash" : "c63c63846d9c539229e96de38d6af51417e28c0ee9a0bc48bd0f0f19d923c329",
+  "originHash" : "e80c82c1c2cca3f2fdcca0868ae69233fe34a12722cdced7d79a6e4dfbb1f2f4",
   "pins" : [
     {
       "identity" : "abseil-cpp-binary",
@@ -8,6 +8,15 @@
       "state" : {
         "revision" : "bbe8b69694d7873315fd3a4ad41efe043e1c07c5",
         "version" : "1.2024072200.0"
+      }
+    },
+    {
+      "identity" : "adhan-swift",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/batoulapps/adhan-swift",
+      "state" : {
+        "revision" : "a6fa2deee80c5abb0b9ad04466f8ab12b53144e7",
+        "version" : "1.5.0"
       }
     },
     {

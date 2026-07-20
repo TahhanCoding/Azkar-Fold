@@ -15,7 +15,6 @@ class FirebaseUpdateService {
 
     private let kMinimumAppVersion = "min_version"
     private let kLatestAppVersion = "latest_version"
-    private let kWhatIsNew = "what_is_new"
 
     private init() {
         let settings = RemoteConfigSettings()
@@ -28,8 +27,7 @@ class FirebaseUpdateService {
 
         let defaults: [String: NSObject] = [
             kMinimumAppVersion: AppConfiguration.marketingVersion as NSObject,
-            kLatestAppVersion: AppConfiguration.marketingVersion as NSObject,
-            kWhatIsNew: "" as NSObject
+            kLatestAppVersion: AppConfiguration.marketingVersion as NSObject
         ]
         remoteConfig.setDefaults(defaults)
     }
@@ -79,10 +77,6 @@ class FirebaseUpdateService {
 
     func getAppStoreURL() -> URL? {
         AppConfiguration.appStoreURL
-    }
-
-    func getWhatIsNew() -> String {
-        remoteConfig[kWhatIsNew].stringValue ?? ""
     }
 
     private func isVersion(_ version1: String, lessThan version2: String) -> Bool {

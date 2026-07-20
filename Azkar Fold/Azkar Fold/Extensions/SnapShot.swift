@@ -5,6 +5,8 @@
 //  Created by Ahmed Shaban on 08/07/2025.
 //
 
+import CoreImage
+import CoreImage.CIFilterBuiltins
 import SwiftUI
 import UIKit
 
@@ -27,6 +29,55 @@ struct ShareSheet: UIViewControllerRepresentable {
         popover.sourceView = sourceView
         popover.sourceRect = CGRect(x: sourceView.bounds.midX, y: sourceView.bounds.midY, width: 0, height: 0)
         popover.permittedArrowDirections = []
+    }
+}
+
+enum AppStoreShareQRCode {
+    static let displaySize: CGFloat = 52
+    private static let quietZonePadding: CGFloat = 4
+    private static let lock = NSLock()
+    private static var cachedImage: UIImage?
+
+    static var quietZone: CGFloat { quietZonePadding }
+
+    static func prefetch() {
+        DispatchQueue.global(qos: .utility).async {
+            _ = image()
+        }
+    }
+
+    static func image() -> UIImage? {
+        lock.lock()
+        if let cachedImage {
+            lock.unlock()
+            return cachedImage
+        }
+        lock.unlock()
+
+        let generated = generateImage()
+
+        lock.lock()
+        if cachedImage == nil {
+            cachedImage = generated
+        }
+        let result = cachedImage
+        lock.unlock()
+        return result
+    }
+
+    private static func generateImage() -> UIImage? {
+        guard let url = AppConfiguration.appStoreURL else { return nil }
+        let data = Data(url.absoluteString.utf8)
+        let filter = CIFilter.qrCodeGenerator()
+        filter.message = data
+        filter.correctionLevel = "M"
+        guard let output = filter.outputImage else { return nil }
+
+        let scale = displaySize / output.extent.width
+        let scaled = output.transformed(by: CGAffineTransform(scaleX: scale, y: scale))
+        let context = CIContext()
+        guard let cgImage = context.createCGImage(scaled, from: scaled.extent) else { return nil }
+        return UIImage(cgImage: cgImage)
     }
 }
 
@@ -132,10 +183,40 @@ struct ExportableZekrCard: View {
             .frame(maxHeight: maxCardHeight, alignment: .top)
             .fixedSize(horizontal: false, vertical: true)
 
-            Text(AppConfiguration.repositoryDisplayLabel)
-                .font(.system(size: 14, weight: .medium))
-                .foregroundColor(appearance.text.opacity(0.6))
-                .frame(maxWidth: .infinity)
+            if let qrImage = AppStoreShareQRCode.image() {
+                HStack(spacing: 12) {
+                    Image(uiImage: qrImage)
+                        .interpolation(.none)
+                        .resizable()
+                        .frame(width: AppStoreShareQRCode.displaySize, height: AppStoreShareQRCode.displaySize)
+                        .padding(AppStoreShareQRCode.quietZone)
+                        .background(Color.white)
+                        .clipShape(RoundedRectangle(cornerRadius: 6, style: .continuous))
+
+                    HStack(spacing: 8) {
+                        Image("ShareAppIcon")
+                            .resizable()
+                            .aspectRatio(contentMode: .fill)
+                            .frame(width: 28, height: 28)
+                            .clipShape(RoundedRectangle(cornerRadius: 6, style: .continuous))
+
+                        VStack(alignment: .leading, spacing: 2) {
+                            Text(L10n.t("app.name"))
+                                .font(.system(size: 13, weight: .semibold))
+                                .foregroundColor(appearance.text.opacity(0.75))
+                                .lineLimit(1)
+
+                            HStack(spacing: 3) {
+                                Image(systemName: "apple.logo")
+                                    .font(.system(size: 9, weight: .medium))
+                                Text("App Store")
+                                    .font(.system(size: 10, weight: .medium))
+                            }
+                            .foregroundColor(appearance.text.opacity(0.5))
+                        }
+                    }
+                }
+            }
         }
         .padding(.horizontal, Self.outerHorizontalPadding)
         .padding(.vertical, 24)
@@ -236,6 +317,8 @@ func renderZekrImage(
         isSimpleMode: isSimpleMode,
         appearance: appearance
     )
+    .environment(\.locale, AppLanguageManager.shared.locale)
+    .environment(\.layoutDirection, AppLanguageManager.shared.layoutDirection)
 
     return snapshotRoundedSwiftUIView(
         exportView,

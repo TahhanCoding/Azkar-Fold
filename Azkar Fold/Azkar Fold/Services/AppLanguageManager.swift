@@ -73,6 +73,7 @@ final class AppLanguageManager: ObservableObject {
         UserDefaults.standard.set(true, forKey: hasChosenLanguageKey)
         syncAppleLanguagesPreference()
         applyUIKitLayoutDirection()
+        FirebaseTelemetry.syncAppLanguage(language)
         refreshID = UUID()
     }
 

@@ -570,8 +570,6 @@ struct SunnahZekrView: View {
         isExporting = true
 
         Task { @MainActor in
-            try? await Task.sleep(nanoseconds: 350_000_000)
-
             guard currentIndex < displayedAzkarList.count else {
                 isExporting = false
                 return
@@ -603,6 +601,7 @@ struct SunnahZekrView: View {
             }
 
             isExporting = false
+            FirebaseTelemetry.logEvent(FirebaseTelemetry.Event.shareZekr)
             presentShareSheet(activityItems: [shareURL]) { activity, success, _, _ in
                 Task { @MainActor in
                     guard activity == .saveToCameraRoll else { return }

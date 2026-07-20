@@ -7,6 +7,16 @@
     "#RRGGBB" : {
 
     },
+    "%@ – %@" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "%1$@ – %2$@"
+          }
+        }
+      }
+    },
     "%lld" : {
 
     },
@@ -20,9 +30,6 @@
         }
       }
     },
-    "•" : {
-
-    },
     "12/15" : {
 
     },
@@ -33,6 +40,9 @@
 
     },
     "Accent text for highlights" : {
+
+    },
+    "App Store" : {
 
     },
     "app.name" : {
@@ -864,6 +874,329 @@
     "OK" : {
 
     },
+    "prayer_location.geocode_failed" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "ar" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "تعذر تحديد اسم المكان"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Couldn’t resolve place name"
+          }
+        }
+      }
+    },
+    "prayer_location.open_settings" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "ar" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "فتح الإعدادات"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Open Settings"
+          }
+        }
+      }
+    },
+    "prayer_location.permission_message" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "ar" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "فعّل خدمات الموقع من الإعدادات لحساب مواقيت الصلاة حسب مكانك."
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Enable Location Services in Settings so Azkar Fold can calculate prayer times for where you are."
+          }
+        }
+      }
+    },
+    "prayer_location.permission_title" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "ar" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "الوصول إلى الموقع"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Location access"
+          }
+        }
+      }
+    },
+    "prayer_location.search_placeholder" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "ar" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "ابحث عن مدينة أو مكان"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Search city or place"
+          }
+        }
+      }
+    },
+    "prayer_location.selected" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "ar" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "الموقع المحدد"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Selected location"
+          }
+        }
+      }
+    },
+    "prayer_location.title" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "ar" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "موقع الصلاة"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Prayer location"
+          }
+        }
+      }
+    },
+    "prayer_location.use_location" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "ar" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "استخدم هذا الموقع"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Use this location"
+          }
+        }
+      }
+    },
+    "prayer.coming_soon" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "ar" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "قريباً"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Coming soon"
+          }
+        }
+      }
+    },
+    "prayer.countdown" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "ar" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "التالي خلال %@"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Next in %@"
+          }
+        }
+      }
+    },
+    "prayer.location_makkah" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "ar" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "مكة المكرمة"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Makkah"
+          }
+        }
+      }
+    },
+    "prayer.period.asr" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "ar" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "العصر"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Asr"
+          }
+        }
+      }
+    },
+    "prayer.period.between" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "ar" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "بين الصلوات"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Between"
+          }
+        }
+      }
+    },
+    "prayer.period.dhuhr" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "ar" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "الظهر"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Dhuhr"
+          }
+        }
+      }
+    },
+    "prayer.period.fajr" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "ar" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "الفجر"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Fajr"
+          }
+        }
+      }
+    },
+    "prayer.period.isha" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "ar" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "العشاء"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Isha"
+          }
+        }
+      }
+    },
+    "prayer.period.maghrib" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "ar" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "المغرب"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Maghrib"
+          }
+        }
+      }
+    },
+    "prayer.period.shuruq" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "ar" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "الشروق"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Sunrise"
+          }
+        }
+      }
+    },
+    "prayer.subtitle_makkah" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "ar" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "مكة · ١٠ يوليو ٢٠٢٦ (مؤقت)"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Makkah · 10 Jul 2026 (temporary)"
+          }
+        }
+      }
+    },
     "Primary" : {
 
     },
@@ -909,6 +1242,23 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Contact Support"
+          }
+        }
+      }
+    },
+    "settings.developer_dua" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "ar" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "غفر الله للمطور ولوالديه"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "May Allah forgive the developer and his parents"
           }
         }
       }
@@ -994,6 +1344,23 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Legal"
+          }
+        }
+      }
+    },
+    "settings.prayer_times" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "ar" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "مواقيت الصلاة"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Prayer times"
           }
         }
       }
@@ -1100,6 +1467,40 @@
         }
       }
     },
+    "settings.tabs" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "ar" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "التبويبات"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Tabs"
+          }
+        }
+      }
+    },
+    "settings.tabs.subtitle" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "ar" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "إظهار التبويبات وترتيبها والتاب الافتراضي"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Show, arrange, and choose the startup tab"
+          }
+        }
+      }
+    },
     "settings.terms" : {
       "extractionState" : "manual",
       "localizations" : {
@@ -1147,23 +1548,6 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Customize app colors and themes"
-          }
-        }
-      }
-    },
-    "settings.developer_dua" : {
-      "extractionState" : "manual",
-      "localizations" : {
-        "ar" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "غفر الله للمطور ولوالديه"
-          }
-        },
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "May Allah forgive the developer and his parents"
           }
         }
       }
@@ -2205,6 +2589,125 @@
         }
       }
     },
+    "tab_settings.hidden" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "ar" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "مخفي"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Hidden"
+          }
+        }
+      }
+    },
+    "tab_settings.order" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "ar" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "ترتيب التبويبات"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Tab order"
+          }
+        }
+      }
+    },
+    "tab_settings.order_hint" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "ar" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "اسحب لإعادة ترتيب التبويبات في الشريط السفلي"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Drag to rearrange tabs in the tab bar"
+          }
+        }
+      }
+    },
+    "tab_settings.show_prayer" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "ar" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "إظهار تبويب الصلاة"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Show Prayer tab"
+          }
+        }
+      }
+    },
+    "tab_settings.startup" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "ar" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "عند التشغيل"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "On launch"
+          }
+        }
+      }
+    },
+    "tab_settings.startup_tab" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "ar" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "التبويب الافتراضي"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Startup tab"
+          }
+        }
+      }
+    },
+    "tab_settings.visibility" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "ar" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "الظهور"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Visibility"
+          }
+        }
+      }
+    },
     "tab.azkary" : {
       "extractionState" : "manual",
       "localizations" : {
@@ -2218,6 +2721,23 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Azkary"
+          }
+        }
+      }
+    },
+    "tab.prayer" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "ar" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "الصلاة"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Prayer"
           }
         }
       }
@@ -2560,6 +3080,23 @@
         }
       }
     },
+    "theme.duplicate_name" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "ar" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%@ نسخة"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%@ Copy"
+          }
+        }
+      }
+    },
     "theme.edit_title" : {
       "extractionState" : "manual",
       "localizations" : {
@@ -2726,6 +3263,74 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Preset Colors"
+          }
+        }
+      }
+    },
+    "theme.preset.dark" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "ar" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "داكن"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Dark"
+          }
+        }
+      }
+    },
+    "theme.preset.default" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "ar" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "افتراضي"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Default"
+          }
+        }
+      }
+    },
+    "theme.preset.ocean" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "ar" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "محيط"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ocean"
+          }
+        }
+      }
+    },
+    "theme.preset.sunset" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "ar" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "غروب"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Sunset"
           }
         }
       }
@@ -2947,91 +3552,6 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Tab Bar"
-          }
-        }
-      }
-    },
-    "theme.duplicate_name" : {
-      "extractionState" : "manual",
-      "localizations" : {
-        "ar" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "%@ نسخة"
-          }
-        },
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "%@ Copy"
-          }
-        }
-      }
-    },
-    "theme.preset.dark" : {
-      "extractionState" : "manual",
-      "localizations" : {
-        "ar" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "داكن"
-          }
-        },
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Dark"
-          }
-        }
-      }
-    },
-    "theme.preset.default" : {
-      "extractionState" : "manual",
-      "localizations" : {
-        "ar" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "افتراضي"
-          }
-        },
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Default"
-          }
-        }
-      }
-    },
-    "theme.preset.ocean" : {
-      "extractionState" : "manual",
-      "localizations" : {
-        "ar" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "محيط"
-          }
-        },
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Ocean"
-          }
-        }
-      }
-    },
-    "theme.preset.sunset" : {
-      "extractionState" : "manual",
-      "localizations" : {
-        "ar" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "غروب"
-          }
-        },
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Sunset"
           }
         }
       }
@@ -3265,6 +3785,159 @@
     },
     "Volume" : {
 
+    },
+    "whats_new.continue" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "ar" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "حسنًا"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Got it"
+          }
+        }
+      }
+    },
+    "whats_new.feature.prayer_tab" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "ar" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "تبويب جديد لأوقات الصلاة مع ساعة يومية"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "New Prayer Times tab with a daily prayer clock"
+          }
+        }
+      }
+    },
+    "whats_new.feature.prayer_widget" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "ar" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "ودجت ساعة الصلاة على الشاشة الرئيسية"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Prayer Clock widget for the Home Screen"
+          }
+        }
+      }
+    },
+    "whats_new.feature.share_qr" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "ar" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "مشاركة الذكر كصورة مع رمز QR لمتجر التطبيقات"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Share a zekr as an image with an App Store QR code"
+          }
+        }
+      }
+    },
+    "whats_new.feature.tab_settings" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "ar" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "إظهار التبويبات أو إخفاؤها وترتيبها من الإعدادات"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Show, hide, and rearrange tabs in Settings"
+          }
+        }
+      }
+    },
+    "whats_new.subtitle" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "ar" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "إليك أبرز ما في الإصدار %@:"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Here’s what’s new in version %@:"
+          }
+        }
+      }
+    },
+    "whats_new.title" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "ar" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "مرحباً بالتحديث"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Welcome to the update"
+          }
+        }
+      }
+    },
+    "widget.prayer_clock.description" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "ar" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "عرض أوقات الصلاة على شاشة القفل"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Shows today’s prayer periods on the Lock Screen"
+          }
+        }
+      }
+    },
+    "widget.prayer_clock.name" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "ar" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "ساعة الصلاة"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Prayer Clock"
+          }
+        }
+      }
     }
   },
   "version" : "1.0"

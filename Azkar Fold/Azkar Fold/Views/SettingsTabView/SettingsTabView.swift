@@ -11,6 +11,7 @@ import StoreKit
 struct SettingsTabView: View {
     @EnvironmentObject var theme: ThemeManager
     @EnvironmentObject var appLanguage: AppLanguageManager
+    @ObservedObject private var prayerSettings = PrayerSettingsStore.shared
     @State private var showingPrivacyPolicy = false
     @State private var showingTerms = false
     @State private var showingSupportSheet = false
@@ -33,6 +34,18 @@ struct SettingsTabView: View {
 
                     sunnahSettingsNavigationLink
                         
+                    Divider()
+                        .background(.gray.opacity(0.3))
+                        .padding(.horizontal, 32)
+
+                    prayerTimesNavigationLink
+
+                    Divider()
+                        .background(.gray.opacity(0.3))
+                        .padding(.horizontal, 32)
+
+                    tabSettingsNavigationLink
+
                     Divider()
                         .background(.gray.opacity(0.3))
                         .padding(.horizontal, 32)
@@ -217,6 +230,55 @@ struct SettingsTabView: View {
                         .foregroundColor(theme.currentTheme.text.opacity(0.7))
                 }
                     
+                Spacer()
+            }
+            .padding(.vertical, 12)
+            .padding(.horizontal, 14)
+        }
+    }
+
+    private var prayerTimesNavigationLink: some View {
+        NavigationLink(destination: PrayerLocationPickerView()) {
+            HStack(spacing: 12) {
+                Image(systemName: "location.circle.fill")
+                    .foregroundColor(theme.currentTheme.primary)
+                    .frame(width: 24, height: 24)
+
+                VStack(alignment: .leading, spacing: 2) {
+                    Text(appLanguage.text("settings.prayer_times"))
+                        .font(.headline)
+                        .foregroundColor(theme.currentTheme.text)
+
+                    Text(prayerSettings.location.resolvedDisplayName(using: appLanguage))
+                        .font(.caption)
+                        .foregroundColor(theme.currentTheme.text.opacity(0.7))
+                        .lineLimit(1)
+                }
+
+                Spacer()
+            }
+            .padding(.vertical, 12)
+            .padding(.horizontal, 14)
+        }
+    }
+
+    private var tabSettingsNavigationLink: some View {
+        NavigationLink(destination: TabSettingsView()) {
+            HStack(spacing: 12) {
+                Image(systemName: "rectangle.split.3x1")
+                    .foregroundColor(theme.currentTheme.primary)
+                    .frame(width: 24, height: 24)
+
+                VStack(alignment: .leading, spacing: 2) {
+                    Text(appLanguage.text("settings.tabs"))
+                        .font(.headline)
+                        .foregroundColor(theme.currentTheme.text)
+
+                    Text(appLanguage.text("settings.tabs.subtitle"))
+                        .font(.caption)
+                        .foregroundColor(theme.currentTheme.text.opacity(0.7))
+                }
+
                 Spacer()
             }
             .padding(.vertical, 12)

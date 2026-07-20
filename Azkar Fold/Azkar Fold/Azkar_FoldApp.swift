@@ -16,7 +16,9 @@ struct Azkar_FoldApp: App {
     
     init() {
         FirebaseApp.configure()
+        FirebaseTelemetry.configure()
         AzkarFont.registerIfNeeded()
+        AppStoreShareQRCode.prefetch()
     }
     
     var body: some Scene {
@@ -45,11 +47,16 @@ struct Azkar_FoldApp: App {
             }
             .onChange(of: showLaunchScreen) { newValue in
                 if !newValue {
-                    // Trigger update check when launch screen dismisses
-                    Task {
+                    Task { @MainActor in
                         await UpdateManager.shared.checkForUpdates()
+                        WhatsNewManager.shared.evaluate(
+                            forceUpdateShowing: UpdateManager.shared.showForceUpdate
+                        )
                     }
                 }
+            }
+            .onOpenURL { url in
+                AppDeepLink.handle(url)
             }
         }
     }

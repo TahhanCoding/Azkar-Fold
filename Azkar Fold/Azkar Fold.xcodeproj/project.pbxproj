@@ -9,16 +9,64 @@
 /* Begin PBXBuildFile section */
 		326D1EC12F06487B00CCF7A5 /* FirebaseCore in Frameworks */ = {isa = PBXBuildFile; productRef = 326D1EC02F06487B00CCF7A5 /* FirebaseCore */; };
 		326D1EC32F06487B00CCF7A5 /* FirebaseRemoteConfig in Frameworks */ = {isa = PBXBuildFile; productRef = 326D1EC22F06487B00CCF7A5 /* FirebaseRemoteConfig */; };
+		A1ADHAN012F8B000100000001 /* Adhan in Frameworks */ = {isa = PBXBuildFile; productRef = A1ADHAN022F8B000100000001 /* Adhan */; };
+		A1FBANL12F9D000100000001 /* FirebaseAnalyticsCore in Frameworks */ = {isa = PBXBuildFile; productRef = A1FBANL22F9D000100000001 /* FirebaseAnalyticsCore */; };
+		A1FBCRSH12F9D000100000001 /* FirebaseCrashlytics in Frameworks */ = {isa = PBXBuildFile; productRef = A1FBCRSH22F9D000100000001 /* FirebaseCrashlytics */; };
+		WDGBF0012F8C000100000001 /* Adhan in Frameworks */ = {isa = PBXBuildFile; productRef = WDGPPROD2F8C000100000001 /* Adhan */; };
+		WDGBF0022F8C000100000001 /* AzkarFoldWidgets.appex in Embed Foundation Extensions */ = {isa = PBXBuildFile; fileRef = WDGFREF02F8C000100000001 /* AzkarFoldWidgets.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
 /* End PBXBuildFile section */
+
+/* Begin PBXContainerItemProxy section */
+		WDGPROXY2F8C000100000001 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 329D04242DC5653500ED5D7E /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = WDGNTARG2F8C000100000001;
+			remoteInfo = AzkarFoldWidgets;
+		};
+/* End PBXContainerItemProxy section */
+
+/* Begin PBXCopyFilesBuildPhase section */
+		WDGEMBED2F8C000100000001 /* Embed Foundation Extensions */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = "";
+			dstSubfolderSpec = 13;
+			files = (
+				WDGBF0022F8C000100000001 /* AzkarFoldWidgets.appex in Embed Foundation Extensions */,
+			);
+			name = "Embed Foundation Extensions";
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
 		329D042C2DC5653500ED5D7E /* Azkar Fold.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "Azkar Fold.app"; sourceTree = BUILT_PRODUCTS_DIR; };
+		WDGFREF02F8C000100000001 /* AzkarFoldWidgets.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = AzkarFoldWidgets.appex; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
+
+/* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
+		WDGEXC012F8C000100000001 /* Exceptions for "AzkarFoldWidgets" folder in "AzkarFoldWidgets" target */ = {
+			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
+			membershipExceptions = (
+				Info.plist,
+			);
+			target = WDGNTARG2F8C000100000001 /* AzkarFoldWidgets */;
+		};
+/* End PBXFileSystemSynchronizedBuildFileExceptionSet section */
 
 /* Begin PBXFileSystemSynchronizedRootGroup section */
 		329D042E2DC5653500ED5D7E /* Azkar Fold */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
 			path = "Azkar Fold";
+			sourceTree = "<group>";
+		};
+		WDGSYNC12F8C000100000001 /* AzkarFoldWidgets */ = {
+			isa = PBXFileSystemSynchronizedRootGroup;
+			exceptions = (
+				WDGEXC012F8C000100000001 /* Exceptions for "AzkarFoldWidgets" folder in "AzkarFoldWidgets" target */,
+			);
+			path = AzkarFoldWidgets;
 			sourceTree = "<group>";
 		};
 /* End PBXFileSystemSynchronizedRootGroup section */
@@ -30,6 +78,17 @@
 			files = (
 				326D1EC32F06487B00CCF7A5 /* FirebaseRemoteConfig in Frameworks */,
 				326D1EC12F06487B00CCF7A5 /* FirebaseCore in Frameworks */,
+				A1FBANL12F9D000100000001 /* FirebaseAnalyticsCore in Frameworks */,
+				A1FBCRSH12F9D000100000001 /* FirebaseCrashlytics in Frameworks */,
+				A1ADHAN012F8B000100000001 /* Adhan in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		WDGFRM012F8C000100000001 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				WDGBF0012F8C000100000001 /* Adhan in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -40,6 +99,7 @@
 			isa = PBXGroup;
 			children = (
 				329D042E2DC5653500ED5D7E /* Azkar Fold */,
+				WDGSYNC12F8C000100000001 /* AzkarFoldWidgets */,
 				329D042D2DC5653500ED5D7E /* Products */,
 			);
 			sourceTree = "<group>";
@@ -48,6 +108,7 @@
 			isa = PBXGroup;
 			children = (
 				329D042C2DC5653500ED5D7E /* Azkar Fold.app */,
+				WDGFREF02F8C000100000001 /* AzkarFoldWidgets.appex */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -62,10 +123,13 @@
 				329D04282DC5653500ED5D7E /* Sources */,
 				329D04292DC5653500ED5D7E /* Frameworks */,
 				329D042A2DC5653500ED5D7E /* Resources */,
+				WDGEMBED2F8C000100000001 /* Embed Foundation Extensions */,
+				A1FBCRSH32F9D000100000001 /* Upload Crashlytics dSYM */,
 			);
 			buildRules = (
 			);
 			dependencies = (
+				WDGDEP012F8C000100000001 /* PBXTargetDependency */,
 			);
 			fileSystemSynchronizedGroups = (
 				329D042E2DC5653500ED5D7E /* Azkar Fold */,
@@ -74,10 +138,36 @@
 			packageProductDependencies = (
 				326D1EC02F06487B00CCF7A5 /* FirebaseCore */,
 				326D1EC22F06487B00CCF7A5 /* FirebaseRemoteConfig */,
+				A1FBANL22F9D000100000001 /* FirebaseAnalyticsCore */,
+				A1FBCRSH22F9D000100000001 /* FirebaseCrashlytics */,
+				A1ADHAN022F8B000100000001 /* Adhan */,
 			);
 			productName = "Azkar Fold";
 			productReference = 329D042C2DC5653500ED5D7E /* Azkar Fold.app */;
 			productType = "com.apple.product-type.application";
+		};
+		WDGNTARG2F8C000100000001 /* AzkarFoldWidgets */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = WDGCFGLT2F8C000100000001 /* Build configuration list for PBXNativeTarget "AzkarFoldWidgets" */;
+			buildPhases = (
+				WDGSRC012F8C000100000001 /* Sources */,
+				WDGFRM012F8C000100000001 /* Frameworks */,
+				WDGRES012F8C000100000001 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			fileSystemSynchronizedGroups = (
+				WDGSYNC12F8C000100000001 /* AzkarFoldWidgets */,
+			);
+			name = AzkarFoldWidgets;
+			packageProductDependencies = (
+				WDGPPROD2F8C000100000001 /* Adhan */,
+			);
+			productName = AzkarFoldWidgets;
+			productReference = WDGFREF02F8C000100000001 /* AzkarFoldWidgets.appex */;
+			productType = "com.apple.product-type.app-extension";
 		};
 /* End PBXNativeTarget section */
 
@@ -90,6 +180,9 @@
 				LastUpgradeCheck = 1610;
 				TargetAttributes = {
 					329D042B2DC5653500ED5D7E = {
+						CreatedOnToolsVersion = 16.1;
+					};
+					WDGNTARG2F8C000100000001 = {
 						CreatedOnToolsVersion = 16.1;
 					};
 				};
@@ -106,6 +199,7 @@
 			minimizedProjectReferenceProxies = 1;
 			packageReferences = (
 				326D1EBF2F06487B00CCF7A5 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */,
+				A1ADHAN032F8B000100000001 /* XCRemoteSwiftPackageReference "adhan-swift" */,
 			);
 			preferredProjectObjectVersion = 77;
 			productRefGroup = 329D042D2DC5653500ED5D7E /* Products */;
@@ -113,6 +207,7 @@
 			projectRoot = "";
 			targets = (
 				329D042B2DC5653500ED5D7E /* Azkar Fold */,
+				WDGNTARG2F8C000100000001 /* AzkarFoldWidgets */,
 			);
 		};
 /* End PBXProject section */
@@ -125,7 +220,41 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		WDGRES012F8C000100000001 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 /* End PBXResourcesBuildPhase section */
+
+/* Begin PBXShellScriptBuildPhase section */
+		A1FBCRSH32F9D000100000001 /* Upload Crashlytics dSYM */ = {
+			isa = PBXShellScriptBuildPhase;
+			alwaysOutOfDate = 1;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+			);
+			inputPaths = (
+				"${DWARF_DSYM_FOLDER_PATH}/${DWARF_DSYM_FILE_NAME}",
+				"${DWARF_DSYM_FOLDER_PATH}/${DWARF_DSYM_FILE_NAME}/Contents/Resources/DWARF/${PRODUCT_NAME}",
+				"${DWARF_DSYM_FOLDER_PATH}/${DWARF_DSYM_FILE_NAME}/Contents/Info.plist",
+				"$(TARGET_BUILD_DIR)/$(UNLOCALIZED_RESOURCES_FOLDER_PATH)/GoogleService-Info.plist",
+				"$(TARGET_BUILD_DIR)/$(EXECUTABLE_PATH)",
+			);
+			name = "Upload Crashlytics dSYM";
+			outputFileListPaths = (
+			);
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "\"${BUILD_DIR%/Build/*}/SourcePackages/checkouts/firebase-ios-sdk/Crashlytics/run\"\n";
+		};
+/* End PBXShellScriptBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
 		329D04282DC5653500ED5D7E /* Sources */ = {
@@ -135,7 +264,22 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		WDGSRC012F8C000100000001 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 /* End PBXSourcesBuildPhase section */
+
+/* Begin PBXTargetDependency section */
+		WDGDEP012F8C000100000001 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = WDGNTARG2F8C000100000001 /* AzkarFoldWidgets */;
+			targetProxy = WDGPROXY2F8C000100000001 /* PBXContainerItemProxy */;
+		};
+/* End PBXTargetDependency section */
 
 /* Begin XCBuildConfiguration section */
 		329D04382DC5653700ED5D7E /* Debug */ = {
@@ -262,6 +406,7 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_ENTITLEMENTS = "Azkar Fold/AzkarFold.entitlements";
 				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
@@ -273,6 +418,7 @@
 				INFOPLIST_KEY_CFBundleDisplayName = "Azkar Fold";
 				INFOPLIST_KEY_ITSAppUsesNonExemptEncryption = NO;
 				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.lifestyle";
+				INFOPLIST_KEY_NSLocationWhenInUseUsageDescription = "Azkar Fold uses your location to calculate prayer times for where you are.";
 				INFOPLIST_KEY_NSMotionUsageDescription = "Used for 3-D tilt effect";
 				INFOPLIST_KEY_NSPhotoLibraryAddUsageDescription = "The app needs this permission to be able to save or share zekr snap.";
 				INFOPLIST_KEY_NSPhotoLibraryUsageDescription = "Azkar Fold needs access to your photo library so you can attach photos or videos to support messages.";
@@ -301,6 +447,7 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_ENTITLEMENTS = "Azkar Fold/AzkarFold.entitlements";
 				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
@@ -312,6 +459,7 @@
 				INFOPLIST_KEY_CFBundleDisplayName = "Azkar Fold";
 				INFOPLIST_KEY_ITSAppUsesNonExemptEncryption = NO;
 				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.lifestyle";
+				INFOPLIST_KEY_NSLocationWhenInUseUsageDescription = "Azkar Fold uses your location to calculate prayer times for where you are.";
 				INFOPLIST_KEY_NSMotionUsageDescription = "Used for 3-D tilt effect";
 				INFOPLIST_KEY_NSPhotoLibraryAddUsageDescription = "The app needs this permission to be able to save or share zekr snap.";
 				INFOPLIST_KEY_NSPhotoLibraryUsageDescription = "Azkar Fold needs access to your photo library so you can attach photos or videos to support messages.";
@@ -329,6 +477,62 @@
 				PRODUCT_BUNDLE_IDENTIFIER = "com.AhmedAlTahhan.Azkar-Fold";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Release;
+		};
+		WDGCFGDF2F8C000100000001 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_ENTITLEMENTS = AzkarFoldWidgets/AzkarFoldWidgets.entitlements;
+				CODE_SIGN_IDENTITY = "Apple Development";
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = V92LW66S55;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = AzkarFoldWidgets/Info.plist;
+				INFOPLIST_KEY_CFBundleDisplayName = "Azkar Fold";
+				INFOPLIST_KEY_NSHumanReadableCopyright = "";
+				IPHONEOS_DEPLOYMENT_TARGET = 16.0;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@executable_path/../../Frameworks",
+				);
+				MARKETING_VERSION = 1.0.2;
+				PRODUCT_BUNDLE_IDENTIFIER = "com.AhmedAlTahhan.Azkar-Fold.Widgets";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SKIP_INSTALL = YES;
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Debug;
+		};
+		WDGCFGRL2F8C000100000001 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_ENTITLEMENTS = AzkarFoldWidgets/AzkarFoldWidgets.entitlements;
+				CODE_SIGN_IDENTITY = "Apple Development";
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = V92LW66S55;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = AzkarFoldWidgets/Info.plist;
+				INFOPLIST_KEY_CFBundleDisplayName = "Azkar Fold";
+				INFOPLIST_KEY_NSHumanReadableCopyright = "";
+				IPHONEOS_DEPLOYMENT_TARGET = 16.0;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@executable_path/../../Frameworks",
+				);
+				MARKETING_VERSION = 1.0.2;
+				PRODUCT_BUNDLE_IDENTIFIER = "com.AhmedAlTahhan.Azkar-Fold.Widgets";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SKIP_INSTALL = YES;
 				SWIFT_EMIT_LOC_STRINGS = YES;
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
@@ -356,6 +560,15 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
+		WDGCFGLT2F8C000100000001 /* Build configuration list for PBXNativeTarget "AzkarFoldWidgets" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				WDGCFGDF2F8C000100000001 /* Debug */,
+				WDGCFGRL2F8C000100000001 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
 /* End XCConfigurationList section */
 
 /* Begin XCRemoteSwiftPackageReference section */
@@ -365,6 +578,14 @@
 			requirement = {
 				kind = upToNextMinorVersion;
 				minimumVersion = 12.7.0;
+			};
+		};
+		A1ADHAN032F8B000100000001 /* XCRemoteSwiftPackageReference "adhan-swift" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/batoulapps/adhan-swift";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 1.4.0;
 			};
 		};
 /* End XCRemoteSwiftPackageReference section */
@@ -379,6 +600,26 @@
 			isa = XCSwiftPackageProductDependency;
 			package = 326D1EBF2F06487B00CCF7A5 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
 			productName = FirebaseRemoteConfig;
+		};
+		A1ADHAN022F8B000100000001 /* Adhan */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = A1ADHAN032F8B000100000001 /* XCRemoteSwiftPackageReference "adhan-swift" */;
+			productName = Adhan;
+		};
+		A1FBANL22F9D000100000001 /* FirebaseAnalyticsCore */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 326D1EBF2F06487B00CCF7A5 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
+			productName = FirebaseAnalyticsCore;
+		};
+		A1FBCRSH22F9D000100000001 /* FirebaseCrashlytics */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 326D1EBF2F06487B00CCF7A5 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
+			productName = FirebaseCrashlytics;
+		};
+		WDGPPROD2F8C000100000001 /* Adhan */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = A1ADHAN032F8B000100000001 /* XCRemoteSwiftPackageReference "adhan-swift" */;
+			productName = Adhan;
 		};
 /* End XCSwiftPackageProductDependency section */
 	};

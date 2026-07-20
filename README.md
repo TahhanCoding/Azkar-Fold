@@ -59,19 +59,28 @@ Azkar Fold is an open-source SwiftUI app for daily Islamic remembrance. It combi
 
 ## Firebase setup (optional for local dev)
 
-The app uses **Firebase Remote Config** only for optional/force update checks.
+The app uses Firebase for:
+
+- **Remote Config** — optional / force update checks (`min_version`, `latest_version`)
+- **Analytics** (`FirebaseAnalyticsCore`, without Ad ID) — anonymous usage (sessions, a few feature events)
+- **Crashlytics** — crash and non-fatal diagnostics
 
 1. Create a Firebase iOS app or use an existing project.
-2. Download `GoogleService-Info.plist` from the Firebase console.
-3. Copy the example file and replace placeholders:
+2. In the Firebase Console, enable **Analytics** and **Crashlytics** for the iOS app.
+3. Download `GoogleService-Info.plist` (ensure `IS_ANALYTICS_ENABLED` is `true`).
+4. Copy the example file and replace placeholders:
    ```bash
    cp "Azkar Fold/Azkar Fold/GoogleService-Info.plist.example" "Azkar Fold/Azkar Fold/GoogleService-Info.plist"
    ```
-4. Paste your real Firebase values into `GoogleService-Info.plist`.
+5. Paste your real Firebase values into `GoogleService-Info.plist`.
 
 `GoogleService-Info.plist` is gitignored. Do not commit production keys.
 
-If Firebase is not configured, the app should still run; update prompts may not work until Remote Config is set up.
+If Firebase is not configured, the app should still run; update prompts, analytics, and crash reporting will not work until the plist and Console products are set up.
+
+When submitting to App Store Connect, disclose **crash data** and **product interaction** analytics in App Privacy (no advertising ID).
+
+To verify Analytics quickly, run with launch argument `-FIRDebugEnabled` and check Firebase **DebugView**.
 
 ## Project structure
 

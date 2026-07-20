@@ -1,4 +1,5 @@
 "CFBundleDisplayName" = "مطوية الأذكار";
+"NSLocationWhenInUseUsageDescription" = "يستخدم مطوية الأذكار موقعك لحساب مواقيت الصلاة حسب مكانك.";
 "NSMotionUsageDescription" = "يُستخدم لتأثير الميل ثلاثي الأبعاد";
 "NSPhotoLibraryAddUsageDescription" = "يحتاج مطوية الأذكار هذا الإذن لحفظ أو مشاركة صورة الذكر.";
 "NSPhotoLibraryUsageDescription" = "يحتاج مطوية الأذكار الوصول إلى مكتبة الصور لإرفاق صور أو فيديوهات برسائل الدعم.";
